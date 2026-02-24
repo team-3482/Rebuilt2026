@@ -1,8 +1,5 @@
 package frc.robot.swerve;
 
-import static edu.wpi.first.units.Units.*;
-
-import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -29,8 +26,11 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
 import frc.robot.constants.TunerConstants;
+
+import java.util.function.Supplier;
+
+import static edu.wpi.first.units.Units.*;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
