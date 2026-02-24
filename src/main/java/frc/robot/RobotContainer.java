@@ -129,37 +129,35 @@ public class RobotContainer {
         final SwerveRequest.RobotCentric robotCentricDrive = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-        if (ControllerConstants.DPAD_DRIVE_INPUT) {
-            // POV angle: [X velocity, Y velocity] in m/s
-            final Map<Integer, Integer[]> povSpeeds = Map.ofEntries(
-                Map.entry(0, new Integer[]{1, 0}),
-                Map.entry(45, new Integer[]{1, -1}),
-                Map.entry(90, new Integer[]{0, -1}),
-                Map.entry(135, new Integer[]{-1, -1}),
-                Map.entry(180, new Integer[]{-1, 0}),
-                Map.entry(225, new Integer[]{-1, 1}),
-                Map.entry(270, new Integer[]{0, 1}),
-                Map.entry(315, new Integer[]{1, 1})
-            );
+        // POV angle: [X velocity, Y velocity] in m/s
+        final Map<Integer, Integer[]> povSpeeds = Map.ofEntries(
+            Map.entry(0, new Integer[]{1, 0}),
+            Map.entry(45, new Integer[]{1, -1}),
+            Map.entry(90, new Integer[]{0, -1}),
+            Map.entry(135, new Integer[]{-1, -1}),
+            Map.entry(180, new Integer[]{-1, 0}),
+            Map.entry(225, new Integer[]{-1, 1}),
+            Map.entry(270, new Integer[]{0, 1}),
+            Map.entry(315, new Integer[]{1, 1})
+        );
 
-            povSpeeds.forEach(
-                (Integer angle, Integer[] speeds) -> this.driverController.pov(angle).whileTrue(
-                    Drivetrain.applyRequest(() -> {
-                        boolean faster = leftTrigger.get();
-                        boolean robotCentric = rightTrigger.get();
+        povSpeeds.forEach(
+            (Integer angle, Integer[] speeds) -> this.driverController.pov(angle).whileTrue(
+                Drivetrain.applyRequest(() -> {
+                    boolean faster = leftTrigger.get();
+                    boolean robotCentric = rightTrigger.get();
 
-                        return robotCentric
-                            ? robotCentricDrive
-                            .withVelocityX(speeds[0] * (faster ? 1.5 : 0.25))
-                            .withVelocityY(speeds[1] * (faster ? 1.5 : 0.25))
-                            : fieldCentricDrive
-                            .withVelocityX(speeds[0] * (faster ? 1.5 : 0.25))
-                            .withVelocityY(speeds[1] * (faster ? 1.5 : 0.25));
-                    })
-                )
-            );
-        }
-
+                    return robotCentric
+                        ? robotCentricDrive
+                        .withVelocityX(speeds[0] * (faster ? 1.5 : 0.25))
+                        .withVelocityY(speeds[1] * (faster ? 1.5 : 0.25))
+                        : fieldCentricDrive
+                        .withVelocityX(speeds[0] * (faster ? 1.5 : 0.25))
+                        .withVelocityY(speeds[1] * (faster ? 1.5 : 0.25));
+                })
+            )
+        );
+        
         Drivetrain.registerTelemetry(logger::telemeterize);
     }
 

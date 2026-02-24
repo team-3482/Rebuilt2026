@@ -11,10 +11,10 @@ public class VirtualConstants {
         public static final int DRIVER_CONTROLLER_ID = 0;
         /** DriverStation ID of the operator controller. */
         public static final int OPERATOR_CONTROLLER_ID = 1;
+
         /** Removes input around the joystick's center (eliminates stick drift). */
         public static final double DEADBAND = 0.075;
-        /** Whether to accept directional pad input for movement. */
-        public static final boolean DPAD_DRIVE_INPUT = true;
+        
         /** Speed multiplier when using fine-control movement. */
         public static final double FINE_CONTROL_MULT = 0.15;
     }
