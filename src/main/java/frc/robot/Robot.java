@@ -21,10 +21,9 @@ import java.io.File;
 public class Robot extends LoggedRobot {
     private Command auton;
 
-    private final RobotContainer m_robotContainer;
-
     public Robot() {
-        m_robotContainer = new RobotContainer();
+        RobotContainer.getInstance().configureDriverBindings();
+        RobotContainer.getInstance().configureOperatorBindings();
 
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
         Logger.recordMetadata("ProjectName", "Rebuilt2026");
@@ -49,6 +48,9 @@ public class Robot extends LoggedRobot {
 
             Logger.start();
         }
+
+        // Eager-load the auton command so it's ready right away
+        RobotContainer.getInstance().getAutonomousCommand();
     }
 
     @Override
@@ -73,7 +75,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        auton = m_robotContainer.getAutonomousCommand();
+        auton = RobotContainer.getInstance().getAutonomousCommand();
 
         Logger.recordOutput("Auton/AutonCommand", auton.getName());
 
