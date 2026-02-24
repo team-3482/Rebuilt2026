@@ -4,30 +4,62 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.HootAutoReplay;
-
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-public class Robot extends TimedRobot {
-    private Command m_autonomousCommand;
+import java.io.File;
+
+public class Robot extends LoggedRobot {
+    private Command auton;
 
     private final RobotContainer m_robotContainer;
 
-    /* log and replay timestamp and joystick data */
-    private final HootAutoReplay m_timeAndJoystickReplay = new HootAutoReplay()
-        .withTimestampReplay()
-        .withJoystickReplay();
-
     public Robot() {
         m_robotContainer = new RobotContainer();
+
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
+        Logger.recordMetadata("ProjectName", "Rebuilt2026");
+
+        if (isReal()) {
+            // Random parent directory name to differentiate logs.
+            // I tried to use the date & time, but the RIO doesn't have an accurate timestamp since there's no RTC.
+            String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
+
+            System.out.println("logging to: " + path + " (new directory: " + new File(path).mkdirs() + ")");
+
+            // SignalLogger.setPath(path);
+
+            Logger.addDataReceiver(new WPILOGWriter(path)); // Log to a USB stick ("/U/logs")
+            Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+
+            Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+            // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
+            //noinspection ConstantValue (IntelliJ warning suppression)
+            Logger.recordMetadata("GitDirty", BuildConstants.DIRTY > 0 ? "true" : "false");
+            Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+
+            Logger.start();
+        }
     }
 
     @Override
     public void robotPeriodic() {
-        m_timeAndJoystickReplay.update();
-        CommandScheduler.getInstance().run(); 
+        CommandScheduler.getInstance().run();
+
+        double voltage = RobotController.getBatteryVoltage();
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+        SmartDashboard.putNumber("Voltage", voltage);
+
+        Logger.recordOutput("Voltage", voltage);
     }
 
     @Override
@@ -41,10 +73,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        auton = m_robotContainer.getAutonomousCommand();
 
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().schedule(m_autonomousCommand);
+        Logger.recordOutput("Auton/AutonCommand", auton.getName());
+
+        if (auton != null) {
+            CommandScheduler.getInstance().schedule(auton);
+        } else {
+            System.err.println("No auton command found.");
         }
     }
 
@@ -56,8 +92,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        if (m_autonomousCommand != null) {
-            CommandScheduler.getInstance().cancel(m_autonomousCommand);
+        if (auton != null) {
+            CommandScheduler.getInstance().cancel(auton);
         }
     }
 
@@ -68,9 +104,7 @@ public class Robot extends TimedRobot {
     public void teleopExit() {}
 
     @Override
-    public void testInit() {
-        CommandScheduler.getInstance().cancelAll();
-    }
+    public void testInit() {}
 
     @Override
     public void testPeriodic() {}
