@@ -1,5 +1,11 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+
 /**
  * Tunable Constants that aren't based on physical attributes of the robot.
  * For example, motor speeds, PID gains, timings, positions, etc.
@@ -14,11 +20,19 @@ public class VirtualConstants {
 
         /** Removes input around the joystick's center (eliminates stick drift). */
         public static final double DEADBAND = 0.075;
-        
+
         /** Speed multiplier when using fine-control movement. */
         public static final double FINE_CONTROL_MULT = 0.15;
     }
 
-    // Future classes: VirtualConstants.Shooter, VirtualConstants.Intake, etc.
+    /** Constants for QuestNav and Limelight */
+    public static final class Vision {
+        /** Standard Deviations for Trust */
+        public static final Matrix<N3, N1> QUESTNAV_TRUST_STD_DEVS = VecBuilder.fill(
+            0.02, // Trust down to 2cm in X direction
+            0.02, // Trust down to 2cm in Y direction
+            Units.degreesToRadians(2) // Trust down to 2 degrees rotational
+        );
+    }
 
 }

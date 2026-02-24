@@ -27,6 +27,7 @@ import frc.robot.constants.TunerConstants;
 import frc.robot.constants.VirtualConstants.ControllerConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
+import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.Map;
@@ -71,7 +72,8 @@ public class RobotContainer {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void initializeSubsystems() {
-    } // TODO: add future subsystems here
+        VisionSubsystem.getInstance();
+    }
 
     /**
      * This method initializes the swerve subsystem and configures its bindings with the driver controller.
@@ -157,7 +159,7 @@ public class RobotContainer {
                 })
             )
         );
-        
+
         Drivetrain.registerTelemetry(logger::telemeterize);
     }
 
