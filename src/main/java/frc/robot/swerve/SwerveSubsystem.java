@@ -9,6 +9,10 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -149,13 +153,12 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
             TunerConstants.BackRight
         );
 
-        // configureAutoBuilder(); TODO: pathplanner
+        configureAutoBuilder();
         if (Utils.isSimulation()) {
             startSimThread();
         }
     }
 
-    /* TODO: pathplanner
     private void configureAutoBuilder() {
         try {
             var config = RobotConfig.fromGUISettings();
@@ -183,7 +186,7 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
         } catch (Exception ex) {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder.", ex.getStackTrace());
         }
-    } */
+    }
 
     /**
      * Returns a command that applies the specified control request to this swerve drivetrain.

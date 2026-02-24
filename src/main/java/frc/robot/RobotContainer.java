@@ -4,10 +4,11 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,7 +42,7 @@ public class RobotContainer {
         return RobotContainerHolder.INSTANCE;
     }
 
-    // private final SendableChooser<Command> autoChooser; // TODO: pathplanner
+    private final SendableChooser<Command> autoChooser;
     private Command auton = null;
 
     // Instance of the controllers used to drive the robot
@@ -58,9 +59,8 @@ public class RobotContainer {
         configureDrivetrain();
         initializeSubsystems();
 
-        // TODO: pathplanner
-        // this.autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be Commands.none()
-        // this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
+        this.autoChooser = AutoBuilder.buildAutoChooser(); // The default auto will be Commands.none()
+        this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
 
         // SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
@@ -183,7 +183,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if (this.auton == null) {
-            this.auton = null; //this.autoChooser.getSelected(); // TODO pathplanner
+            this.auton = this.autoChooser.getSelected();
         }
         return this.auton;
     }
