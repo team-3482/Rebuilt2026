@@ -4,6 +4,8 @@
 
 package frc.robot.vision;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.PhysicalConstants;
 import frc.robot.constants.VirtualConstants;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.utilities.LimelightHelpers;
+import frc.robot.utilities.LimelightHelpers.PoseEstimate;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 import org.littletonrobotics.junction.Logger;
@@ -29,9 +33,17 @@ public class VisionSubsystem extends SubsystemBase {
 
     QuestNav questNav = new QuestNav();
     PoseFrame[] poseFrames;
+    PoseEstimate limelightPose;
 
     private VisionSubsystem() {
         super("VisionSubsystem");
+
+        HttpCamera LLCamera = new HttpCamera(
+            PhysicalConstants.Vision.LIMELIGHT,
+            "http://" + "10.34.82.20" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
+        );
+
+        CameraServer.startAutomaticCapture(LLCamera);
     }
 
     @Override
@@ -57,6 +69,9 @@ public class VisionSubsystem extends SubsystemBase {
                 Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
             }
         }
+
+        limelightPose = getLimelightPose();
+        Logger.recordOutput("Limelight/Pose", limelightPose.pose);
     }
 
     /**
@@ -89,16 +104,21 @@ public class VisionSubsystem extends SubsystemBase {
         return null;
     }
 
-    /**
-     * Tells QuestNav an accurate pose to start tracking from.
-     * Will run at beginning of match with AprilTag pose data
-     * or later if necessary to recalibrate the Quest.
-     * @param actualPose The trusted and accurate pose.
-     */
-    public void resetPose(Pose3d actualPose){
-        questNav.setPose(actualPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST));
+    /** Reset pose from absolute Limelight data if QuestNav relative data is inaccurate */
+    public void resetPose(){
+        // TODO: test if this works. I think it might not, and instead the limelight pose should be provided directly
+        // if it does work, then maybe the limelight vision data should be added periodically
+        SwerveSubsystem.getInstance().addVisionMeasurement(
+            limelightPose.pose,
+            limelightPose.timestampSeconds,
+            VirtualConstants.Vision.LIMELIGHT_TRUST_STD_DEVS
+        );
+
+        Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);
+        questNav.setPose(currentPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST));
     }
 
+    /** Periodically adds vision measurements to the swerve odometry */
     private void updateSwervePoseEstimation() {
         for (PoseFrame poseFrame : poseFrames) {
             double timestamp = poseFrame.dataTimestamp();
@@ -109,5 +129,21 @@ public class VisionSubsystem extends SubsystemBase {
             // Add the measurement
             SwerveSubsystem.getInstance().addVisionMeasurement(robotPose.toPose2d(), timestamp, VirtualConstants.Vision.QUESTNAV_TRUST_STD_DEVS);
         }
+    }
+
+    /**
+     * Get the latest Limelight pose data
+     * @return the pose estimate
+     */
+    private PoseEstimate getLimelightPose() {
+        double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
+
+        LimelightHelpers.SetRobotOrientation(
+            PhysicalConstants.Vision.LIMELIGHT,
+            rotationDegrees,
+            0.0, 0.0, 0.0, 0.0, 0.0
+        );
+
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(PhysicalConstants.Vision.LIMELIGHT);
     }
 }

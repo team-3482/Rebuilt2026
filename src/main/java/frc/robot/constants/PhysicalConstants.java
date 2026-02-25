@@ -21,6 +21,9 @@ public class PhysicalConstants {
 
     /** Constants for QuestNav and Limelight */
     public static final class Vision {
+        /** The name of the limelight */
+        public static final String LIMELIGHT = "limelight-stheno";
+
         /** Quest mounting offsets */
         public static final Transform3d ROBOT_TO_QUEST = new Transform3d(
             new Translation3d(

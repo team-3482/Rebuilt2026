@@ -27,11 +27,18 @@ public class VirtualConstants {
 
     /** Constants for QuestNav and Limelight */
     public static final class Vision {
-        /** Standard Deviations for Trust */
+        /** Standard Deviations for Trust with QuestNav */
         public static final Matrix<N3, N1> QUESTNAV_TRUST_STD_DEVS = VecBuilder.fill(
             0.02, // Trust down to 2cm in X direction
             0.02, // Trust down to 2cm in Y direction
             Units.degreesToRadians(2) // Trust down to 2 degrees rotational
+        );
+
+        /** Standard Deviations for Trust with QuestNav */
+        public static final Matrix<N3, N1> LIMELIGHT_TRUST_STD_DEVS = VecBuilder.fill(
+            0.5, // Trust down to 50cm in X direction
+            0.5, // Trust down to 50cm in Y direction
+            9999999 // Trust all rotational data
         );
     }
 
