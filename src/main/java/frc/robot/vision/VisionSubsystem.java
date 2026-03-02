@@ -8,13 +8,16 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.PhysicalConstants;
 import frc.robot.constants.VirtualConstants;
+import frc.robot.constants.VirtualConstants.Vision;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.utilities.LimelightHelpers;
 import frc.robot.utilities.LimelightHelpers.PoseEstimate;
+import frc.robot.utilities.LimelightHelpers.RawFiducial;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 import org.littletonrobotics.junction.Logger;
@@ -34,6 +37,9 @@ public class VisionSubsystem extends SubsystemBase {
     QuestNav questNav = new QuestNav();
     PoseFrame[] poseFrames;
     PoseEstimate limelightPose;
+
+    RawFiducial[] fiducials;
+
 
     private VisionSubsystem() {
         super("VisionSubsystem");
@@ -72,6 +78,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         limelightPose = getLimelightPose();
         Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+
+        if(DriverStation.isDisabled()) {
+            resetPose();
+        }
     }
 
     /**
@@ -144,10 +154,42 @@ public class VisionSubsystem extends SubsystemBase {
             0.0, 0.0, 0.0, 0.0, 0.0
         );
 
+        fiducials = LimelightHelpers.getRawFiducials(PhysicalConstants.Vision.LIMELIGHT);
+
         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(PhysicalConstants.Vision.LIMELIGHT);
     }
 
-    public boolean tagInView(){
+    /**
+     * Getter method to know if an AprilTag is in view of the Limelight
+     * @return if it's in view
+     */
+    private boolean tagInView(){
         return LimelightHelpers.getTV(PhysicalConstants.Vision.LIMELIGHT);
+    }
+
+    /**
+     * Getter method to find the ambiguity value of currently visible AprilTags
+     * @return the ambiguity value
+     */
+    private double getLimelightAmbiguity(){ // If this doesn't work, just switch to distance
+        double lowestAmbiguity = Double.MAX_VALUE;
+
+        if(fiducials != null) {
+            for (RawFiducial fiducial : fiducials) {
+                if (fiducial.ambiguity < lowestAmbiguity) {
+                    lowestAmbiguity = fiducial.ambiguity;
+                }
+            }
+        }
+
+        return lowestAmbiguity;
+    }
+
+    /**
+     * Whether to trust the Limelight pose or not.
+     * @return true if it can be trusted
+     */
+    public boolean trustLimelightData(){
+        return tagInView() && getLimelightAmbiguity() <= Vision.MAX_APRILTAG_AMBIGUITY;
     }
 }

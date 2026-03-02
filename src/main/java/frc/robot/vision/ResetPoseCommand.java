@@ -21,7 +21,7 @@ public class ResetPoseCommand extends Command {
 
     @Override
     public void execute() {
-        if(VisionSubsystem.getInstance().tagInView()) {
+        if(VisionSubsystem.getInstance().trustLimelightData()) {
             VisionSubsystem.getInstance().resetPose();
             reset = true;
         }

@@ -40,6 +40,9 @@ public class VirtualConstants {
             0.5, // Trust down to 50cm in Y direction
             9999999 // Trust all rotational data
         );
+
+        /** Maximum allowed AprilTag ambiguity value */
+        public static final double MAX_APRILTAG_AMBIGUITY = 1.0; // TODO: tune
     }
 
 }
