@@ -146,4 +146,8 @@ public class VisionSubsystem extends SubsystemBase {
 
         return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(PhysicalConstants.Vision.LIMELIGHT);
     }
+
+    public boolean tagInView(){
+        return LimelightHelpers.getTV(PhysicalConstants.Vision.LIMELIGHT);
+    }
 }

@@ -21,6 +21,7 @@ import frc.robot.constants.TunerConstants;
 import frc.robot.constants.VirtualConstants.ControllerConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
+import frc.robot.vision.ResetPoseCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -157,20 +158,25 @@ public class RobotContainer {
         Drivetrain.registerTelemetry(logger::telemeterize);
     }
 
-    /**
-     * Configures the button bindings of the driver controller.
-     */
+    /** Configures the button bindings of the driver controller. */
     public void configureDriverBindings() {
-        // Double Rectangle -> Reset pose
-        this.driverController.back().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)));
-        // Burger -> Reset rotation to zero
+        // Double Rectangle (Left) -> Reset pose
+        this.driverController.back().onTrue(Commands.sequence(
+            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
+            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
+        ));
+        // Burger (Right) -> Reset rotation to zero
         this.driverController.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric()));
     }
 
-    /**
-     * Configures the button bindings of the operator controller.
-     */
+    /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
+        // Double Rectangle (Left) -> Reset pose
+        this.driverController.back().onTrue(Commands.sequence(
+            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
+            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
+        ));
+
         // B -> Cancel all commands
         this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
     }
