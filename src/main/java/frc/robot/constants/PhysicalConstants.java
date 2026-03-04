@@ -14,9 +14,17 @@ import static edu.wpi.first.units.Units.Inches;
  * */
 public class PhysicalConstants {
     /** General specific constants about the robot. */
-    public static final class RobotConstants {
+    public static final class Robot {
         /** CAN Bus for all CTRE devices */
         public static final CANBus CAN_BUS = new CANBus("ctre");
+    }
+
+    /** Constants for the controller and any controller-related assignments. */
+    public static final class Controller {
+        /** DriverStation ID of the driver controller. */
+        public static final int DRIVER_CONTROLLER_ID = 0;
+        /** DriverStation ID of the operator controller. */
+        public static final int OPERATOR_CONTROLLER_ID = 1;
     }
 
     /** Constants for QuestNav and Limelight */

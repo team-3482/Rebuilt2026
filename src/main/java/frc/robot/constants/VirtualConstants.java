@@ -12,12 +12,7 @@ import edu.wpi.first.math.util.Units;
  * */
 public class VirtualConstants {
     /** Constants for the controller and any controller-related assignments. */
-    public static final class ControllerConstants {
-        /** DriverStation ID of the driver controller. */
-        public static final int DRIVER_CONTROLLER_ID = 0;
-        /** DriverStation ID of the operator controller. */
-        public static final int OPERATOR_CONTROLLER_ID = 1;
-
+    public static final class Controller {
         /** Removes input around the joystick's center (eliminates stick drift). */
         public static final double DEADBAND = 0.075;
 
