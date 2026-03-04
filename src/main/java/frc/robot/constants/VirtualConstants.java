@@ -11,6 +11,16 @@ import edu.wpi.first.math.util.Units;
  * For example, motor speeds, PID gains, timings, positions, etc.
  * */
 public class VirtualConstants {
+    /** Contants relating to the driver dashboard (Elastic) */
+    public static final class Dashboard {
+        /** Tab to show while humans are driving */
+        public static final String TELEOP_TAB = "Teleoperated";
+        /** Tab to show during autonomous period at beginning of match */
+        public static final String AUTON_TAB = "Autonomous";
+        /** Extra tab for debugging/development */
+        public static final String DEV_TAB = "Dev";
+    }
+
     /** Constants for the controller and any controller-related assignments. */
     public static final class Controller {
         /** Removes input around the joystick's center (eliminates stick drift). */
