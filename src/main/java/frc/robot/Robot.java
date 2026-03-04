@@ -9,7 +9,8 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,6 +25,7 @@ import java.io.File;
 
 public class Robot extends LoggedRobot {
     private Command auton;
+    private PowerDistribution PDP = new PowerDistribution(0, ModuleType.kCTRE);
 
     public Robot() {
         RobotContainer.getInstance().configureDriverBindings();
@@ -53,6 +55,8 @@ public class Robot extends LoggedRobot {
             Logger.start();
         }
 
+        Elastic.selectTab(VirtualConstants.Dashboard.DEV_TAB);
+
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
         // Eager-load the auton command so it's ready right away
         RobotContainer.getInstance().getAutonomousCommand();
@@ -62,11 +66,15 @@ public class Robot extends LoggedRobot {
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
 
-        double voltage = RobotController.getBatteryVoltage();
+        double voltage = PDP.getVoltage();
+        double current = PDP.getTotalCurrent();
+
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
         SmartDashboard.putNumber("Voltage", voltage);
+        SmartDashboard.putNumber("Current", current);
 
         Logger.recordOutput("Voltage", voltage);
+        Logger.recordOutput("Current", current);
     }
 
     @Override
@@ -90,7 +98,7 @@ public class Robot extends LoggedRobot {
             System.err.println("No auton command found.");
         }
 
-        Elastic.selectTab(VirtualConstants.Dashboard.TELEOP_TAB);
+        Elastic.selectTab(VirtualConstants.Dashboard.AUTON_TAB);
     }
 
     @Override
