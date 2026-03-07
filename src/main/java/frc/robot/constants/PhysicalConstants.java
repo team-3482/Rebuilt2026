@@ -1,8 +1,6 @@
 package frc.robot.constants;
 
 import com.ctre.phoenix6.CANBus;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -51,29 +49,17 @@ public class PhysicalConstants {
 
     /** Constants for intake system (both the pivot and actual intake) */
     public static final class Intake {
+        // TODO: fill in values
         /** The CAN ID for the Intake Pivot TalonFX */
         public static final int PIVOT_MOTOR_ID = 0;
         /** The CAN ID for the Intake Intake TalonFX */
         public static final int INTAKE_MOTOR_ID = 0;
 
-        /* Motion Magic Config */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 0;
-        public static final double CRUISE_SPEED = 0;
-        public static final double ACCELERATION = 0;
-
-        /** Gains used for Motion Magic slot 0. */
-        public static final class Slot0Gains {
-            public static final double kG = 0;
-            public static final double kS = 0;
-            public static final double kV = 0;
-            public static final double kA = 0;
-            public static final double kP = 0;
-            public static final double kI = 0;
-            public static final double kD = 0;
-        }
-
         /** The lower and upper angle limit for the pivot */
         public static final double LOWER_ANGLE_LIMIT = 0;
         public static final double UPPER_ANGLE_LIMIT = 0;
+
+        /** Gear ratio for mechanism */
+        public static final double ROTOR_TO_MECHANISM_RATIO = 0;
     }
 }

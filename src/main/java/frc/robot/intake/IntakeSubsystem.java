@@ -4,25 +4,22 @@
 
 package frc.robot.intake;
 
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.PhysicalConstants;
 import frc.robot.constants.PhysicalConstants.Intake;
 import frc.robot.constants.PhysicalConstants.Robot;
+import frc.robot.constants.VirtualConstants;
 
-/** An example subsystem that does nothing. */
+/** Controls Intake and Intake Pivot */
 public class IntakeSubsystem extends SubsystemBase {
     // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
     private static class IntakeSubsystemHolder {
@@ -36,7 +33,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private TalonFX pivotMotor = new TalonFX(Intake.PIVOT_MOTOR_ID, Robot.CAN_BUS);
     private TalonFX intakeMotor = new TalonFX(Intake.INTAKE_MOTOR_ID, Robot.CAN_BUS);
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0); 
+    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private IntakeSubsystem() {
         super("IntakeSubsystem");
@@ -47,6 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
         this.pivotMotor.getPosition().setUpdateFrequency(50);
     }
 
+    // TODO: telemetry to logs and dashboard
     @Override
     public void periodic() {}
 
@@ -58,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
         feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         // Sets the gear ration from the rotor to the mechanism.
         // This gear ratio needs to be exact.
-        feedbackConfigs.SensorToMechanismRatio = Intake.ROTOR_TO_MECHANISM_RATIO;
+        feedbackConfigs.SensorToMechanismRatio = PhysicalConstants.Intake.ROTOR_TO_MECHANISM_RATIO;
 
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
@@ -67,18 +65,18 @@ public class IntakeSubsystem extends SubsystemBase {
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
         slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-        slot0Configs.kG = Intake.Slot0Gains.kG;
-        slot0Configs.kS = Intake.Slot0Gains.kS;
-        slot0Configs.kV = Intake.Slot0Gains.kV;
-        slot0Configs.kA = Intake.Slot0Gains.kA;
-        slot0Configs.kP = Intake.Slot0Gains.kP;
-        slot0Configs.kI = Intake.Slot0Gains.kI;
-        slot0Configs.kD = Intake.Slot0Gains.kD;
+        slot0Configs.kG = VirtualConstants.Intake.Slot0Gains.kG;
+        slot0Configs.kS = VirtualConstants.Intake.Slot0Gains.kS;
+        slot0Configs.kV = VirtualConstants.Intake.Slot0Gains.kV;
+        slot0Configs.kA = VirtualConstants.Intake.Slot0Gains.kA;
+        slot0Configs.kP = VirtualConstants.Intake.Slot0Gains.kP;
+        slot0Configs.kI = VirtualConstants.Intake.Slot0Gains.kI;
+        slot0Configs.kD = VirtualConstants.Intake.Slot0Gains.kD;
 
         // Set acceleration and cruise velocity.
         MotionMagicConfigs motionMagicConfigs = configuration.MotionMagic;
-        motionMagicConfigs.MotionMagicCruiseVelocity = Intake.CRUISE_SPEED;
-        motionMagicConfigs.MotionMagicAcceleration = Intake.ACCELERATION;
+        motionMagicConfigs.MotionMagicCruiseVelocity = VirtualConstants.Intake.CRUISE_SPEED;
+        motionMagicConfigs.MotionMagicAcceleration = VirtualConstants.Intake.ACCELERATION;
 
         this.pivotMotor.getConfigurator().apply(configuration);
     }
@@ -87,11 +85,11 @@ public class IntakeSubsystem extends SubsystemBase {
       * Goes to a position using Motion Magic slot 0.
       * @param position The position for the pivot in degrees.
       * @param clamp Whether to clamp with the soft limits.
-      * @apiNote The soft limits in {@link PivotConstants}.
+      * @apiNote The soft limits in {@link PhysicalConstants.Intake}.
       */
     public void motionMagicPosition(double position, boolean clamp) {
         if (clamp) {
-            position = MathUtil.clamp(position, Intake.LOWER_ANGLE_LIMIT, Intake.UPPER_ANGLE_LIMIT);
+            position = MathUtil.clamp(position, PhysicalConstants.Intake.LOWER_ANGLE_LIMIT, PhysicalConstants.Intake.UPPER_ANGLE_LIMIT);
         }
 
         MotionMagicVoltage control = motionMagicVoltage
@@ -104,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
     /**
      * Goes to a position using Motion Magic slot 0.
      * @param position The position for the pivot in degrees.
-     * @apiNote The position is clamped by the soft limits in {@link Intake}.
+     * @apiNote The position is clamped by the soft limits in {@link PhysicalConstants.Intake}.
      */
     public void motionMagicPosition(double position) {
         motionMagicPosition(position, true);

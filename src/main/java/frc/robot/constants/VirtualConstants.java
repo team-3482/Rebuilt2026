@@ -50,4 +50,23 @@ public class VirtualConstants {
         public static final double MAX_APRILTAG_AMBIGUITY = 1.0; // TODO: tune
     }
 
+    /** Constants for Intake & Intake Pivot */
+    public static final class Intake {
+        // TODO: fill in values
+        /* Motion Magic Config */
+        public static final double CRUISE_SPEED = 0;
+        public static final double ACCELERATION = 0;
+
+        /** Gains used for Motion Magic slot 0. */
+        public static final class Slot0Gains {
+            public static final double kG = 0;
+            public static final double kS = 0;
+            public static final double kV = 0;
+            public static final double kA = 0;
+            public static final double kP = 0;
+            public static final double kI = 0;
+            public static final double kD = 0;
+        }
+    }
+
 }
