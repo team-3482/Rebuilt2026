@@ -77,7 +77,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         limelightPose = getLimelightPose();
-        Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+        // Logger.recordOutput("Limelight/Pose", limelightPose.pose);
 
         if(DriverStation.isDisabled()) {
             resetPose();
