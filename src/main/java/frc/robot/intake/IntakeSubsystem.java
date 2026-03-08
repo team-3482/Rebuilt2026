@@ -15,7 +15,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.IntakeConstants;
-import frc.robot.constants.Constants.IntakeConstants.Slot0Gains;
 import frc.robot.constants.Constants.RobotConstants;
 
 /** Controls Intake and Intake Pivot */
@@ -30,8 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
         return IntakeSubsystemHolder.INSTANCE;
     }
 
-    private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID, RobotConstants.CAN_BUS);
-    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, RobotConstants.CAN_BUS);
+    private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR, RobotConstants.CAN_BUS);
+    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
     private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private IntakeSubsystem() {
@@ -121,6 +120,6 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param speed How fast the motor goes. Must be between -1 and 1.
      */
     public void setIntakeSpeed(double speed) {
-        this.intakeMotor.set(speed);
+        this.intakeMotor.set(-speed);
     }
 }

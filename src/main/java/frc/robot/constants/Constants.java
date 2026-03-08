@@ -81,9 +81,9 @@ public class Constants {
     public static final class IntakeConstants {
         // TODO: fill in values
         /** The CAN ID for the Intake Pivot TalonFX */
-        public static final int PIVOT_MOTOR_ID = 22;
+        public static final int PIVOT_MOTOR = 22;
         /** The CAN ID for the Intake TalonFX */
-        public static final int INTAKE_MOTOR_ID = 20;
+        public static final int INTAKE_MOTOR = 20;
 
         /** The lower and upper angle limit for the pivot */
         public static final double LOWER_ANGLE_LIMIT = 0;
@@ -107,6 +107,9 @@ public class Constants {
             public static final double kI = 0;
             public static final double kD = 0;
         }
+
+        /** Speed to run the intake motor at */
+        public static final double INTAKE_SPEED = 0.2;
     }
 
     /** Constants for the Shooter subsystem */

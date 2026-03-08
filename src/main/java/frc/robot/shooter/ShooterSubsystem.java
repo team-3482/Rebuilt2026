@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Set the speed of the shooter motors
-     * @param speed the speed from 0-1
+     * @param speed the speed from -1 to 1
      */
     public void setShooterSpeed(double speed) {
         shooterMotor3.set(speed);
@@ -61,7 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Set the speed of the feeder motor
-     * @param speed the speed from 0-1
+     * @param speed the speed from -1 to 1
      */
     public void setFeederSpeed(double speed) {
         feederMotor.set(speed);
@@ -69,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Set the speed of the sterilizer motor
-     * @param speed the speed from 0-1
+     * @param speed the speed from -1 to 1
      */
     public void setSterilizerSpeed(double speed) {
         sterilizerMotor.set(speed);

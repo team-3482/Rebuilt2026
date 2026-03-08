@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.TunerConstants;
+import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
@@ -185,7 +186,11 @@ public class RobotContainer {
         // B -> Cancel all commands
         this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
 
-        this.operatorController.rightTrigger().whileTrue(new ShootCommand());
+        // Left Bumper -> Intake
+        this.operatorController.leftBumper().whileTrue(new IntakeCommand());
+
+        // Right Bumper -> Shoot
+        this.operatorController.rightBumper().whileTrue(new ShootCommand());
     }
 
     public Command getAutonomousCommand() {
