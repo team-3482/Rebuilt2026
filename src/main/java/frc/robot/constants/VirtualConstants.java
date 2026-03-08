@@ -5,6 +5,9 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+
+import static edu.wpi.first.units.Units.RPM;
 
 /**
  * Tunable Constants that aren't based on physical attributes of the robot.
@@ -67,6 +70,17 @@ public class VirtualConstants {
             public static final double kI = 0;
             public static final double kD = 0;
         }
+    }
+
+    /** Constants for Shooter */
+    public static final class Shooter {
+        /** Shooter motor speed */
+        public static final double SHOOTING_SPEED = 1.0;
+        /** Feeder motor speed */
+        public static final double FEEDER_SPEED = 1.0;
+
+        /** Shooter velocity (RPM) threshold to start feeding fuel */
+        public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
     }
 
 }

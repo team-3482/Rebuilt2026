@@ -47,13 +47,13 @@ public class PhysicalConstants {
         );
     }
 
-    /** Constants for intake system (both the pivot and actual intake) */
+    /** Constants for intake subsystem (both the pivot and actual intake) */
     public static final class Intake {
         // TODO: fill in values
         /** The CAN ID for the Intake Pivot TalonFX */
-        public static final int PIVOT_MOTOR_ID = 0;
-        /** The CAN ID for the Intake Intake TalonFX */
-        public static final int INTAKE_MOTOR_ID = 0;
+        public static final int PIVOT_MOTOR_ID = 22;
+        /** The CAN ID for the Intake TalonFX */
+        public static final int INTAKE_MOTOR_ID = 20;
 
         /** The lower and upper angle limit for the pivot */
         public static final double LOWER_ANGLE_LIMIT = 0;
@@ -61,5 +61,17 @@ public class PhysicalConstants {
 
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = 0;
+    }
+
+    /** Constants for the Shooter subsystem */
+    public static final class Shooter {
+        /** CAN ID for Shooter motor 1 */
+        public static final int SHOOTER_MOTOR_1 = 23;
+        /** CAN ID for Shooter motor 2 */
+        public static final int SHOOTER_MOTOR_2 = 21;
+        /** CAN ID for Shooter motor 3 */
+        public static final int SHOOTER_MOTOR_3 = 24;
+        /** CAN ID for Feeder motor */
+        public static final int FEEDER_MOTOR = 25;
     }
 }

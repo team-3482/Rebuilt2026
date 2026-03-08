@@ -20,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.constants.PhysicalConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.VirtualConstants;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.shooter.ShootCommand;
+import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.vision.ResetPoseCommand;
@@ -69,6 +72,8 @@ public class RobotContainer {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void initializeSubsystems() {
         VisionSubsystem.getInstance();
+        IntakeSubsystem.getInstance();
+        ShooterSubsystem.getInstance();
     }
 
     /**
@@ -180,6 +185,8 @@ public class RobotContainer {
 
         // B -> Cancel all commands
         this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
+
+        this.operatorController.rightTrigger().whileTrue(new ShootCommand());
     }
 
     public Command getAutonomousCommand() {
