@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.climb.ClimbCommand;
+import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.intake.IntakeCommand;
@@ -191,6 +193,11 @@ public class RobotContainer {
 
         // Right Bumper -> Shoot
         this.operatorController.rightBumper().whileTrue(new ShootCommand());
+
+        // D-Pad Up -> Enter Climb
+        this.operatorController.povUp().onTrue(new ClimbCommand());
+        // D-Pad Down -> Leave Climb
+        this.operatorController.povDown().onTrue(new LeaveClimbCommand());
     }
 
     public Command getAutonomousCommand() {

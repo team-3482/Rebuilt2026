@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 import static edu.wpi.first.units.Units.*;
@@ -134,5 +135,19 @@ public class Constants {
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
+    }
+
+    /** Constants for climb */
+    public static final class ClimbConstants {
+        /** CAN ID for Climb motor 1 */
+        public static final int CLIMB_MOTOR_1 = 31;
+        /** CAN ID for Climb motor 2 */
+        public static final int CLIMB_MOTOR_2 = 32;
+
+        /** How many revolutions to completely retract the climb */
+        public static final Angle FULL_RETRACTION_REVOLUTIONS = Revolutions.of(43);
+
+        /** Speed to climb at */
+        public static final double CLIMB_SPEED = 0.5;
     }
 }
