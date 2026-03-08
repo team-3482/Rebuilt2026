@@ -11,9 +11,8 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.PhysicalConstants;
-import frc.robot.constants.PhysicalConstants.Robot;
-import frc.robot.constants.VirtualConstants;
+import frc.robot.constants.Constants.RobotConstants;
+import frc.robot.constants.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
 
 /** Controls the Shooter */
@@ -28,10 +27,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return ShooterSubsystemHolder.INSTANCE;
     }
 
-    private final TalonFX shooterMotor1 = new TalonFX(PhysicalConstants.Shooter.SHOOTER_MOTOR_1, Robot.CAN_BUS);
-    private final TalonFX shooterMotor2 = new TalonFX(PhysicalConstants.Shooter.SHOOTER_MOTOR_2, Robot.CAN_BUS);
-    private final TalonFX shooterMotor3 = new TalonFX(PhysicalConstants.Shooter.SHOOTER_MOTOR_3, Robot.CAN_BUS);
-    private final TalonFX feederMotor = new TalonFX(PhysicalConstants.Shooter.FEEDER_MOTOR, Robot.CAN_BUS);
+    private final TalonFX shooterMotor1 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_1, RobotConstants.CAN_BUS);
+    private final TalonFX shooterMotor2 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_2, RobotConstants.CAN_BUS);
+    private final TalonFX shooterMotor3 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_3, RobotConstants.CAN_BUS);
+    private final TalonFX feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR, RobotConstants.CAN_BUS);
 
     private ShooterSubsystem() {
         super("ShooterSubsystem");
@@ -91,6 +90,6 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return true if shooter velocity is within threshold
      */
     public boolean atShootingVelocityThreshold() {
-        return getShooterVelocity().in(Units.RPM) >= VirtualConstants.Shooter.VELOCITY_THRESHOLD.magnitude();
+        return getShooterVelocity().in(Units.RPM) >= ShooterConstants.VELOCITY_THRESHOLD.magnitude();
     }
 }

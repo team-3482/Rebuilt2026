@@ -5,10 +5,7 @@
 package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.PhysicalConstants;
-import frc.robot.constants.VirtualConstants;
-import frc.robot.constants.VirtualConstants.Shooter;
-import frc.robot.template.ExampleSubsystem;
+import frc.robot.constants.Constants.ShooterConstants;
 
 /** Rev up shooter and start feeding when up to speed */
 public class ShootCommand extends Command {
@@ -20,13 +17,13 @@ public class ShootCommand extends Command {
 
     @Override
     public void initialize() {
-        ShooterSubsystem.getInstance().setShooterSpeed(VirtualConstants.Shooter.SHOOTING_SPEED);
+        ShooterSubsystem.getInstance().setShooterSpeed(ShooterConstants.SHOOTING_SPEED);
     }
 
     @Override
     public void execute() {
         if(ShooterSubsystem.getInstance().atShootingVelocityThreshold()) {
-            ShooterSubsystem.getInstance().setFeederSpeed(VirtualConstants.Shooter.FEEDER_SPEED);
+            ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
         }
     }
 

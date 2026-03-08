@@ -17,9 +17,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.constants.PhysicalConstants;
+import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.TunerConstants;
-import frc.robot.constants.VirtualConstants;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
@@ -52,9 +51,9 @@ public class RobotContainer {
 
     public RobotContainer() {
         // Initialize controllers
-        this.driverController = new CommandXboxController(PhysicalConstants.Controller.DRIVER_CONTROLLER_ID);
+        this.driverController = new CommandXboxController(DriverStationConstants.DRIVER_CONTROLLER_ID);
         this.driverController_HID = this.driverController.getHID();
-        this.operatorController = new CommandXboxController(PhysicalConstants.Controller.OPERATOR_CONTROLLER_ID);
+        this.operatorController = new CommandXboxController(DriverStationConstants.OPERATOR_CONTROLLER_ID);
 
         configureDrivetrain();
         initializeSubsystems();
@@ -111,7 +110,7 @@ public class RobotContainer {
 
                 double angularSpeed = topSpeed ? NormalAngularSpeed : FastAngularSpeed;
 
-                double fineControlMult = fineControl ? VirtualConstants.Controller.FINE_CONTROL_MULT : 1;
+                double fineControlMult = fineControl ? DriverStationConstants.FINE_CONTROL_MULT : 1;
 
                 return fieldCentricDrive_withDeadband
                     // Drive forward with negative Y (forward)
@@ -121,8 +120,8 @@ public class RobotContainer {
                     // Drive counterclockwise with negative X (left)
                     .withRotationalRate(-driverController.getRightX() * angularSpeed * fineControlMult)
 
-                    .withDeadband(VirtualConstants.Controller.DEADBAND * linearSpeed)
-                    .withRotationalDeadband(VirtualConstants.Controller.DEADBAND * angularSpeed);
+                    .withDeadband(DriverStationConstants.DEADBAND * linearSpeed)
+                    .withRotationalDeadband(DriverStationConstants.DEADBAND * angularSpeed);
             }).ignoringDisable(true)
         );
 

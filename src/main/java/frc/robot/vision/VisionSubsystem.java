@@ -11,9 +11,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.PhysicalConstants;
-import frc.robot.constants.VirtualConstants;
-import frc.robot.constants.VirtualConstants.Vision;
+import frc.robot.constants.Constants.VisionConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.utilities.LimelightHelpers;
 import frc.robot.utilities.LimelightHelpers.PoseEstimate;
@@ -45,7 +43,7 @@ public class VisionSubsystem extends SubsystemBase {
         super("VisionSubsystem");
 
         HttpCamera LLCamera = new HttpCamera(
-            PhysicalConstants.Vision.LIMELIGHT,
+            VisionConstants.LIMELIGHT,
             "http://" + "10.34.82.20" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
         );
 
@@ -94,7 +92,7 @@ public class VisionSubsystem extends SubsystemBase {
             Pose3d questPose = poseFrames[poseFrames.length - 1].questPose3d();
 
             // Transform by the mount pose to get your robot pose
-            return questPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST.inverse());
+            return questPose.transformBy(VisionConstants.ROBOT_TO_QUEST.inverse());
         }
 
         return null;
@@ -121,11 +119,11 @@ public class VisionSubsystem extends SubsystemBase {
         SwerveSubsystem.getInstance().addVisionMeasurement(
             limelightPose.pose,
             limelightPose.timestampSeconds,
-            VirtualConstants.Vision.LIMELIGHT_TRUST_STD_DEVS
+            VisionConstants.LIMELIGHT_TRUST_STD_DEVS
         );
 
         Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);
-        questNav.setPose(currentPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST));
+        questNav.setPose(currentPose.transformBy(VisionConstants.ROBOT_TO_QUEST));
     }
 
     /** Periodically adds vision measurements to the swerve odometry */
@@ -134,10 +132,10 @@ public class VisionSubsystem extends SubsystemBase {
             double timestamp = poseFrame.dataTimestamp();
 
             // Transform by the mount pose to get the robot pose
-            Pose3d robotPose = poseFrame.questPose3d().transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST.inverse());
+            Pose3d robotPose = poseFrame.questPose3d().transformBy(VisionConstants.ROBOT_TO_QUEST.inverse());
 
             // Add the measurement
-            SwerveSubsystem.getInstance().addVisionMeasurement(robotPose.toPose2d(), timestamp, VirtualConstants.Vision.QUESTNAV_TRUST_STD_DEVS);
+            SwerveSubsystem.getInstance().addVisionMeasurement(robotPose.toPose2d(), timestamp, VisionConstants.QUESTNAV_TRUST_STD_DEVS);
         }
     }
 
@@ -149,14 +147,14 @@ public class VisionSubsystem extends SubsystemBase {
         double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
 
         LimelightHelpers.SetRobotOrientation(
-            PhysicalConstants.Vision.LIMELIGHT,
+            VisionConstants.LIMELIGHT,
             rotationDegrees,
             0.0, 0.0, 0.0, 0.0, 0.0
         );
 
-        fiducials = LimelightHelpers.getRawFiducials(PhysicalConstants.Vision.LIMELIGHT);
+        fiducials = LimelightHelpers.getRawFiducials(VisionConstants.LIMELIGHT);
 
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(PhysicalConstants.Vision.LIMELIGHT);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.LIMELIGHT);
     }
 
     /**
@@ -164,7 +162,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @return if it's in view
      */
     private boolean tagInView(){
-        return LimelightHelpers.getTV(PhysicalConstants.Vision.LIMELIGHT);
+        return LimelightHelpers.getTV(VisionConstants.LIMELIGHT);
     }
 
     /**
@@ -190,6 +188,6 @@ public class VisionSubsystem extends SubsystemBase {
      * @return true if it can be trusted
      */
     public boolean trustLimelightData(){
-        return tagInView() && getLimelightAmbiguity() <= Vision.MAX_APRILTAG_AMBIGUITY;
+        return tagInView() && getLimelightAmbiguity() <= VisionConstants.MAX_APRILTAG_AMBIGUITY;
     }
 }

@@ -11,7 +11,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import edu.wpi.first.units.measure.*;
-import frc.robot.constants.PhysicalConstants.Robot;
+import frc.robot.constants.Constants.RobotConstants;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -111,7 +111,7 @@ public class TunerConstants {
     private static final Voltage kDriveFrictionVoltage = Volts.of(0.2);
 
     public static final SwerveDrivetrainConstants DrivetrainConstants = new SwerveDrivetrainConstants()
-            .withCANBusName(Robot.CAN_BUS.getName())
+            .withCANBusName(RobotConstants.CAN_BUS.getName())
             .withPigeon2Id(kPigeonId)
             .withPigeon2Configs(pigeonConfigs);
 
