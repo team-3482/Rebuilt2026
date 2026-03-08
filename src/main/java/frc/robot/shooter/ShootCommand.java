@@ -24,6 +24,7 @@ public class ShootCommand extends Command {
     public void execute() {
         if(ShooterSubsystem.getInstance().atShootingVelocityThreshold()) {
             ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
+            ShooterSubsystem.getInstance().setSterilizerSpeed(ShooterConstants.STERILIZER_SPEED);
         }
     }
 
@@ -31,6 +32,7 @@ public class ShootCommand extends Command {
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setShooterSpeed(0);
         ShooterSubsystem.getInstance().setFeederSpeed(0);
+        ShooterSubsystem.getInstance().setSterilizerSpeed(0);
     }
 
     @Override

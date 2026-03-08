@@ -11,6 +11,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
@@ -31,6 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor2 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_2, RobotConstants.CAN_BUS);
     private final TalonFX shooterMotor3 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_3, RobotConstants.CAN_BUS);
     private final TalonFX feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX sterilizerMotor = new TalonFX(ShooterConstants.STERILIZER_MOTOR, RobotConstants.CAN_BUS);
 
     private ShooterSubsystem() {
         super("ShooterSubsystem");
@@ -41,13 +43,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double shooterVelocity = getShooterVelocity().in(Units.RPM);
-        SmartDashboard.putNumber("Shooter/ShooterVelocity", shooterVelocity);
-        Logger.recordOutput("Shooter/ShooterVelocity", shooterVelocity);
-
-        double feederVelocity = getFeederVelocity().in(Units.RPM);
-        SmartDashboard.putNumber("Shooter/FeederVelocity", feederVelocity);
-        Logger.recordOutput("Shooter/FeederVelocity", feederVelocity);
+        Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(Units.RPM));
+        Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(Units.RPM));
+        Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(Units.RPM));
 
         SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
         Logger.recordOutput("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
@@ -70,19 +68,19 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
+     * Set the speed of the sterilizer motor
+     * @param speed the speed from 0-1
+     */
+    public void setSterilizerSpeed(double speed) {
+        sterilizerMotor.set(speed);
+    }
+
+    /**
      * Get the velocity of the shooter motors
      * @return the velocity
      */
     public AngularVelocity getShooterVelocity() {
         return shooterMotor3.getVelocity().getValue();
-    }
-
-    /**
-     * Get the velocity of the feeder motor
-     * @return the velocity
-     */
-    public AngularVelocity getFeederVelocity() {
-        return feederMotor.getVelocity().getValue();
     }
 
     /**

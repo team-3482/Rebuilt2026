@@ -119,11 +119,15 @@ public class Constants {
         public static final int SHOOTER_MOTOR_3 = 24;
         /** CAN ID for Feeder motor */
         public static final int FEEDER_MOTOR = 25;
+        /** CAN ID for Sterilizer motor */
+        public static final int STERILIZER_MOTOR = 30;
 
         /** Shooter motor speed */
         public static final double SHOOTING_SPEED = 1.0;
         /** Feeder motor speed */
         public static final double FEEDER_SPEED = 1.0;
+        /** Sterilizer motor speed */
+        public static final double STERILIZER_SPEED = 0.15;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
