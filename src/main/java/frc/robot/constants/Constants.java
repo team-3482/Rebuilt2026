@@ -11,6 +11,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -140,6 +142,10 @@ public class Constants {
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
 
+        /** Full Servo Length */
+        public static final Distance SERVO_LENGTH = Millimeters.of(50);
+        /** Max Servo speed to run at */
+        public static final LinearVelocity MAX_SERVO_SPEED = Millimeters.of(32).per(Second);
         // TODO: find real limits
         /** Hood angle minimum */
         public static final Angle HOOD_ANGLE_MIN = Degrees.of(30);

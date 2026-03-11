@@ -27,13 +27,12 @@ public class AngleHoodCommand extends Command {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem.getInstance());
 
-        this.position = (angle.in(Degrees) - ShooterConstants.HOOD_ANGLE_MIN.in(Degrees))
-            / (ShooterConstants.HOOD_ANGLE_MAX.in(Degrees) - ShooterConstants.HOOD_ANGLE_MIN.in(Degrees));
+        this.position = ShooterSubsystem.getInstance().hoodAngleToDouble(angle);
     }
 
     @Override
     public void initialize() {
-        ShooterSubsystem.getInstance().setHoodAngle(position);
+        ShooterSubsystem.getInstance().setHoodPosition(position);
     }
 
     @Override
@@ -44,6 +43,6 @@ public class AngleHoodCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return true;
+        return ShooterSubsystem.getInstance().isHoodPositionWithinTolerance();
     }
 }
