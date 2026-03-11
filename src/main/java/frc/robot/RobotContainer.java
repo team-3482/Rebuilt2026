@@ -20,9 +20,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
+import frc.robot.constants.Constants.ShooterConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
+import frc.robot.shooter.AngleHoodCommand;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -193,6 +195,12 @@ public class RobotContainer {
 
         // Right Bumper -> Shoot
         this.operatorController.rightBumper().whileTrue(new ShootCommand());
+
+        // Temporary
+        // Left Trigger -> Shooter Hood Minimum
+        this.operatorController.leftTrigger().onTrue(new AngleHoodCommand(ShooterConstants.HOOD_ANGLE_MIN));
+        // Right Trigger -> Shooter Hood Maximum
+        this.operatorController.rightTrigger().onTrue(new AngleHoodCommand(ShooterConstants.HOOD_ANGLE_MAX));
 
         // D-Pad Up -> Enter Climb
         this.operatorController.povUp().onTrue(new ClimbCommand());

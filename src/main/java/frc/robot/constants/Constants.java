@@ -125,6 +125,10 @@ public class Constants {
         public static final int FEEDER_MOTOR = 25;
         /** CAN ID for Sterilizer motor */
         public static final int STERILIZER_MOTOR = 30;
+        /** PWM Channel for Hood Linear Actuator 1 */
+        public static final int HOOD_SERVO_1 = 0;
+        /** PWM Channel for Hood Linear Actuator 2 */
+        public static final int HOOD_SERVO_2 = 1;
 
         /** Shooter motor speed */
         public static final double SHOOTING_SPEED = 1.0;
@@ -135,6 +139,12 @@ public class Constants {
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
+
+        // TODO: find real limits
+        /** Hood angle minimum */
+        public static final Angle HOOD_ANGLE_MIN = Degrees.of(30);
+        /** Hood angle maximum */
+        public static final Angle HOOD_ANGLE_MAX = Degrees.of(60);
     }
 
     /** Constants for climb */

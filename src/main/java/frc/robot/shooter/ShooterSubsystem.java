@@ -8,13 +8,16 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /** Controls the Shooter */
 public class ShooterSubsystem extends SubsystemBase {
@@ -33,12 +36,17 @@ public class ShooterSubsystem extends SubsystemBase {
     private final TalonFX shooterMotor3 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_3, RobotConstants.CAN_BUS);
     private final TalonFX feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR, RobotConstants.CAN_BUS);
     private final TalonFX sterilizerMotor = new TalonFX(ShooterConstants.STERILIZER_MOTOR, RobotConstants.CAN_BUS);
+    private final Servo hoodAngleServo1 = new Servo(ShooterConstants.HOOD_SERVO_1);
+    private final Servo hoodAngleServo2 = new Servo(ShooterConstants.HOOD_SERVO_2);
 
     private ShooterSubsystem() {
         super("ShooterSubsystem");
 
         shooterMotor1.setControl(new Follower(shooterMotor3.getDeviceID(), MotorAlignmentValue.Opposed));
         shooterMotor2.setControl(new Follower(shooterMotor3.getDeviceID(), MotorAlignmentValue.Opposed));
+
+        hoodAngleServo1.set(0);
+        hoodAngleServo2.set(0);
     }
 
     @Override
@@ -89,5 +97,26 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public boolean atShootingVelocityThreshold() {
         return getShooterVelocity().in(Units.RPM) >= ShooterConstants.VELOCITY_THRESHOLD.magnitude();
+    }
+
+    /**
+     * Set the angle of the hood
+     * @param value from 0.0 to 1.0
+     */
+    public void setHoodAngle(double value) {
+        hoodAngleServo1.set(value);
+        hoodAngleServo2.set(value);
+    }
+
+    /**
+     * Set the angle of the hood
+     * @param angle within minimum and maximum set in {@link ShooterConstants}
+     */
+    public void setHoodAngle(Angle angle) {
+        double value = (angle.in(Degrees) - ShooterConstants.HOOD_ANGLE_MIN.in(Degrees))
+            / (ShooterConstants.HOOD_ANGLE_MAX.in(Degrees) - ShooterConstants.HOOD_ANGLE_MIN.in(Degrees));
+
+        hoodAngleServo1.set(value);
+        hoodAngleServo2.set(value);
     }
 }
