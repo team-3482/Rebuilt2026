@@ -79,6 +79,8 @@ public class IntakeSubsystem extends SubsystemBase {
         this.pivotMotor.getConfigurator().apply(configuration);
     }
 
+    // TODO: make lowk consider making a pivotsystem and moving ts stuff
+    
      /**
       * Goes to a position using Motion Magic slot 0.
       * @param position The position for the pivot in degrees.
@@ -104,6 +106,23 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void motionMagicPosition(double position) {
         motionMagicPosition(position, true);
+    }
+
+    /**
+     * Gets the mechanism position of the motor.
+     * @return The angle in degrees
+     */
+    public double getPosition() {
+        return Units.rotationsToDegrees(this.pivotMotor.getPosition().getValueAsDouble());
+    }
+
+    /**
+     * Checks if the current position is within
+     * {@link IntakeConstants#POSITION_TOLERANCE} of an input position.
+     * @param position The position to compare to in rot.
+     */
+    public boolean withinTolerance(double position) {
+        return Math.abs(getPosition() - position) <= IntakeConstants.PIVOT_TOLERANCE;
     }
 
      /**
