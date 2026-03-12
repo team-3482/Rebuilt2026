@@ -13,9 +13,15 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.RobotConstants;
+import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 
 /** Controls Intake and Intake Pivot */
 public class IntakeSubsystem extends SubsystemBase {
@@ -37,14 +43,18 @@ public class IntakeSubsystem extends SubsystemBase {
         super("IntakeSubsystem");
 
         this.configureMotor();
-        this.setPivotPosition(0);
+        this.setPivotPosition(Degrees.of(0));
 
         this.pivotMotor.getPosition().setUpdateFrequency(50);
     }
 
     // TODO: telemetry to logs and dashboard
     @Override
-    public void periodic() {}
+    public void periodic() {
+        double angle = getPosition().in(Degrees);
+        Logger.recordOutput("Intake/PivotAngle", angle);
+        SmartDashboard.putNumber("Intake/PivotAngle", angle);
+    }
 
     /* Configures pivot motor since it is the only one using motion magic. */
     private void configureMotor() {
@@ -58,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-        motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
@@ -78,57 +88,56 @@ public class IntakeSubsystem extends SubsystemBase {
 
         this.pivotMotor.getConfigurator().apply(configuration);
     }
-    
+
      /**
       * Goes to a position using Motion Magic slot 0.
-      * @param position The position for the pivot in degrees.
+      * @param position The angle position for the pivot.
       * @param clamp Whether to clamp with the soft limits.
       * @apiNote The soft limits in {@link IntakeConstants}.
       */
-    public void motionMagicPosition(double position, boolean clamp) {
+    public void motionMagicPosition(Angle position, boolean clamp) {
         if (clamp) {
-            position = MathUtil.clamp(position, IntakeConstants.LOWER_ANGLE_LIMIT, IntakeConstants.UPPER_ANGLE_LIMIT);
+            position = Degrees.of(MathUtil.clamp(position.in(Degrees), IntakeConstants.MINIMUM_ANGLE.in(Degrees), IntakeConstants.MAXIMUM_ANGLE.in(Degrees)));
         }
 
         MotionMagicVoltage control = motionMagicVoltage
             .withSlot(0)
-            .withPosition(Units.degreesToRotations(position));
+            .withPosition(position.in(Rotations));
 
         this.pivotMotor.setControl(control);
     }
 
     /**
      * Goes to a position using Motion Magic slot 0.
-     * @param position The position for the pivot in degrees.
+     * @param position The angle position for the pivot.
      * @apiNote The position is clamped by the soft limits in {@link IntakeConstants}.
      */
-    public void motionMagicPosition(double position) {
+    public void motionMagicPosition(Angle position) {
         motionMagicPosition(position, true);
     }
 
     /**
      * Gets the mechanism position of the motor.
-     * @return The angle in degrees
+     * @return The angle
      */
-    public double getPosition() {
-        return Units.rotationsToDegrees(this.pivotMotor.getPosition().getValueAsDouble());
+    public Angle getPosition() {
+        return this.pivotMotor.getPosition().getValue();
     }
 
     /**
      * Checks if the current position is within
-     * {@link IntakeConstants#POSITION_TOLERANCE} of an input position.
-     * @param position The position to compare to in rot.
+     * {@link IntakeConstants#PIVOT_TOLERANCE} of an input position.
+     * @param position The position to compare to.
      */
-    public boolean withinTolerance(double position) {
-        return Math.abs(getPosition() - position) <= IntakeConstants.PIVOT_TOLERANCE;
+    public boolean withinTolerance(Angle position) {
+        return Math.abs(getPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PIVOT_TOLERANCE;
     }
 
      /**
      * Sets the mechanism position of the pivot motor.
-     * @param position The position in degrees.
+     * @param position The position.
      */
-    public void setPivotPosition(double position) {
-        position = Units.degreesToRotations(position);
+    public void setPivotPosition(Angle position) {
         this.pivotMotor.setPosition(position);
     }
 

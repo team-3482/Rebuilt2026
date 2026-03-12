@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
+import frc.robot.climb.ClimbSubsystem;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.ShooterConstants;
@@ -78,6 +79,7 @@ public class RobotContainer {
         VisionSubsystem.getInstance();
         IntakeSubsystem.getInstance();
         ShooterSubsystem.getInstance();
+        ClimbSubsystem.getInstance();
     }
 
     /**

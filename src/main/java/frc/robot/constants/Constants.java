@@ -87,13 +87,13 @@ public class Constants {
         /** The CAN ID for the Intake TalonFX */
         public static final int INTAKE_MOTOR = 20;
 
-        // TODO: Fill in values
-        /** The lower and upper angle limit for the pivot */
-        public static final double LOWER_ANGLE_LIMIT = 0;
-        public static final double UPPER_ANGLE_LIMIT = 0;
+        /** Minimum angle (Up on hardstop inside robot) */
+        public static final Angle MINIMUM_ANGLE = Degrees.of(0);
+        /** Maximum angle (Intaking position on bumper) */
+        public static final Angle MAXIMUM_ANGLE = Degrees.of(110); // TODO: real bumper angle
 
         /** Gear ratio for mechanism */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 0;
+        public static final double ROTOR_TO_MECHANISM_RATIO = 6;
 
         // TODO: fill in values
         /* Motion Magic Config */
@@ -111,11 +111,11 @@ public class Constants {
             public static final double kD = 0;
         }
 
-        /** Speed to run the intake motor at */
-        public static final double INTAKE_SPEED = 0.2;
-
         /** The tolerance used for pivot in degrees  */
         public static final double PIVOT_TOLERANCE = 2; // TODO: make ts more accurate
+
+        /** Speed to run the intake motor at */
+        public static final double INTAKE_SPEED = 0.2;
     }
 
     /** Constants for the Shooter subsystem */

@@ -4,18 +4,19 @@
 
 package frc.robot.intake;
 
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.IntakeConstants;
 
 /** An example command that does nothing. */
 public class MovePivotCommand extends Command {
-    private double position;
-    
-    public MovePivotCommand(double position) {
+    private Angle position;
+
+    public MovePivotCommand(Angle position) {
         setName("MovePivotCommand");
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IntakeSubsystem.getInstance());
-    
+
         this.position = position;
     }
 
