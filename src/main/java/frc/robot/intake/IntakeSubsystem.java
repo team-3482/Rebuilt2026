@@ -78,8 +78,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         this.pivotMotor.getConfigurator().apply(configuration);
     }
-
-    // TODO: make lowk consider making a pivotsystem and moving ts stuff
     
      /**
       * Goes to a position using Motion Magic slot 0.

@@ -8,11 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.IntakeConstants;
 
 /** An example command that does nothing. */
-public class PivotCommand extends Command {
+public class MovePivotCommand extends Command {
     private double position;
     
-    public PivotCommand(double position) {
-        setName("PivotCommand");
+    public MovePivotCommand(double position) {
+        setName("MovePivotCommand");
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IntakeSubsystem.getInstance());
     
