@@ -154,11 +154,10 @@ public class Constants {
         public static final Distance SERVO_LENGTH = Millimeters.of(50);
         /** Max Servo speed to run at */
         public static final LinearVelocity MAX_SERVO_SPEED = Millimeters.of(32).per(Second);
-        // TODO: find real limits
         /** Hood angle minimum */
-        public static final Angle HOOD_ANGLE_MIN = Degrees.of(30);
+        public static final Angle HOOD_ANGLE_MIN = Degrees.of(54.14);
         /** Hood angle maximum */
-        public static final Angle HOOD_ANGLE_MAX = Degrees.of(60);
+        public static final Angle HOOD_ANGLE_MAX = Degrees.of(69);
     }
 
     /** Constants for kinematics math */
