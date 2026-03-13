@@ -161,6 +161,22 @@ public class Constants {
         public static final Angle HOOD_ANGLE_MAX = Degrees.of(60);
     }
 
+    /** Constants for kinematics math */
+    public static final class CalculationConstants {
+        // https://engineerexcel.com/planetary-gear-calculation/
+        /** Shooter wheel diameter */
+        public static final Distance WHEEL_DIAMETER = Inches.of(3.965);
+        /** Fuel ball diameter */
+        public static final Distance FUEL_DIAMETER = Inches.of(5.91);
+        /** Diameter of the hood (if it was a full circle) */
+        public static final Distance RING_DIAMETER = Inches.of(15.155);
+
+        /** Ratio of the diameter of the Ring to the diameter of the Wheel */
+        public static final double RING_TO_WHEEL_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
+        /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
+        public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO;
+    }
+
     /** Constants for climb */
     public static final class ClimbConstants {
         /** CAN ID for Climb motor 1 */

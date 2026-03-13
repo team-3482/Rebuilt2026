@@ -23,6 +23,7 @@ import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.TunerConstants;
+import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
@@ -79,6 +80,7 @@ public class RobotContainer {
         VisionSubsystem.getInstance();
         IntakeSubsystem.getInstance();
         ShooterSubsystem.getInstance();
+        HoodSubsystem.getInstance();
         ClimbSubsystem.getInstance();
     }
 

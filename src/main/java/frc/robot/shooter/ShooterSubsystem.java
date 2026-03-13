@@ -7,13 +7,17 @@ package frc.robot.shooter;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.*;
 
 /** Controls the Shooter */
 public class ShooterSubsystem extends SubsystemBase {
@@ -42,9 +46,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(Units.RPM));
-        Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(Units.RPM));
-        Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(Units.RPM));
+        Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
+        Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
 
         SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
         Logger.recordOutput("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
@@ -87,6 +91,32 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return true if shooter velocity is within threshold
      */
     public boolean atShootingVelocityThreshold() {
-        return getShooterVelocity().in(Units.RPM) >= ShooterConstants.VELOCITY_THRESHOLD.magnitude();
+        return getShooterVelocity().in(RPM) >= ShooterConstants.VELOCITY_THRESHOLD.in(RPM);
+    }
+
+    /**
+     * Calculate the Angular Velocity of the shot fuel using a planetary gearbox formula.
+     * @return The Angular Velocity.
+     */
+    public AngularVelocity getFuelAngularVelocity() {
+        double currentVelocity = getShooterVelocity().in(RPM);
+        return RPM.of(
+            // use threshold number by default, but use real velocity
+            // if at threshold so it can correct the angle if necessary
+            (atShootingVelocityThreshold() ? currentVelocity : ShooterConstants.VELOCITY_THRESHOLD.in(RPM))
+            * CalculationConstants.VELOCITY_RATIO
+        );
+    }
+
+    /**
+     * Calculate the Linear Velocity of the shot fuel from the Angular Velocity.
+     * @return The Linear Velocity.
+     */
+    public LinearVelocity getFuelLinearVelocity() {
+        Distance radius = Inches.of(
+            (CalculationConstants.FUEL_DIAMETER.in(Inches) / 2) + (CalculationConstants.WHEEL_DIAMETER.in(Inches) / 2)
+        );
+
+        return MetersPerSecond.of(getFuelAngularVelocity().in(RadiansPerSecond) * radius.in(Meters));
     }
 }

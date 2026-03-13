@@ -83,7 +83,6 @@ public class HoodSubsystem extends SubsystemBase {
             SmartDashboard.putBoolean("Hood/ToggleInputSlider", false);
         }
 
-
         Logger.recordOutput("Hood/Position", currentPosition);
     }
 
