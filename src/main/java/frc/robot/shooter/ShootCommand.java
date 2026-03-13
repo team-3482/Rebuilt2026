@@ -6,6 +6,7 @@ package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ShooterConstants;
+import frc.robot.hood.HoodSubsystem;
 
 /** Rev up shooter and start feeding when up to speed */
 public class ShootCommand extends Command {
@@ -22,7 +23,7 @@ public class ShootCommand extends Command {
 
     @Override
     public void execute() {
-        if(ShooterSubsystem.getInstance().atShootingVelocityThreshold()) {
+        if(ShooterSubsystem.getInstance().atShootingVelocityThreshold() && HoodSubsystem.getInstance().isPositionWithinTolerance()) {
             ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
             ShooterSubsystem.getInstance().setSterilizerSpeed(ShooterConstants.STERILIZER_SPEED);
         }

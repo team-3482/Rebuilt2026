@@ -2,37 +2,34 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.shooter;
+package frc.robot.hood;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.Constants.ShooterConstants;
-
-import static edu.wpi.first.units.Units.Degrees;
 
 /** Move shooter hood to position */
-public class AngleHoodCommand extends Command {
+public class MoveHoodCommand extends Command {
     private double position;
 
-    public AngleHoodCommand(double position) {
-        setName("AngleHoodCommand");
+    public MoveHoodCommand(double position) {
+        setName("MoveHoodCommand");
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(ShooterSubsystem.getInstance());
+        addRequirements(HoodSubsystem.getInstance());
 
         this.position = position;
     }
 
-    public AngleHoodCommand(Angle angle) {
-        setName("AngleHoodCommand");
+    public MoveHoodCommand(Angle angle) {
+        setName("MoveHoodCommand");
         // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(ShooterSubsystem.getInstance());
+        addRequirements(HoodSubsystem.getInstance());
 
-        this.position = ShooterSubsystem.getInstance().hoodAngleToDouble(angle);
+        this.position = HoodSubsystem.getInstance().hoodAngleToDouble(angle);
     }
 
     @Override
     public void initialize() {
-        ShooterSubsystem.getInstance().setHoodPosition(position);
+        HoodSubsystem.getInstance().setHoodPosition(position);
     }
 
     @Override
@@ -43,6 +40,6 @@ public class AngleHoodCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return ShooterSubsystem.getInstance().isHoodPositionWithinTolerance();
+        return HoodSubsystem.getInstance().isPositionWithinTolerance();
     }
 }

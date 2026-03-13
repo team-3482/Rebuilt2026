@@ -21,11 +21,11 @@ import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
-import frc.robot.constants.Constants.ShooterConstants;
+import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.TunerConstants;
+import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.shooter.AngleHoodCommand;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -200,9 +200,9 @@ public class RobotContainer {
 
         // Temporary
         // Left Trigger -> Shooter Hood Minimum
-        this.operatorController.leftTrigger().onTrue(new AngleHoodCommand(ShooterConstants.HOOD_ANGLE_MIN));
+        this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
         // Right Trigger -> Shooter Hood Maximum
-        this.operatorController.rightTrigger().onTrue(new AngleHoodCommand(ShooterConstants.HOOD_ANGLE_MAX));
+        this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
 
         // D-Pad Up -> Enter Climb
         this.operatorController.povUp().onTrue(new ClimbCommand());
