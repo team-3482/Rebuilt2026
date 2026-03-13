@@ -22,11 +22,13 @@ import frc.robot.climb.ClimbSubsystem;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.HoodConstants;
+import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.MovePivotCommand;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
@@ -210,6 +212,10 @@ public class RobotContainer {
         this.operatorController.povUp().onTrue(new ClimbCommand());
         // D-Pad Down -> Leave Climb
         this.operatorController.povDown().onTrue(new LeaveClimbCommand());
+
+        this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+
     }
 
     public Command getAutonomousCommand() {
