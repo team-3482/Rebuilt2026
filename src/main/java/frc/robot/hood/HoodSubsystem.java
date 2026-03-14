@@ -119,22 +119,27 @@ public class HoodSubsystem extends SubsystemBase {
     public void setHoodAngle(Angle angle) {
         setHoodPosition(hoodAngleToDouble(angle));
     }
-    
+
     /**
      * Gives the angle at which the hood should be set to shoot a fuel element into the hub.
-     * @param distance
-     * @return the angle at which the hood should be set.
+     * @param distance The distance from the bot to the center of the Hub.
+     * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(double distance){
-        double fuelSpeed = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity()).in(MetersPerSecond));
+    public Angle getShootingHoodAngle(Distance distance){
+        double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity()).in(MetersPerSecond));
+        double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
+        double d = distance.in(Meters);
 
-        return Radians.of(
-            Math.atan(
-                (Math.pow(fuelSpeed,2) + Math.sqrt(Math.pow(fuelSpeed,4) - CalculationConstants.GRAV * 
-                (CalculationConstants.GRAV*Math.pow(distance,2) + 2*CalculationConstants.HUB_HEIGHT*Math.pow(fuelSpeed,2))))
-                / (CalculationConstants.GRAV * distance)
-            )
-        );
+        return Radians.of(Math.atan(( // https://www.desmos.com/calculator/moewwoi4pa :)
+            Math.pow(v, 2)
+            + Math.sqrt(
+                Math.pow(v, 4)
+                - g * (
+                    g * Math.pow(d, 2)
+                    + 2 * CalculationConstants.HUB_HEIGHT.in(Meters) * Math.pow(v, 2)
+                )
+            )) / (g * d)
+        ));
     }
 
     /**

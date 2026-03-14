@@ -9,10 +9,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.*;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -155,7 +152,7 @@ public class Constants {
         /** Max Servo speed to run at */
         public static final LinearVelocity MAX_SERVO_SPEED = Millimeters.of(32).per(Second);
         /** Hood angle minimum */
-        public static final Angle HOOD_ANGLE_MIN = Degrees.of(54.14);
+        public static final Angle HOOD_ANGLE_MIN = Degrees.of(54.2);
         /** Hood angle maximum */
         public static final Angle HOOD_ANGLE_MAX = Degrees.of(69);
     }
@@ -175,10 +172,10 @@ public class Constants {
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
         public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO;
 
-        /** Acceleration due to gravity in meters per second */
-        public static final double GRAV = 9.81;
-        /** Height of the hub in meters */
-        public static final double HUB_HEIGHT = 1.83;
+        /** Acceleration of gravity */
+        public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
+        /** Height of the hub */
+        public static final Distance HUB_HEIGHT = Feet.of(6);
     }
 
     /** Constants for climb */
