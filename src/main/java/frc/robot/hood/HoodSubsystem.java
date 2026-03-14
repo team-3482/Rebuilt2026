@@ -5,8 +5,10 @@
 package frc.robot.hood;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
@@ -15,6 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.HoodConstants;
+import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.constants.Constants.CalculationConstants;
+
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
@@ -113,6 +118,23 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public void setHoodAngle(Angle angle) {
         setHoodPosition(hoodAngleToDouble(angle));
+    }
+    
+    /**
+     * Gives the angle at which the hood should be set to shoot a fuel element into the hub.
+     * @param distance
+     * @return the angle at which the hood should be set.
+     */
+    public Angle getShootingHoodAngle(double distance){
+        double fuelSpeed = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity()).in(MetersPerSecond));
+
+        return Radians.of(
+            Math.atan(
+                (Math.pow(fuelSpeed,2) + Math.sqrt(Math.pow(fuelSpeed,4) - CalculationConstants.GRAV * 
+                (CalculationConstants.GRAV*Math.pow(distance,2) + 2*CalculationConstants.HUB_HEIGHT*Math.pow(fuelSpeed,2))))
+                / (CalculationConstants.GRAV * distance)
+            )
+        );
     }
 
     /**

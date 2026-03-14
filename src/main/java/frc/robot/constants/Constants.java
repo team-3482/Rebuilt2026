@@ -174,6 +174,11 @@ public class Constants {
         public static final double RING_TO_WHEEL_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
         public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO;
+
+        /** Acceleration due to gravity in meters per second */
+        public static final double GRAV = 9.81;
+        /** Height of the hub in meters */
+        public static final double HUB_HEIGHT = 1.83;
     }
 
     /** Constants for climb */
