@@ -71,6 +71,7 @@ public class VisionSubsystem extends SubsystemBase {
                 Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
                 Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
                 Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
+                Logger.recordOutput("QuestNav/Pose2d", getPose2d());
             }
         }
 

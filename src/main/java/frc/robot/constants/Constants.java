@@ -51,12 +51,12 @@ public class Constants {
         /** Quest mounting offsets */
         public static final Transform3d ROBOT_TO_QUEST = new Transform3d(
             new Translation3d(
-                Inches.of(0), // X -> Forward from robot center
-                Inches.of(0), // Y -> Left from robot center
+                Inches.of(0.72010064), // X -> Forward from robot center
+                Inches.of(0.46832619), // Y -> Left from robot center
                 Inches.of(0) // Z -> Up from robot center
             ),
             new Rotation3d(
-                Degrees.of(0), // Yaw -> Counter-clockwise rotation on the Z axis
+                Degrees.of(180), // Yaw -> Counter-clockwise rotation on the Z axis
                 Degrees.of(0), // Pitch -> Counter-clockwise rotation on the Y axis
                 Degrees.of(0) // Roll -> Counter-clockwise rotation on the X axis
             )

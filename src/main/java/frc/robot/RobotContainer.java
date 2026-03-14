@@ -33,6 +33,7 @@ import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
+import frc.robot.vision.CalibrateQuestCommand;
 import frc.robot.vision.ResetPoseCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -188,10 +189,12 @@ public class RobotContainer {
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         // Double Rectangle (Left) -> Reset pose
-        this.driverController.back().onTrue(Commands.sequence(
+        this.operatorController.back().onTrue(Commands.sequence(
             Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
             new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
         ));
+        // Burger (Right) -> Calibrate QuestNav
+        this.operatorController.start().onTrue(new CalibrateQuestCommand());
 
         // B -> Cancel all commands
         this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
