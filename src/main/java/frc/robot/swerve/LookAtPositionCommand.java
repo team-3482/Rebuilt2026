@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Radians;
 
 /** Takes a position on the field and automatically rotates to face it */
@@ -25,10 +24,14 @@ public class LookAtPositionCommand extends Command {
 
     public LookAtPositionCommand(Pose2d target) {
         setName("LookAtPositionCommand");
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(SwerveSubsystem.getInstance());
 
         this.target = target;
+
+        controller.enableContinuousInput(-Math.PI, Math.PI);
+        controller.setTolerance(AutoAngleConstants.TOLERANCE.in(Radians));
+
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(SwerveSubsystem.getInstance());
     }
 
     SwerveDriveState state;
@@ -37,19 +40,17 @@ public class LookAtPositionCommand extends Command {
     Distance xDistance;
     Distance yDistance;
 
-
     private final SwerveRequest.FieldCentricFacingAngle facingAngleDrive = new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(TunerConstants.kSpeedAt12Volts.magnitude() * 0.035)
         .withDriveRequestType(DriveRequestType.Velocity);
 
+    private final PhoenixPIDController controller = new PhoenixPIDController(AutoAngleConstants.P, AutoAngleConstants.I, AutoAngleConstants.D);
     @Override
     public void initialize() {
-        System.out.println("LookAtPositionCommand initialize");
-
         state = SwerveSubsystem.getInstance().getState();
 
-        facingAngleDrive.HeadingController = new PhoenixPIDController(AutoAngleConstants.P, AutoAngleConstants.I, AutoAngleConstants.D);
-        facingAngleDrive.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+        controller.reset();
+        facingAngleDrive.HeadingController = controller;
 
         calculateAngle();
     }
@@ -58,12 +59,11 @@ public class LookAtPositionCommand extends Command {
     public void execute() {
         calculateAngle();
 
-        SwerveSubsystem.getInstance().applyRequest(() -> facingAngleDrive
+        SwerveSubsystem.getInstance().setControl(facingAngleDrive
             .withVelocityX(0)
             .withVelocityY(0)
             .withTargetDirection(new Rotation2d(angleToTarget))
         );
-
     }
 
     @Override
@@ -77,17 +77,7 @@ public class LookAtPositionCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        System.out.println("target: " + angleToTarget.magnitude() + ", " + angleToTarget.in(Degrees));
-        System.out.println("current: " + currentRobotAngle.magnitude() + ", " + currentRobotAngle.in(Degrees));
-        System.out.println("tolerance: " + AutoAngleConstants.TOLERANCE.magnitude() + ", " + AutoAngleConstants.TOLERANCE.in(Degrees));
-        System.out.println("within tolerance: " + withinTolerance(AutoAngleConstants.TOLERANCE));
-
-        return withinTolerance(AutoAngleConstants.TOLERANCE);
-    }
-
-    private boolean withinTolerance(Angle tol) {
-        // return Math.abs(angleToTarget.in(Degrees) - angleToTarget.in(Degrees)) <= tol.in(Degrees);
-        return
+        return controller.atSetpoint();
     }
 
     private void calculateAngle(){

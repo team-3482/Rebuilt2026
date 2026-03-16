@@ -216,7 +216,7 @@ public class Constants {
      * {@link frc.robot.swerve.LookAtPositionCommand}
      */
     public static final class AutoAngleConstants {
-        public static final double P = 10;
+        public static final double P = 4.75;
         public static final double I = 0;
         public static final double D = 0;
 
