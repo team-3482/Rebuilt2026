@@ -10,6 +10,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +24,7 @@ import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.PositionConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
@@ -31,6 +33,7 @@ import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
 import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.vision.CalibrateQuestCommand;
@@ -184,6 +187,22 @@ public class RobotContainer {
         ));
         // Burger (Right) -> Reset rotation to zero
         this.driverController.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric()));
+
+        boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+
+        // Left Bumper -> Rotate to home side to Ferry
+        this.driverController.leftBumper().onTrue(Commands.run(() -> {
+            boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
+
+            Pose2d position = redAlliance ?
+                (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
+                (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
+
+            CommandScheduler.getInstance().schedule(new LookAtPositionCommand(position));
+        }));
+
+        // Right Bumper -> Rotate to Hub
+        this.driverController.rightBumper().onTrue(new LookAtPositionCommand(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB));
     }
 
     /** Configures the button bindings of the operator controller. */

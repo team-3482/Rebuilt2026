@@ -1,0 +1,100 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
+
+package frc.robot.swerve;
+
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.Constants.AutoAngleConstants;
+import frc.robot.constants.TunerConstants;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+
+/** Takes a position on the field and automatically rotates to face it */
+public class LookAtPositionCommand extends Command {
+    Pose2d target;
+
+    public LookAtPositionCommand(Pose2d target) {
+        setName("LookAtPositionCommand");
+        // Use addRequirements() here to declare subsystem dependencies.
+        addRequirements(SwerveSubsystem.getInstance());
+
+        this.target = target;
+    }
+
+    SwerveDriveState state;
+    Angle angleToTarget;
+    Angle currentRobotAngle;
+    Distance xDistance;
+    Distance yDistance;
+
+
+    private final SwerveRequest.FieldCentricFacingAngle facingAngleDrive = new SwerveRequest.FieldCentricFacingAngle()
+        .withDeadband(TunerConstants.kSpeedAt12Volts.magnitude() * 0.035)
+        .withDriveRequestType(DriveRequestType.Velocity);
+
+    @Override
+    public void initialize() {
+        System.out.println("LookAtPositionCommand initialize");
+
+        state = SwerveSubsystem.getInstance().getState();
+
+        facingAngleDrive.HeadingController = new PhoenixPIDController(AutoAngleConstants.P, AutoAngleConstants.I, AutoAngleConstants.D);
+        facingAngleDrive.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
+        calculateAngle();
+    }
+
+    @Override
+    public void execute() {
+        calculateAngle();
+
+        SwerveSubsystem.getInstance().applyRequest(() -> facingAngleDrive
+            .withVelocityX(0)
+            .withVelocityY(0)
+            .withTargetDirection(new Rotation2d(angleToTarget))
+        );
+
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        if(interrupted) {
+            System.out.println("Swerve Auto Angle command interrupted.");
+        } else {
+            System.out.println("Swerve angle within tolerance.");
+        }
+    }
+
+    @Override
+    public boolean isFinished() {
+        System.out.println("target: " + angleToTarget.magnitude() + ", " + angleToTarget.in(Degrees));
+        System.out.println("current: " + currentRobotAngle.magnitude() + ", " + currentRobotAngle.in(Degrees));
+        System.out.println("tolerance: " + AutoAngleConstants.TOLERANCE.magnitude() + ", " + AutoAngleConstants.TOLERANCE.in(Degrees));
+        System.out.println("within tolerance: " + withinTolerance(AutoAngleConstants.TOLERANCE));
+
+        return withinTolerance(AutoAngleConstants.TOLERANCE);
+    }
+
+    private boolean withinTolerance(Angle tol) {
+        // return Math.abs(angleToTarget.in(Degrees) - angleToTarget.in(Degrees)) <= tol.in(Degrees);
+        return
+    }
+
+    private void calculateAngle(){
+        xDistance = target.getMeasureX().minus(state.Pose.getMeasureX());
+        yDistance = target.getMeasureY().minus(state.Pose.getMeasureY());
+
+        angleToTarget = Radians.of(Math.atan(xDistance.magnitude() / yDistance.magnitude()));
+        currentRobotAngle = SwerveSubsystem.getInstance().getRotation3d().getMeasureZ();
+    }
+}

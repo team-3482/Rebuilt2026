@@ -188,13 +188,38 @@ public class Constants {
         public static final double CLIMB_SPEED = 0.5;
     }
 
+    /** Constants for positions of important points on the field */
     public static final class PositionConstants {
         /** Height of the Hub */
         public static final Distance HUB_HEIGHT = Feet.of(6);
+
+        /** Position of half the field (y-axis) */
+        public static final double HALF_FIELD_Y = 4;
 
         /** Position of the Blue side Hub */
         public static final Pose2d BLUE_HUB = new Pose2d(new Translation2d(4.5974, 4.034536), new Rotation2d());
         /** Position of the Red side Hub */
         public static final Pose2d RED_HUB = new Pose2d(new Translation2d(11.938, 4.034536), new Rotation2d());
+
+        /** Position of the Blue left side (from driver view) Ferry target */
+        public static final Pose2d BLUE_LEFT_FERRY = new Pose2d(new Translation2d(2, 7.4), new Rotation2d());
+        /** Position of the Blue right side (from driver view) Ferry target */
+        public static final Pose2d BLUE_RIGHT_FERRY = new Pose2d(new Translation2d(2, 0.6), new Rotation2d());
+        /** Position of the Red left side (from driver view) Ferry target */
+        public static final Pose2d RED_LEFT_FERRY = new Pose2d(new Translation2d(14.5, 7.4), new Rotation2d());
+        /** Position of the Red right side (from driver view) Ferry target */
+        public static final Pose2d RED_RIGHT_FERRY = new Pose2d(new Translation2d(14.5, 0.6), new Rotation2d());
+
+    }
+
+    /** Constants for auto swerve angle alignment
+     * {@link frc.robot.swerve.LookAtPositionCommand}
+     */
+    public static final class AutoAngleConstants {
+        public static final double P = 10;
+        public static final double I = 0;
+        public static final double D = 0;
+
+        public static final Angle TOLERANCE = Degrees.of(3);
     }
 }
