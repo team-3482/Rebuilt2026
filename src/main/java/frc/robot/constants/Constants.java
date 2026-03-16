@@ -168,9 +168,12 @@ public class Constants {
         public static final Distance RING_DIAMETER = Inches.of(15.155);
 
         /** Ratio of the diameter of the Ring to the diameter of the Wheel */
-        public static final double RING_TO_WHEEL_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
+        public static final double  RING_TO_WHEEL_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
         public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO;
+        /** Ratio for converting Fuel linear velocity to Motor angular velocity */
+        public static final double FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO = 1 / (CalculationConstants.VELOCITY_RATIO * 
+                    ((CalculationConstants.FUEL_DIAMETER.in(Inches) / 2) + (CalculationConstants.WHEEL_DIAMETER.in(Inches) / 2)));
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);

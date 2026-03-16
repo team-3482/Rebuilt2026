@@ -79,11 +79,36 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
+     * Calculate the desired fuel velocity based on distance from the hub
+     * @param distance distance from the hub
+     * @return the desired velocity of the fuel
+     */
+    public LinearVelocity calculateDesiredFuelVelocity(Distance distance){
+        double minDist = 6; //Placeholder values (will find later)
+        double maxDist = 20;
+        double ratio = (distance.in(Meters) - minDist)/(maxDist - minDist);
+
+        double minV = 6.6;
+        double maxV = 12;
+
+        return MetersPerSecond.of((ratio * (maxV - minV)) + minV);
+    }
+
+    /**
      * Get the velocity of the shooter motors
      * @return the velocity
      */
     public AngularVelocity getShooterVelocity() {
         return shooterMotor3.getVelocity().getValue();
+    }
+
+    /**
+     * Sets the angular velocity of the shooter motors based on a desired fuel launch velocity
+     * @param desiredFuelVelocity the desired velocity of the fuel projectile
+     */
+    public void setFuelLinearVelocity(LinearVelocity desiredFuelVelocity){
+        double ratio = desiredFuelVelocity.in(MetersPerSecond) / getFuelLinearVelocity().in(MetersPerSecond);
+        shooterMotor3.set(getShooterVelocity().in(RadiansPerSecond) * ratio);
     }
 
     /**
