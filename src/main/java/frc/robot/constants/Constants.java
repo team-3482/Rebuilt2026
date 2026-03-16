@@ -3,9 +3,7 @@ package frc.robot.constants;
 import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -174,8 +172,6 @@ public class Constants {
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
-        /** Height of the hub */
-        public static final Distance HUB_HEIGHT = Feet.of(6);
     }
 
     /** Constants for climb */
@@ -190,5 +186,15 @@ public class Constants {
 
         /** Speed to climb at */
         public static final double CLIMB_SPEED = 0.5;
+    }
+
+    public static final class PositionConstants {
+        /** Height of the Hub */
+        public static final Distance HUB_HEIGHT = Feet.of(6);
+
+        /** Position of the Blue side Hub */
+        public static final Pose2d BLUE_HUB = new Pose2d(new Translation2d(4.5974, 4.034536), new Rotation2d());
+        /** Position of the Red side Hub */
+        public static final Pose2d RED_HUB = new Pose2d(new Translation2d(11.938, 4.034536), new Rotation2d());
     }
 }
