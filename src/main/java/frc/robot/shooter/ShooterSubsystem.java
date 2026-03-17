@@ -84,12 +84,12 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return the desired velocity of the fuel
      */
     public LinearVelocity calculateDesiredFuelVelocity(Distance distance){
-        double minDist = 6; //Placeholder values (will find later)
-        double maxDist = 20;
+        double minDist = CalculationConstants.MIN_SHOOTING_DISTANCE.in(Meters);
+        double maxDist = CalculationConstants.MAX_SHOOTING_DISTANCE.in(Meters);
         double ratio = (distance.in(Meters) - minDist)/(maxDist - minDist);
 
-        double minV = 6.6;
-        double maxV = 12;
+        double minV = CalculationConstants.MIN_SHOOTING_VELOCITY.in(MetersPerSecond);
+        double maxV = CalculationConstants.MAX_SHOOTING_VELOCITY.in(MetersPerSecond);
 
         return MetersPerSecond.of((ratio * (maxV - minV)) + minV);
     }

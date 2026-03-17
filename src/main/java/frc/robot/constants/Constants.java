@@ -175,6 +175,17 @@ public class Constants {
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
+
+        // found from https://www.desmos.com/calculator/moewwoi4pa
+        /** Minimum distance that we can shoot to */
+        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.9);
+        /** Maximum distance that we can shoot to */
+        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.4);
+        /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
+        public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
+        /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
+        public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
+
     }
 
     /** Constants for climb */
