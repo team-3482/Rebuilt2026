@@ -2,9 +2,11 @@ package frc.robot.utilities;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.Constants.PositionConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.FeedShooterCommand;
@@ -67,6 +69,35 @@ public class CommandGenerators {
             new RevShooterCommand(target)
         );
     }
+
+    /**
+     * Aims to our alliance side and revs shooter
+     * @return The command.
+     */
+    public static Command PrepareFerry() {
+        return Commands.run(() -> {
+            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+            boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
+
+            Pose2d position = redAlliance ?
+                (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
+                (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
+
+            CommandGenerators.AimAndRevShooter(position);
+        });
+    }
+
+    /**
+     * Aims to the Hub and revs the Shooter
+     * @return The command.
+     */
+    public static Command PrepareHub() {
+        return Commands.run(() -> {
+            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+            CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB);
+        });
+    }
+
 
     /**
      * Feeds Fuel into Shooter if at correct velocity and Hood is at correct position.
