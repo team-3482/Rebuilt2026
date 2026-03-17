@@ -79,8 +79,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Calculate the desired fuel velocity based on distance from the hub
-     * @param distance distance from the hub
+     * Calculate the desired fuel velocity based on distance from the target
+     * @param distance distance from the target
      * @return the desired velocity of the fuel
      */
     public LinearVelocity calculateDesiredFuelVelocity(Distance distance){

@@ -31,11 +31,10 @@ import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
-import frc.robot.shooter.ShootCommand;
 import frc.robot.shooter.ShooterSubsystem;
-import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
+import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.CalibrateQuestCommand;
 import frc.robot.vision.ResetPoseCommand;
 import frc.robot.vision.VisionSubsystem;
@@ -181,28 +180,27 @@ public class RobotContainer {
     /** Configures the button bindings of the driver controller. */
     public void configureDriverBindings() {
         // Double Rectangle (Left) -> Reset pose
-        this.driverController.back().onTrue(Commands.sequence(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
-            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
-        ));
+        this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
         // Burger (Right) -> Reset rotation to zero
-        this.driverController.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric()));
+        this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
 
-        boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-
-        // Left Bumper -> Rotate to home side to Ferry
-        this.driverController.leftBumper().onTrue(Commands.runOnce(() -> {
+        // Left Bumper -> Aim to home side to Ferry and start up Shooter
+        this.driverController.leftBumper().whileTrue(Commands.run(() -> {
+            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
             boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
 
             Pose2d position = redAlliance ?
                 (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
                 (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
 
-            CommandScheduler.getInstance().schedule(new LookAtPositionCommand(position));
+            CommandGenerators.AimAndRevShooter(position);
         }));
 
-        // Right Bumper -> Rotate to Hub
-        this.driverController.rightBumper().onTrue(new LookAtPositionCommand(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB));
+        // Right Bumper -> Aim to Hub and start up Shooter
+        this.driverController.rightBumper().whileTrue(Commands.run(() -> {
+            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+            CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB);
+        }));
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -216,13 +214,12 @@ public class RobotContainer {
         this.operatorController.start().onTrue(new CalibrateQuestCommand());
 
         // B -> Cancel all commands
-        this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
-
+        this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
         // Left Bumper -> Intake
         this.operatorController.leftBumper().whileTrue(new IntakeCommand());
 
-        // Right Bumper -> Shoot
-        this.operatorController.rightBumper().whileTrue(new ShootCommand());
+        // Right Bumper -> Feed Fuel into Shooter
+        this.operatorController.rightBumper().whileTrue(CommandGenerators.FeedShooter());
 
         // Temporary
         // Left Trigger -> Shooter Hood Minimum

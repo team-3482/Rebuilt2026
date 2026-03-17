@@ -8,7 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
@@ -120,14 +119,16 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gives the angle at which the hood should be set to shoot a fuel element into the hub.
-     * @param distance The distance from the bot to the center of the Hub.
+     * Gives the angle at which the hood should be set to shoot a fuel element to
+     * @param distance The distance from the bot to the target
+     * @param hub Whether to calculate to shoot into the hub
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance){
+    public Angle getShootingHoodAngle(Distance distance, boolean hub){
         double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity()).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
+        double h = hub ? PositionConstants.HUB_HEIGHT.in(Meters) : 0;
 
         return Radians.of(Math.atan(( // https://www.desmos.com/calculator/moewwoi4pa :)
             Math.pow(v, 2)
@@ -135,10 +136,19 @@ public class HoodSubsystem extends SubsystemBase {
                 Math.pow(v, 4)
                 - g * (
                     g * Math.pow(d, 2)
-                    + 2 * PositionConstants.HUB_HEIGHT.in(Meters) * Math.pow(v, 2)
+                    + 2 * h * Math.pow(v, 2)
                 )
             )) / (g * d)
         ));
+    }
+
+    /**
+     * Gives the angle at which the hood should be set to shoot a fuel element to
+     * @param distance The distance from the bot to the target
+     * @return The angle at which the hood should be set.
+     */
+    public Angle getShootingHoodAngle(Distance distance){
+        return getShootingHoodAngle(distance, true);
     }
 
     /**
