@@ -8,8 +8,15 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.struct.Pose2dStruct;
+import edu.wpi.first.math.geometry.struct.Translation2dStruct;
+import edu.wpi.first.util.struct.StructBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.VisionConstants;
 import frc.robot.swerve.SwerveSubsystem;
@@ -18,7 +25,11 @@ import frc.robot.utilities.LimelightHelpers.PoseEstimate;
 import frc.robot.utilities.LimelightHelpers.RawFiducial;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
+import org.littletonrobotics.junction.LogTable;
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /** Subsystem that manages odometry and vision using a Limelight and QuestNav */
 public class VisionSubsystem extends SubsystemBase {
@@ -44,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         HttpCamera LLCamera = new HttpCamera(
             VisionConstants.LIMELIGHT,
-            "http://" + "10.34.82.20" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
+            "http://" + "10.34.82.13" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
         );
 
         CameraServer.startAutomaticCapture(LLCamera);
@@ -58,21 +69,18 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.recordOutput("QuestNav/Tracking", tracking);
 
         if (tracking) {
-            if (questNav.isTracking()) {
-                // Get the latest pose data frames from the Quest
-                poseFrames = questNav.getAllUnreadPoseFrames();
+            // Get the latest pose data frames from the Quest
+            poseFrames = questNav.getAllUnreadPoseFrames();
 
-                updateSwervePoseEstimation();
+            updateSwervePoseEstimation();
 
-                SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
-                SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
-                SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
+            SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
+            SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
-                Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
-                Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
-                Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
-                Logger.recordOutput("QuestNav/Pose2d", getPose2d());
-            }
+            Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
+            Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
         }
 
         limelightPose = getLimelightPose();

@@ -41,13 +41,13 @@ public class Constants {
     /** Constants for QuestNav and Limelight */
     public static final class VisionConstants {
         /** The name of the limelight */
-        public static final String LIMELIGHT = "limelight-stheno";
+        public static final String LIMELIGHT = "limelight-euryale";
 
         /** Quest mounting offsets */
         public static final Transform3d ROBOT_TO_QUEST = new Transform3d(
             new Translation3d( // values generated from https://www.desmos.com/calculator/ymzqtr2lip
-                0.72010064, // X -> Forward from robot center
-                -0.46832619, // Y -> Left from robot center
+                0.19288985, // X -> Forward from robot center
+                -0.13843581, // Y -> Left from robot center
                 0 // Z -> Up from robot center
             ),
             new Rotation3d(

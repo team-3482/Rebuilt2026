@@ -191,7 +191,7 @@ public class RobotContainer {
         boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
 
         // Left Bumper -> Rotate to home side to Ferry
-        this.driverController.leftBumper().onTrue(Commands.run(() -> {
+        this.driverController.leftBumper().onTrue(Commands.runOnce(() -> {
             boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
 
             Pose2d position = redAlliance ?
