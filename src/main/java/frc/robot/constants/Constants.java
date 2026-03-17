@@ -51,9 +51,9 @@ public class Constants {
                 0 // Z -> Up from robot center
             ),
             new Rotation3d(
-                Degrees.of(180), // Yaw -> Counter-clockwise rotation on the Z axis
+                Degrees.of(0), // Roll -> Counter-clockwise rotation on the X axis
                 Degrees.of(0), // Pitch -> Counter-clockwise rotation on the Y axis
-                Degrees.of(0) // Roll -> Counter-clockwise rotation on the X axis
+                Degrees.of(180) // Yaw -> Counter-clockwise rotation on the Z axis
             )
         );
 
@@ -170,7 +170,7 @@ public class Constants {
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
         public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO;
         /** Ratio for converting Fuel linear velocity to Motor angular velocity */
-        public static final double FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO = 1 / (CalculationConstants.VELOCITY_RATIO * 
+        public static final double FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO = 1 / (CalculationConstants.VELOCITY_RATIO *
                     ((CalculationConstants.FUEL_DIAMETER.in(Inches) / 2) + (CalculationConstants.WHEEL_DIAMETER.in(Inches) / 2)));
 
         /** Acceleration of gravity */
