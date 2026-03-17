@@ -3,9 +3,7 @@ package frc.robot.constants;
 import com.ctre.phoenix6.CANBus;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -43,13 +41,13 @@ public class Constants {
     /** Constants for QuestNav and Limelight */
     public static final class VisionConstants {
         /** The name of the limelight */
-        public static final String LIMELIGHT = "limelight-stheno";
+        public static final String LIMELIGHT = "limelight-euryale";
 
         /** Quest mounting offsets */
         public static final Transform3d ROBOT_TO_QUEST = new Transform3d(
             new Translation3d( // values generated from https://www.desmos.com/calculator/ymzqtr2lip
-                0.72010064, // X -> Forward from robot center
-                -0.46832619, // Y -> Left from robot center
+                0.19288985, // X -> Forward from robot center
+                -0.13843581, // Y -> Left from robot center
                 0 // Z -> Up from robot center
             ),
             new Rotation3d(
@@ -177,8 +175,6 @@ public class Constants {
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
-        /** Height of the hub */
-        public static final Distance HUB_HEIGHT = Feet.of(6);
     }
 
     /** Constants for climb */
@@ -193,5 +189,40 @@ public class Constants {
 
         /** Speed to climb at */
         public static final double CLIMB_SPEED = 0.5;
+    }
+
+    /** Constants for positions of important points on the field */
+    public static final class PositionConstants {
+        /** Height of the Hub */
+        public static final Distance HUB_HEIGHT = Feet.of(6);
+
+        /** Position of half the field (y-axis) */
+        public static final double HALF_FIELD_Y = 4;
+
+        /** Position of the Blue side Hub */
+        public static final Pose2d BLUE_HUB = new Pose2d(new Translation2d(4.5974, 4.034536), new Rotation2d());
+        /** Position of the Red side Hub */
+        public static final Pose2d RED_HUB = new Pose2d(new Translation2d(11.938, 4.034536), new Rotation2d());
+
+        /** Position of the Blue left side (from driver view) Ferry target */
+        public static final Pose2d BLUE_LEFT_FERRY = new Pose2d(new Translation2d(2, 7.4), new Rotation2d());
+        /** Position of the Blue right side (from driver view) Ferry target */
+        public static final Pose2d BLUE_RIGHT_FERRY = new Pose2d(new Translation2d(2, 0.6), new Rotation2d());
+        /** Position of the Red left side (from driver view) Ferry target */
+        public static final Pose2d RED_LEFT_FERRY = new Pose2d(new Translation2d(14.5, 7.4), new Rotation2d());
+        /** Position of the Red right side (from driver view) Ferry target */
+        public static final Pose2d RED_RIGHT_FERRY = new Pose2d(new Translation2d(14.5, 0.6), new Rotation2d());
+
+    }
+
+    /** Constants for auto swerve angle alignment
+     * {@link frc.robot.swerve.LookAtPositionCommand}
+     */
+    public static final class AutoAngleConstants {
+        public static final double P = 4.75;
+        public static final double I = 0;
+        public static final double D = 0;
+
+        public static final Angle TOLERANCE = Degrees.of(3);
     }
 }

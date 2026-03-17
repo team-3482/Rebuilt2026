@@ -5,10 +5,8 @@
 package frc.robot.hood;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,10 +15,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants.HoodConstants;
-import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.constants.Constants.CalculationConstants;
-
+import frc.robot.constants.Constants.HoodConstants;
+import frc.robot.constants.Constants.PositionConstants;
+import frc.robot.shooter.ShooterSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
@@ -137,7 +135,7 @@ public class HoodSubsystem extends SubsystemBase {
                 Math.pow(v, 4)
                 - g * (
                     g * Math.pow(d, 2)
-                    + 2 * CalculationConstants.HUB_HEIGHT.in(Meters) * Math.pow(v, 2)
+                    + 2 * PositionConstants.HUB_HEIGHT.in(Meters) * Math.pow(v, 2)
                 )
             )) / (g * d)
         ));
