@@ -2,6 +2,7 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -12,7 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import frc.robot.constants.Constants.AutoAngleConstants;
 import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 public class SwerveTelemetry {
     private final double MaxSpeed;
@@ -97,7 +101,6 @@ public class SwerveTelemetry {
         SignalLogger.writeStructArray("DriveState/ModulePositions", SwerveModulePosition.struct, state.ModulePositions);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        // TODO: make sure this works
         Logger.recordOutput("DriveState/PoseArray", m_poseArray);
         Logger.recordOutput("DriveState/Pose", Pose2d.struct, state.Pose);
         Logger.recordOutput("DriveState/Speeds", ChassisSpeeds.struct, state.Speeds);
@@ -121,7 +124,19 @@ public class SwerveTelemetry {
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
         }
 
-        SmartDashboard.putNumber("Robot Angle", state.Pose.getRotation().getDegrees());
-        Logger.recordOutput("DriveState/Angle", state.Pose.getRotation().getDegrees());
+        double angle = state.Pose.getRotation().getDegrees();
+
+        SmartDashboard.putNumber("Robot Angle", angle);
+        Logger.recordOutput("DriveState/Angle", angle);
+
+        double targetAngle = SwerveSubsystem.getInstance().getTargetAngle().in(Degrees);
+
+        Logger.recordOutput("DriveState/TargetAngle", targetAngle);
+        SmartDashboard.putNumber("DriveState/TargetAngle", targetAngle);
+
+        boolean angleWithinToleranceToTarget = MathUtil.isNear(targetAngle, angle, AutoAngleConstants.TOLERANCE.in(Degrees));
+
+        Logger.recordOutput("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
+        SmartDashboard.putBoolean("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
     }
 }

@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -79,11 +78,11 @@ public class RobotContainer {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void initializeSubsystems() {
-        VisionSubsystem.getInstance();
+        ClimbSubsystem.getInstance();
+        HoodSubsystem.getInstance();
         IntakeSubsystem.getInstance();
         ShooterSubsystem.getInstance();
-        HoodSubsystem.getInstance();
-        ClimbSubsystem.getInstance();
+        VisionSubsystem.getInstance();
     }
 
     /**

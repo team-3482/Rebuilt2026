@@ -87,6 +87,10 @@ public class HoodSubsystem extends SubsystemBase {
         }
 
         Logger.recordOutput("Hood/Position", currentPosition);
+
+        boolean withinTolerance = isPositionWithinTolerance();
+        Logger.recordOutput("Hood/WithinTolerance", withinTolerance);
+        SmartDashboard.putBoolean("Hood/WithinTolerance", withinTolerance);
     }
 
     /**

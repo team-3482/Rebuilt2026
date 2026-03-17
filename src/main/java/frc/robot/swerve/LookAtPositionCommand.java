@@ -64,6 +64,8 @@ public class LookAtPositionCommand extends Command {
             .withVelocityY(0)
             .withTargetDirection(new Rotation2d(angleToTarget))
         );
+
+        SwerveSubsystem.getInstance().setTargetAngle(angleToTarget);
     }
 
     @Override
