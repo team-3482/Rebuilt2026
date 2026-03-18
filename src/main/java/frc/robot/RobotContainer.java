@@ -4,19 +4,16 @@
 
 package frc.robot;
 
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
@@ -24,7 +21,6 @@ import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.Constants.IntakeConstants;
-import frc.robot.constants.Constants.PositionConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
@@ -36,7 +32,6 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.utilities.CommandGenerators;
 import frc.robot.vision.CalibrateQuestCommand;
-import frc.robot.vision.ResetPoseCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -69,6 +64,7 @@ public class RobotContainer {
 
         configureDrivetrain();
         initializeSubsystems();
+        registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // The default auto will be Commands.none()
         this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
@@ -82,11 +78,11 @@ public class RobotContainer {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void initializeSubsystems() {
-        VisionSubsystem.getInstance();
+        ClimbSubsystem.getInstance();
+        HoodSubsystem.getInstance();
         IntakeSubsystem.getInstance();
         ShooterSubsystem.getInstance();
-        HoodSubsystem.getInstance();
-        ClimbSubsystem.getInstance();
+        VisionSubsystem.getInstance();
     }
 
     /**
@@ -185,36 +181,21 @@ public class RobotContainer {
         this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
 
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().whileTrue(Commands.run(() -> {
-            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-            boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
-
-            Pose2d position = redAlliance ?
-                (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
-                (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
-
-            CommandGenerators.AimAndRevShooter(position);
-        }));
-
+        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().whileTrue(Commands.run(() -> {
-            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-            CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB);
-        }));
+        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         // Double Rectangle (Left) -> Reset pose
-        this.operatorController.back().onTrue(Commands.sequence(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
-            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
-        ));
+        this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
         // Burger (Right) -> Calibrate QuestNav
-        this.operatorController.start().onTrue(new CalibrateQuestCommand());
+        this.operatorController.start().onTrue(new CalibrateQuestCommand());  // TODO: comment this out before comp.
 
         // B -> Cancel all commands
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+
         // Left Bumper -> Intake
         this.operatorController.leftBumper().whileTrue(new IntakeCommand());
 
@@ -234,7 +215,22 @@ public class RobotContainer {
 
         this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
         this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+    }
 
+    private void registerNamedCommands() {
+        // Climb
+        NamedCommands.registerCommand("Climb", new ClimbCommand());
+        NamedCommands.registerCommand("LeaveClimb", new LeaveClimbCommand());
+
+        // Intake
+        NamedCommands.registerCommand("Intake", new IntakeCommand());
+        NamedCommands.registerCommand("MovePivotDown", new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        NamedCommands.registerCommand("MovePivotUp", new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+
+        // Shooter
+        NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
+        NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
+        NamedCommands.registerCommand("FeedShooter", CommandGenerators.FeedShooter());
     }
 
     public Command getAutonomousCommand() {
