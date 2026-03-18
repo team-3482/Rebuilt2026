@@ -15,6 +15,8 @@ import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 
+import static frc.robot.constants.Constants.CalculationConstants.MIN_SHOOTING_DISTANCE;
+
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
     /**
@@ -51,9 +53,9 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command ContinuousMoveHoodCommand(Pose2d target) {
-        return Commands.run(() -> {
+        return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-            new MoveHoodCommand(HoodSubsystem.getInstance().getShootingHoodAngle(distance, false));
+            CommandScheduler.getInstance().schedule(new MoveHoodCommand(HoodSubsystem.getInstance().getShootingHoodAngle(distance, false)));
         });
     }
 
@@ -63,11 +65,16 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command AimAndRevShooter(Pose2d target) {
-        return Commands.parallel(
-            new LookAtPositionCommand(target),
-            ContinuousMoveHoodCommand(target),
-            new RevShooterCommand(target)
-        );
+        if (SwerveSubsystem.getInstance().getDistance(target).gt(MIN_SHOOTING_DISTANCE)) {
+            return Commands.parallel(
+                new LookAtPositionCommand(target),
+                ContinuousMoveHoodCommand(target),
+                new RevShooterCommand(target)
+            );
+        } else {
+            System.out.println("Too close to target!!!");
+            return Commands.none();
+        }
     }
 
     /**
@@ -75,7 +82,7 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareFerry() {
-        return Commands.run(() -> {
+        return Commands.runOnce(() -> {
             boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
             boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
 
@@ -83,7 +90,7 @@ public class CommandGenerators {
                 (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
                 (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
 
-            CommandGenerators.AimAndRevShooter(position);
+            CommandScheduler.getInstance().schedule(CommandGenerators.AimAndRevShooter(position));
         });
     }
 
@@ -92,9 +99,11 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        return Commands.run(() -> {
+        return Commands.runOnce(() -> {
             boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
-            CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB);
+            CommandScheduler.getInstance().schedule(
+                CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB)
+            );
         });
     }
 

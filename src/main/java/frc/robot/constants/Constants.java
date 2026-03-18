@@ -85,7 +85,7 @@ public class Constants {
         /** Minimum angle (Up on hardstop inside robot) */
         public static final Angle MINIMUM_ANGLE = Degrees.of(0);
         /** Maximum angle (Intaking position on bumper) */
-        public static final Angle MAXIMUM_ANGLE = Degrees.of(110); // TODO: real bumper angle
+        public static final Angle MAXIMUM_ANGLE = Degrees.of(100); // TODO: real bumper angle
 
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = 6;
@@ -110,7 +110,7 @@ public class Constants {
         public static final double PIVOT_TOLERANCE = 2; // TODO: make ts more accurate
 
         /** Speed to run the intake motor at */
-        public static final double INTAKE_SPEED = 0.2;
+        public static final double INTAKE_SPEED = 0.4;
     }
 
     /** Constants for the Shooter subsystem */

@@ -181,9 +181,9 @@ public class RobotContainer {
         this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
 
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
+        this.driverController.leftBumper().onTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
+        this.driverController.rightBumper().onTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
