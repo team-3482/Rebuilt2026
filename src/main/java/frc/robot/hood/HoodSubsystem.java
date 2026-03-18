@@ -125,7 +125,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @return The angle at which the hood should be set.
      */
     public Angle getShootingHoodAngle(Distance distance, boolean hub){
-        double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity()).in(MetersPerSecond));
+        double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity(distance)).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
         double h = hub ? PositionConstants.HUB_HEIGHT.in(Meters) : 0;

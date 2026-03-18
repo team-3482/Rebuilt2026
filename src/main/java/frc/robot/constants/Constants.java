@@ -134,8 +134,26 @@ public class Constants {
         public static final double STERILIZER_SPEED = 0.15;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
-        public static final AngularVelocity VELOCITY_THRESHOLD = RPM.of(5000);
+        public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(100);
 
+        /** Gear ratio for mechanism */
+        public static final double ROTOR_TO_MECHANISM_RATIO = 6;
+
+        // TODO: fill in values
+        /* Motion Magic Config */
+        public static final double CRUISE_SPEED = 2;
+        public static final double ACCELERATION = 2;
+
+        /** Gains used for Motion Magic slot 0. */
+        public static final class Slot0Gains {
+            public static final double kG = 0;
+            public static final double kS = 0.09;
+            public static final double kV = 0;
+            public static final double kA = 0;
+            public static final double kP = 2;
+            public static final double kI = 0;
+            public static final double kD = 0;
+        }
     }
 
     /** Constants for the Hood subsystem */
