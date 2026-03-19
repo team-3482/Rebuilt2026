@@ -4,22 +4,12 @@
 
 package frc.robot.shooter;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -27,7 +17,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CalculationConstants;
-import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
 import org.littletonrobotics.junction.Logger;
@@ -46,23 +35,25 @@ public class ShooterSubsystem extends SubsystemBase {
         return ShooterSubsystemHolder.INSTANCE;
     }
 
+    @SuppressWarnings("FieldCanBeLocal")
     private final TalonFX shooterMotor1 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_1, RobotConstants.CAN_BUS);
+    @SuppressWarnings("FieldCanBeLocal")
     private final TalonFX shooterMotor2 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_2, RobotConstants.CAN_BUS);
     private final TalonFX shooterMotor3 = new TalonFX(ShooterConstants.SHOOTER_MOTOR_3, RobotConstants.CAN_BUS);
     private final TalonFX feederMotor = new TalonFX(ShooterConstants.FEEDER_MOTOR, RobotConstants.CAN_BUS);
     private final TalonFX sterilizerMotor = new TalonFX(ShooterConstants.STERILIZER_MOTOR, RobotConstants.CAN_BUS);
 
-    private final MotionMagicVelocityVoltage motionMagicVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0);
+    private final VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
 
-    private AngularVelocity lastTargetVelocity = RPM.of(0);
+    private AngularVelocity lastTargetVelocity = RPM.of(Double.MAX_VALUE);
 
     private ShooterSubsystem() {
         super("ShooterSubsystem");
 
         this.configureMotors();
 
-        shooterMotor1.setControl(new Follower(shooterMotor3.getDeviceID(), MotorAlignmentValue.Opposed));
-        shooterMotor2.setControl(new Follower(shooterMotor3.getDeviceID(), MotorAlignmentValue.Opposed));
+        this.shooterMotor3.getPosition().setUpdateFrequency(50);
+        this.shooterMotor3.getVelocity().setUpdateFrequency(50);
     }
 
     @Override
@@ -70,6 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
         Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(RPM));
         Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
+        Logger.recordOutput("Shooter/TargetVelocity", lastTargetVelocity.in(RPM));
 
         SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
         Logger.recordOutput("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
@@ -81,29 +73,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private void configureMotors() {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
 
-        FeedbackConfigs feedbackConfigs = configuration.Feedback;
-        feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-        // Sets the gear ratio from the rotor to the mechanism.
-        // This gear ratio needs to be exact.
-        feedbackConfigs.SensorToMechanismRatio = ShooterConstants.ROTOR_TO_MECHANISM_RATIO;
-
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
-        motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
+        motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
-        slot0Configs.kG = ShooterConstants.Slot0Gains.kG;
         slot0Configs.kS = ShooterConstants.Slot0Gains.kS;
         slot0Configs.kV = ShooterConstants.Slot0Gains.kV;
-        slot0Configs.kA = ShooterConstants.Slot0Gains.kA;
         slot0Configs.kP = ShooterConstants.Slot0Gains.kP;
         slot0Configs.kI = ShooterConstants.Slot0Gains.kI;
         slot0Configs.kD = ShooterConstants.Slot0Gains.kD;
 
-        // Set acceleration and cruise velocity.
-        MotionMagicConfigs motionMagicConfigs = configuration.MotionMagic;
-        motionMagicConfigs.MotionMagicAcceleration = ShooterConstants.ACCELERATION;
-
+        // this.shooterMotor1.getConfigurator().apply(configuration);
+        // this.shooterMotor2.getConfigurator().apply(configuration);
         this.shooterMotor3.getConfigurator().apply(configuration);
     }
 
@@ -112,16 +94,21 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param speed the speed from -1 to 1
      */
     public void setShooterSpeed(double speed) {
+        // shooterMotor1.set(-speed);
+        // shooterMotor2.set(-speed);
         shooterMotor3.set(speed);
     }
 
     /**
      * Sets the angular velocity of the shooter motors with PID
-     * @param targetAngularVelocity the target angular velocity for the shooter motors. 
+     * @param targetAngularVelocity the target angular velocity for the shooter motors.
      */
     public void motionMagicAngularVelocity(AngularVelocity targetAngularVelocity){
         lastTargetVelocity = targetAngularVelocity;
-        shooterMotor3.setControl(motionMagicVelocityVoltage.withVelocity(targetAngularVelocity));
+        System.out.println(targetAngularVelocity);
+        // shooterMotor1.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
+        // shooterMotor2.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
+        shooterMotor3.setControl(velocityVoltage.withVelocity(1));
     }
 
     /**
@@ -157,15 +144,14 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Returns the target angular velocity for the shooter motors given the distance from a target. 
+     * Returns the target angular velocity for the shooter motors given the distance from a target.
      * @param distance the distance from the target.
      * @return The desired/target motor angular velocity.
      */
-    public AngularVelocity desiredMotorAngularVelocity(Distance distance){
-        AngularVelocity desiredRPM = 
-            AngularVelocity.ofBaseUnits(
-                (desiredFuelVelocity(distance).in(MetersPerSecond) * Constants.CalculationConstants.FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO), RPM);
-        return desiredRPM;
+    public AngularVelocity desiredMotorAngularVelocity(Distance distance) {
+        return AngularVelocity.ofBaseUnits(
+            (desiredFuelVelocity(distance).in(MetersPerSecond) * Constants.CalculationConstants.FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO), RPM
+        );
     }
 
     /**
@@ -178,7 +164,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Check for if shooter motors are revved up to shooting velocity
-     * @param distance The distance of the bot from the target
      * @return true if shooter velocity is within threshold
      */
     public boolean atShootingVelocityThreshold() {
@@ -195,7 +180,7 @@ public class ShooterSubsystem extends SubsystemBase {
         return RPM.of(
             // use threshold number by default, but use real velocity
             // if at threshold so it can correct the angle if necessary
-            (atShootingVelocityThreshold() ? currentVelocity : desiredMotorAngularVelocity(distance).in(RPM))
+            (atShootingVelocityThreshold() && currentVelocity > 0 ? currentVelocity : desiredMotorAngularVelocity(distance).in(RPM))
             * CalculationConstants.VELOCITY_RATIO
         );
     }

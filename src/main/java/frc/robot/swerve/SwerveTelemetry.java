@@ -2,7 +2,6 @@ package frc.robot.swerve;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -13,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.constants.Constants.AutoAngleConstants;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Degrees;
@@ -29,6 +27,7 @@ public class SwerveTelemetry {
     public SwerveTelemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
         SignalLogger.start();
+
 
         /* Set up the module state Mechanism2d telemetry */
         for (int i = 0; i < 4; ++i) {
@@ -125,17 +124,14 @@ public class SwerveTelemetry {
         }
 
         double angle = state.Pose.getRotation().getDegrees();
-
         SmartDashboard.putNumber("Robot Angle", angle);
         Logger.recordOutput("DriveState/Angle", angle);
 
         double targetAngle = SwerveSubsystem.getInstance().getTargetAngle().in(Degrees);
-
         Logger.recordOutput("DriveState/TargetAngle", targetAngle);
         SmartDashboard.putNumber("DriveState/TargetAngle", targetAngle);
 
-        boolean angleWithinToleranceToTarget = MathUtil.isNear(targetAngle, angle, AutoAngleConstants.TOLERANCE.in(Degrees));
-
+        boolean angleWithinToleranceToTarget = SwerveSubsystem.getInstance().angleWithinToleranceToTarget();
         Logger.recordOutput("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
         SmartDashboard.putBoolean("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
     }

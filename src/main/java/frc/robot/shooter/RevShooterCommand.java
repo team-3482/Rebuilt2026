@@ -4,12 +4,9 @@
 
 package frc.robot.shooter;
 
-import static edu.wpi.first.units.Units.RPM;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.swerve.SwerveSubsystem;
 
@@ -23,13 +20,15 @@ public class RevShooterCommand extends Command {
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem.getInstance());
+
+        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+        AngularVelocity velocity = ShooterSubsystem.getInstance().desiredMotorAngularVelocity(distance);
+        System.out.println(velocity);
+        ShooterSubsystem.getInstance().motionMagicAngularVelocity(velocity);
     }
 
     @Override
-    public void execute() {
-        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-        ShooterSubsystem.getInstance().setShooterSpeed(ShooterSubsystem.getInstance().desiredMotorAngularVelocity(distance).in(RPM));
-    }
+    public void execute() {}
 
     @Override
     public void end(boolean interrupted) {

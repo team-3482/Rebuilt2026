@@ -85,7 +85,7 @@ public class Constants {
         /** Minimum angle (Up on hardstop inside robot) */
         public static final Angle MINIMUM_ANGLE = Degrees.of(0);
         /** Maximum angle (Intaking position on bumper) */
-        public static final Angle MAXIMUM_ANGLE = Degrees.of(100); // TODO: real bumper angle
+        public static final Angle MAXIMUM_ANGLE = Degrees.of(70);
 
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = 6;
@@ -126,31 +126,19 @@ public class Constants {
         /** CAN ID for Sterilizer motor */
         public static final int STERILIZER_MOTOR = 30;
 
-        /** Shooter motor speed */
-        public static final double SHOOTING_SPEED = 1.0;
         /** Feeder motor speed */
-        public static final double FEEDER_SPEED = 1.0;
+        public static final double FEEDER_SPEED = 0.75;
         /** Sterilizer motor speed */
-        public static final double STERILIZER_SPEED = 0.15;
+        public static final double STERILIZER_SPEED = 0.75;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
-        public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(100);
-
-        /** Gear ratio for mechanism */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 6;
-
-        // TODO: fill in values
-        /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 2;
-        public static final double ACCELERATION = 2;
+        public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(50);
 
         /** Gains used for Motion Magic slot 0. */
         public static final class Slot0Gains {
-            public static final double kG = 0;
-            public static final double kS = 0.09;
+            public static final double kS = 0.025;
             public static final double kV = 0;
-            public static final double kA = 0;
-            public static final double kP = 2;
+            public static final double kP = 0.1;
             public static final double kI = 0;
             public static final double kD = 0;
         }

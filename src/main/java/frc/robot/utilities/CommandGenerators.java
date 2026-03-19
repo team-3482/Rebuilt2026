@@ -1,6 +1,7 @@
 package frc.robot.utilities;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,10 +12,12 @@ import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.FeedShooterCommand;
 import frc.robot.shooter.RevShooterCommand;
+import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static frc.robot.constants.Constants.CalculationConstants.MIN_SHOOTING_DISTANCE;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
@@ -52,10 +55,12 @@ public class CommandGenerators {
      * @param target The target.
      * @return The command.
      */
-    public static Command ContinuousMoveHoodCommand(Pose2d target) {
+    public static Command ContinuousMoveHoodCommand(Pose2d target, boolean hub) {
         return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-            CommandScheduler.getInstance().schedule(new MoveHoodCommand(HoodSubsystem.getInstance().getShootingHoodAngle(distance, false)));
+            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, hub);
+            System.out.println(angle.in(Degrees));
+            CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
         });
     }
 
@@ -64,11 +69,11 @@ public class CommandGenerators {
      * @param target The target.
      * @return The command.
      */
-    public static Command AimAndRevShooter(Pose2d target) {
+    public static Command AimAndRevShooter(Pose2d target, boolean hub) {
         if (SwerveSubsystem.getInstance().getDistance(target).gt(MIN_SHOOTING_DISTANCE)) {
             return Commands.parallel(
                 new LookAtPositionCommand(target),
-                ContinuousMoveHoodCommand(target),
+                // ContinuousMoveHoodCommand(target, hub),
                 new RevShooterCommand(target)
             );
         } else {
@@ -90,7 +95,7 @@ public class CommandGenerators {
                 (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
                 (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
 
-            CommandScheduler.getInstance().schedule(CommandGenerators.AimAndRevShooter(position));
+            CommandScheduler.getInstance().schedule(CommandGenerators.AimAndRevShooter(position, false));
         });
     }
 
@@ -102,7 +107,10 @@ public class CommandGenerators {
         return Commands.runOnce(() -> {
             boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
             CommandScheduler.getInstance().schedule(
-                CommandGenerators.AimAndRevShooter(redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB)
+                CommandGenerators.AimAndRevShooter(
+                    redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB,
+                    true
+                )
             );
         });
     }
@@ -113,8 +121,12 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command FeedShooter() {
-        return Commands.run(() -> { // TODO: rewrite atShootingVelocityThreshold
-            if (/*ShooterSubsystem.getInstance().atShootingVelocityThreshold() &&*/HoodSubsystem.getInstance().isPositionWithinTolerance()) {
+        return Commands.run(() -> {
+            if (
+                ShooterSubsystem.getInstance().atShootingVelocityThreshold()
+                && HoodSubsystem.getInstance().isPositionWithinTolerance()
+                && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
+            ) { // TODO: move intake pivot up and down
                 new FeedShooterCommand();
             }
         });

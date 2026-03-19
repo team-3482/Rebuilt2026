@@ -130,6 +130,7 @@ public class HoodSubsystem extends SubsystemBase {
      */
     public Angle getShootingHoodAngle(Distance distance, boolean hub){
         double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity(distance)).in(MetersPerSecond));
+        System.out.println(v);
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
         double h = hub ? PositionConstants.HUB_HEIGHT.in(Meters) : 0;
