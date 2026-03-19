@@ -7,6 +7,7 @@ package frc.robot.hood;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
@@ -17,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.Constants.PositionConstants;
-import frc.robot.shooter.ShooterSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
@@ -98,9 +98,10 @@ public class HoodSubsystem extends SubsystemBase {
      * @param angle within minimum and maximum set in {@link HoodConstants}
      */
     public double hoodAngleToDouble(Angle angle) {
-        return MathUtil.clamp((angle.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees))
-                / (HoodConstants.HOOD_ANGLE_MAX.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees)),
-            0, 1);
+        return (
+            angle.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees))
+            / (HoodConstants.HOOD_ANGLE_MAX.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees)
+        );
     }
 
     /**
@@ -108,10 +109,14 @@ public class HoodSubsystem extends SubsystemBase {
      * @param position from 0.0 to 1.0
      */
     public void setHoodPosition(double position) {
-        final double clampedPosition = MathUtil.clamp(position, 0, 1);
-        servo1.set(clampedPosition);
-        servo2.set(clampedPosition);
-        targetPosition = clampedPosition;
+        double clampedPosition = MathUtil.clamp(position, 0, 1);
+        if(!Double.isNaN(clampedPosition)) {
+            servo1.set(clampedPosition);
+            servo2.set(clampedPosition);
+            targetPosition = clampedPosition;
+        } else {
+            System.out.println("!!! Hood position change failed: target position is NaN !!!");
+        }
     }
 
     /**
@@ -124,12 +129,13 @@ public class HoodSubsystem extends SubsystemBase {
 
     /**
      * Gives the angle at which the hood should be set to shoot a fuel element to
-     * @param distance The distance from the bot to the target
-     * @param hub Whether to calculate to shoot into the hub
+     * @param distance The distance from the bot to the target.
+     * @param velocity The linear velocity that the Fuel will shoot at.
+     * @param hub Whether to calculate to shoot into the hub.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance, boolean hub){
-        double v = Math.abs((ShooterSubsystem.getInstance().getFuelLinearVelocity(distance)).in(MetersPerSecond));
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity, boolean hub){
+        double v = Math.abs((velocity).in(MetersPerSecond));
         System.out.println(v);
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
@@ -150,10 +156,11 @@ public class HoodSubsystem extends SubsystemBase {
     /**
      * Gives the angle at which the hood should be set to shoot a fuel element to
      * @param distance The distance from the bot to the target
+     * @param velocity The linear velocity that the Fuel will shoot at.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance){
-        return getShootingHoodAngle(distance, true);
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity){
+        return getShootingHoodAngle(distance, velocity, true);
     }
 
     /**

@@ -172,11 +172,15 @@ public class Constants {
         public static final Distance RING_DIAMETER = Inches.of(15.155);
 
         /** Ratio of the diameter of the Ring to the diameter of the Wheel */
-        public static final double RING_TO_WHEEL_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1; // 4.822
+        public static final double GEAR_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
-        public static final double VELOCITY_RATIO = 1 / RING_TO_WHEEL_RATIO; // 0.207
-
-        public static final Distance RADIUS = Inches.of((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2));
+        public static final double WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO = 1 / GEAR_RATIO;
+        /** Radius of the path that the Fuel takes */
+        public static final double CARRIER_RADIUS = ((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2));
+        /** Ratio for converting Motor angular velocity to Fuel linear velocity */
+        public static final double SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO = WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO * CARRIER_RADIUS;
+        /** Ratio for converting Fuel linear velocity to Motor angular velocity */
+        public static final double FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO = 1 / SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO;
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
@@ -185,11 +189,11 @@ public class Constants {
         /** Minimum distance that we can shoot to */
         public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.88);
         /** Maximum distance that we can shoot to */
-        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(14.165);
-        /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
-        public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
-        /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
-        public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
+        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.45);
+        // /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
+        // public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
+        // /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
+        // public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
 
         // Coefficients for cubic distance formula https://www.desmos.com/calculator/hxakyltti5
         public static final double DISTANCE_A = 0.0000832704;

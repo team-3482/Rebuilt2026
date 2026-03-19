@@ -22,7 +22,7 @@ public class RevShooterCommand extends Command {
         addRequirements(ShooterSubsystem.getInstance());
 
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-        AngularVelocity velocity = ShooterSubsystem.getInstance().desiredMotorAngularVelocity(distance);
+        AngularVelocity velocity = ShooterSubsystem.getInstance().calculateShooterAngularVelocity(distance);
         System.out.println(velocity);
         ShooterSubsystem.getInstance().motionMagicAngularVelocity(velocity);
     }

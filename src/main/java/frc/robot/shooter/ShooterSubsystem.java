@@ -62,8 +62,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
         Logger.recordOutput("Shooter/TargetVelocity", lastTargetVelocity.in(RPM));
 
-        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
-        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", atShootingVelocityThreshold());
+        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
+        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
     }
 
     /**
@@ -89,16 +89,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Set the speed of the shooter motors
-     * @param speed the speed from -1 to 1
-     */
-    public void setShooterSpeed(double speed) {
-        // shooterMotor1.set(-speed);
-        // shooterMotor2.set(-speed);
-        shooterMotor3.set(speed);
-    }
-
-    /**
      * Sets the angular velocity of the shooter motors with PID
      * @param targetAngularVelocity the target angular velocity for the shooter motors.
      */
@@ -108,6 +98,16 @@ public class ShooterSubsystem extends SubsystemBase {
         // shooterMotor1.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
         // shooterMotor2.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
         shooterMotor3.setControl(velocityVoltage.withVelocity(1));
+    }
+
+    /**
+     * Set the speed of the shooter motors
+     * @param speed the speed from -1 to 1
+     */
+    public void setShooterSpeed(double speed) {
+        // shooterMotor1.set(-speed);
+        // shooterMotor2.set(-speed);
+        shooterMotor3.set(speed);
     }
 
     /**
@@ -127,11 +127,28 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
+     * Get the velocity of the shooter motors
+     * @return the velocity
+     */
+    public AngularVelocity getShooterVelocity() {
+        return shooterMotor3.getVelocity().getValue();
+    }
+
+    /**
+     * Check for if shooter motors are revved up to shooting velocity
+     * @return true if shooter velocity is within threshold
+     */
+    public boolean isShooterVelocityWithinTolerance() {
+        double difference = (getShooterVelocity().in(RadiansPerSecond) - lastTargetVelocity.in(RPM));
+        return Math.abs(difference) <= ShooterConstants.VELOCITY_TOLERANCE.in(RPM);
+    }
+
+    /**
      * Calculate the desired fuel velocity based on distance from the target
      * @param distance distance from the target
      * @return the desired velocity of the fuel
      */
-    public LinearVelocity desiredFuelVelocity(Distance distance){
+    private LinearVelocity calculateFuelLinearVelocity(Distance distance){
         double d = distance.in(Meters);
         return MetersPerSecond.of(
             CalculationConstants.DISTANCE_A * Math.pow(d, 3)
@@ -144,54 +161,27 @@ public class ShooterSubsystem extends SubsystemBase {
     /**
      * Returns the target angular velocity for the shooter motors given the distance from a target.
      * @param distance the distance from the target.
-     * @return The desired/target motor angular velocity.
+     * @return The desired/target shooter angular velocity.
      */
-    public AngularVelocity desiredMotorAngularVelocity(Distance distance) {
-        return RadiansPerSecond.of((
-            desiredFuelVelocity(distance).in(MetersPerSecond)
-            / CalculationConstants.RADIUS.in(Meters)
-        ));
-    }
-
-    /**
-     * Get the velocity of the shooter motors
-     * @return the velocity
-     */
-    public AngularVelocity getShooterVelocity() {
-        return shooterMotor3.getVelocity().getValue();
-    }
-
-    /**
-     * Check for if shooter motors are revved up to shooting velocity
-     * @return true if shooter velocity is within threshold
-     */
-    public boolean atShootingVelocityThreshold() {
-        double difference = (getShooterVelocity().in(RadiansPerSecond) - lastTargetVelocity.in(RPM));
-        return Math.abs(difference) <= ShooterConstants.VELOCITY_TOLERANCE.in(RPM);
-    }
-
-    /**
-     * Calculate the Angular Velocity of the shot fuel using a planetary gearbox formula.
-     * @return The Angular Velocity.
-     */
-    public AngularVelocity getFuelAngularVelocity(Distance distance) {
-        double currentVelocity = getShooterVelocity().in(RPM);
-        return RPM.of(
-            // use threshold number by default, but use real velocity
-            // if at threshold so it can correct the angle if necessary
-            (atShootingVelocityThreshold() && currentVelocity > 0 ? currentVelocity : desiredMotorAngularVelocity(distance).in(RPM))
+    public AngularVelocity calculateShooterAngularVelocity(Distance distance) {
+        return RotationsPerSecond.of( // TODO: this might be radians per second ??
+            (calculateFuelLinearVelocity(distance).in(MetersPerSecond) * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
         );
     }
 
     /**
-     * Calculate the Linear Velocity of the shot fuel from the Angular Velocity.
+     * Calculate the Linear Velocity of the shot fuel using a planetary gearbox formula.
      * @return The Linear Velocity.
      */
     public LinearVelocity getFuelLinearVelocity(Distance distance) {
-        Distance radius = Inches.of(
-            (CalculationConstants.FUEL_DIAMETER.in(Inches) / 2) + (CalculationConstants.WHEEL_DIAMETER.in(Inches) / 2)
-        );
+        AngularVelocity currentVelocity = getShooterVelocity();
+        // use target number by default, but use real velocity once revved so it can correct the angle if necessary
+        AngularVelocity angularVelocity = (isShooterVelocityWithinTolerance() && currentVelocity.in(RotationsPerSecond) > 1)
+            ? currentVelocity
+            : calculateShooterAngularVelocity(distance);
 
-        return MetersPerSecond.of(getFuelAngularVelocity(distance).in(RadiansPerSecond) * radius.in(Meters));
+        return MetersPerSecond.of(
+            angularVelocity.in(RadiansPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
+        );
     }
 }

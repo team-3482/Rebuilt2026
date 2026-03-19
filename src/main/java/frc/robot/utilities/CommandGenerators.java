@@ -3,6 +3,7 @@ package frc.robot.utilities;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -58,7 +59,8 @@ public class CommandGenerators {
     public static Command ContinuousMoveHoodCommand(Pose2d target, boolean hub) {
         return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, hub);
+            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
+            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
             System.out.println(angle.in(Degrees));
             CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
         });
@@ -70,10 +72,14 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
-        if (SwerveSubsystem.getInstance().getDistance(target).gt(CalculationConstants.MIN_SHOOTING_DISTANCE)) {
+        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+        if (
+            distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+        ) {
             return Commands.parallel(
                 new LookAtPositionCommand(target),
-                // ContinuousMoveHoodCommand(target, hub),
+                ContinuousMoveHoodCommand(target, hub), // TODO: test this, it should be working now
                 new RevShooterCommand(target)
             );
         } else {
@@ -123,7 +129,7 @@ public class CommandGenerators {
     public static Command FeedShooter() {
         return Commands.run(() -> {
             if (
-                ShooterSubsystem.getInstance().atShootingVelocityThreshold()
+                ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
                 && HoodSubsystem.getInstance().isPositionWithinTolerance()
                 && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
             ) { // TODO: move intake pivot up and down
