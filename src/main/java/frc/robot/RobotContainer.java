@@ -180,10 +180,11 @@ public class RobotContainer {
         // Burger (Right) -> Reset rotation to zero
         this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
 
+        // TODO: make sure whileTrue works
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().onTrue(CommandGenerators.PrepareFerry());
+        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().onTrue(CommandGenerators.PrepareHub());
+        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */

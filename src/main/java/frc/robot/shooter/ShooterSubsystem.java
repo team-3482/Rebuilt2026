@@ -15,7 +15,6 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
@@ -148,9 +147,10 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The desired/target motor angular velocity.
      */
     public AngularVelocity desiredMotorAngularVelocity(Distance distance) {
-        return AngularVelocity.ofBaseUnits(
-            (desiredFuelVelocity(distance).in(MetersPerSecond) * Constants.CalculationConstants.FUEL_LINEAR_TO_MOTOR_ANGULAR_VELOCITY_RATIO), RPM
-        );
+        return RadiansPerSecond.of((
+            desiredFuelVelocity(distance).in(MetersPerSecond)
+            / CalculationConstants.RADIUS.in(Meters)
+        ));
     }
 
     /**
@@ -180,7 +180,6 @@ public class ShooterSubsystem extends SubsystemBase {
             // use threshold number by default, but use real velocity
             // if at threshold so it can correct the angle if necessary
             (atShootingVelocityThreshold() && currentVelocity > 0 ? currentVelocity : desiredMotorAngularVelocity(distance).in(RPM))
-            * CalculationConstants.VELOCITY_RATIO
         );
     }
 
