@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.PositionConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
@@ -18,7 +19,6 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 
 import static edu.wpi.first.units.Units.Degrees;
-import static frc.robot.constants.Constants.CalculationConstants.MIN_SHOOTING_DISTANCE;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
@@ -70,7 +70,7 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
-        if (SwerveSubsystem.getInstance().getDistance(target).gt(MIN_SHOOTING_DISTANCE)) {
+        if (SwerveSubsystem.getInstance().getDistance(target).gt(CalculationConstants.MIN_SHOOTING_DISTANCE)) {
             return Commands.parallel(
                 new LookAtPositionCommand(target),
                 // ContinuousMoveHoodCommand(target, hub),

@@ -184,14 +184,19 @@ public class Constants {
 
         // found from https://www.desmos.com/calculator/moewwoi4pa
         /** Minimum distance that we can shoot to */
-        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.9);
+        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.88);
         /** Maximum distance that we can shoot to */
-        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.4);
+        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(14.165);
         /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
         public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
         /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
         public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
 
+        // Coefficients for cubic distance formula https://www.desmos.com/calculator/hxakyltti5
+        public static final double DISTANCE_A = 0.0000832704;
+        public static final double DISTANCE_B = -0.013812;
+        public static final double DISTANCE_C = 0.771394;
+        public static final double DISTANCE_D = 5.2026;
     }
 
     /** Constants for climb */
