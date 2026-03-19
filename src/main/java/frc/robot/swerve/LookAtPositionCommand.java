@@ -52,12 +52,13 @@ public class LookAtPositionCommand extends Command {
         controller.reset();
         facingAngleDrive.HeadingController = controller;
 
+        currentRobotAngle = SwerveSubsystem.getInstance().getRotation3d().getMeasureZ();
         calculateAngle();
     }
 
     @Override
     public void execute() {
-        calculateAngle();
+        //calculateAngle();
 
         SwerveSubsystem.getInstance().setControl(facingAngleDrive
             .withVelocityX(0)
@@ -86,7 +87,8 @@ public class LookAtPositionCommand extends Command {
         xDistance = target.getMeasureX().minus(state.Pose.getMeasureX());
         yDistance = target.getMeasureY().minus(state.Pose.getMeasureY());
 
-        angleToTarget = Radians.of(Math.atan(xDistance.magnitude() / yDistance.magnitude()));
-        currentRobotAngle = SwerveSubsystem.getInstance().getRotation3d().getMeasureZ();
+        Angle difference = Radians.of(Math.atan(xDistance.magnitude() / yDistance.magnitude()));
+
+        angleToTarget = currentRobotAngle.plus(difference);
     }
 }

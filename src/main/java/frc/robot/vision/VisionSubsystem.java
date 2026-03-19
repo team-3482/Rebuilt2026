@@ -134,12 +134,14 @@ public class VisionSubsystem extends SubsystemBase {
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
-                limelightPose.timestampSeconds,
-                VisionConstants.LIMELIGHT_TRUST_STD_DEVS
+                limelightPose.timestampSeconds
+                // VisionConstants.LIMELIGHT_TRUST_STD_DEVS
             );
 
             Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);
             questNav.setPose(currentPose.transformBy(VisionConstants.ROBOT_TO_QUEST));
+        } else {
+            System.out.println("Only one AprilTag in view!!!");
         }
     }
 
