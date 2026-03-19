@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -50,9 +51,6 @@ public class ShooterSubsystem extends SubsystemBase {
         super("ShooterSubsystem");
 
         this.configureMotors();
-
-        this.shooterMotor3.getPosition().setUpdateFrequency(50);
-        this.shooterMotor3.getVelocity().setUpdateFrequency(50);
     }
 
     @Override
@@ -77,6 +75,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
+        slot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
         slot0Configs.kS = ShooterConstants.Slot0Gains.kS;
         slot0Configs.kV = ShooterConstants.Slot0Gains.kV;
         slot0Configs.kP = ShooterConstants.Slot0Gains.kP;
