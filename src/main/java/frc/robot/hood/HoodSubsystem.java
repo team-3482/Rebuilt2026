@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.HoodConstants;
-import frc.robot.constants.Constants.PositionConstants;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
@@ -138,7 +137,7 @@ public class HoodSubsystem extends SubsystemBase {
         double v = Math.abs((velocity).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
-        double h = hub ? PositionConstants.HUB_HEIGHT.in(Meters) : 0;
+        double h = hub ? CalculationConstants.HUB_HEIGHT.in(Meters) : 0;
 
         return Radians.of(Math.atan(( // https://www.desmos.com/calculator/moewwoi4pa :)
             Math.pow(v, 2)

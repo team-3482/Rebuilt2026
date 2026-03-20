@@ -137,7 +137,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return true if shooter velocity is within threshold
      */
     public boolean isShooterVelocityWithinTolerance() {
-        double difference = (getShooterVelocity().in(RadiansPerSecond) - lastTargetVelocity.in(RPM));
+        double difference = (getShooterVelocity().in(RPM) - lastTargetVelocity.in(RPM));
         return Math.abs(difference) <= ShooterConstants.VELOCITY_TOLERANCE.in(RPM);
     }
 

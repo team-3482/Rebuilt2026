@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.Constants.CalculationConstants;
-import frc.robot.constants.Constants.PositionConstants;
+import frc.robot.constants.Constants.Positions;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.FeedShooterCommand;
@@ -97,11 +97,11 @@ public class CommandGenerators {
     public static Command PrepareFerry() {
         return Commands.runOnce(() -> {
             boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
-            boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
+            boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
-            Pose2d position = redAlliance ?
-                (rightSide ? PositionConstants.RED_RIGHT_FERRY : PositionConstants.RED_LEFT_FERRY)  :
-                (rightSide ? PositionConstants.BLUE_RIGHT_FERRY : PositionConstants.BLUE_LEFT_FERRY);
+            Pose2d position = redAlliance
+                ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
+                : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
             CommandScheduler.getInstance().schedule(CommandGenerators.AimAndRevShooter(position, false));
         });
@@ -116,7 +116,7 @@ public class CommandGenerators {
             boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
             CommandScheduler.getInstance().schedule(
                 CommandGenerators.AimAndRevShooter(
-                    redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB,
+                    redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
                     true
                 )
             );
@@ -131,10 +131,9 @@ public class CommandGenerators {
     public static Command FeedShooter() {
         return Commands.run(() -> {
             if (
-                // ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
-                // && HoodSubsystem.getInstance().isPositionWithinTolerance()
-                // && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
-                true
+                ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
+                && HoodSubsystem.getInstance().isPositionWithinTolerance()
+                && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
             ) { // TODO: move intake pivot up and down
                 new FeedShooterCommand();
             }

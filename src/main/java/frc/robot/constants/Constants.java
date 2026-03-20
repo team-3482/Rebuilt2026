@@ -204,6 +204,9 @@ public class Constants {
 
         /** Heuristic multiplier to account for friction, slippage, etc */
         public static final double OFFSET_MULTIPLIER = 1.4;
+
+        /** Height of the Hub */
+        public static final Distance HUB_HEIGHT = Feet.of(6);
     }
 
     /** Constants for climb */
@@ -221,9 +224,7 @@ public class Constants {
     }
 
     /** Constants for positions of important points on the field */
-    public static final class PositionConstants {
-        /** Height of the Hub */
-        public static final Distance HUB_HEIGHT = Feet.of(6);
+    public static final class Positions {
 
         /** Position of half the field (y-axis) */
         public static final double HALF_FIELD_Y = 4;
@@ -234,13 +235,13 @@ public class Constants {
         public static final Pose2d RED_HUB = new Pose2d(new Translation2d(11.938, 4.034536), new Rotation2d());
 
         /** Position of the Blue left side (from driver view) Ferry target */
-        public static final Pose2d BLUE_LEFT_FERRY = new Pose2d(new Translation2d(2, 7.4), new Rotation2d());
+        public static final Pose2d BLUE_TOP_FERRY = new Pose2d(new Translation2d(2, 7.4), new Rotation2d());
         /** Position of the Blue right side (from driver view) Ferry target */
-        public static final Pose2d BLUE_RIGHT_FERRY = new Pose2d(new Translation2d(2, 0.6), new Rotation2d());
+        public static final Pose2d BLUE_BOTTOM_FERRY = new Pose2d(new Translation2d(2, 0.6), new Rotation2d());
         /** Position of the Red left side (from driver view) Ferry target */
-        public static final Pose2d RED_LEFT_FERRY = new Pose2d(new Translation2d(14.5, 7.4), new Rotation2d());
+        public static final Pose2d RED_TOP_FERRY = new Pose2d(new Translation2d(14.5, 7.4), new Rotation2d());
         /** Position of the Red right side (from driver view) Ferry target */
-        public static final Pose2d RED_RIGHT_FERRY = new Pose2d(new Translation2d(14.5, 0.6), new Rotation2d());
+        public static final Pose2d RED_BOTTOM_FERRY = new Pose2d(new Translation2d(14.5, 0.6), new Rotation2d());
 
     }
 

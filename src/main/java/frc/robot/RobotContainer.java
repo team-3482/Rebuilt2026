@@ -20,7 +20,7 @@ import frc.robot.climb.ClimbSubsystem;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.IntakeConstants;
-import frc.robot.constants.Constants.PositionConstants;
+import frc.robot.constants.Constants.Positions;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.intake.IntakeCommand;
@@ -206,7 +206,7 @@ public class RobotContainer {
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
         // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
-        // Left Trigger -> Shooter Hood Minimum
+        this.operatorController.rightTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
         // // Left Trigger -> Shooter Hood Minimum
         // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
