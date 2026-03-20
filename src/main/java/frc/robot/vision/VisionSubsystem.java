@@ -11,9 +11,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.PhysicalConstants;
-import frc.robot.constants.VirtualConstants;
-import frc.robot.constants.VirtualConstants.Vision;
+import frc.robot.constants.Constants.VisionConstants;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.utilities.LimelightHelpers;
 import frc.robot.utilities.LimelightHelpers.PoseEstimate;
@@ -40,13 +38,12 @@ public class VisionSubsystem extends SubsystemBase {
 
     RawFiducial[] fiducials;
 
-
     private VisionSubsystem() {
         super("VisionSubsystem");
 
         HttpCamera LLCamera = new HttpCamera(
-            PhysicalConstants.Vision.LIMELIGHT,
-            "http://" + "10.34.82.20" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
+            VisionConstants.LIMELIGHT,
+            "http://" + "10.34.82.13" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
         );
 
         CameraServer.startAutomaticCapture(LLCamera);
@@ -60,27 +57,34 @@ public class VisionSubsystem extends SubsystemBase {
         Logger.recordOutput("QuestNav/Tracking", tracking);
 
         if (tracking) {
-            if (questNav.isTracking()) {
-                // Get the latest pose data frames from the Quest
-                poseFrames = questNav.getAllUnreadPoseFrames();
+            // Get the latest pose data frames from the Quest
+            poseFrames = questNav.getAllUnreadPoseFrames();
 
-                updateSwervePoseEstimation();
+            updateSwervePoseEstimation();
 
-                SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
-                SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
-                SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
+            SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
+            SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
-                Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
-                Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
-                Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
-            }
+            Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
+            Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
+
+            try {
+                Logger.recordOutput("QuestNav/Pose", getPose2d());
+            } catch (Exception ignored) {}
         }
 
         limelightPose = getLimelightPose();
-        // Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+
+        try {
+            Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+        } catch (Exception ignored){}
 
         if(DriverStation.isDisabled()) {
-            resetPose();
+            if(trustLimelightData()) {
+                resetPose();
+            }
         }
     }
 
@@ -94,7 +98,7 @@ public class VisionSubsystem extends SubsystemBase {
             Pose3d questPose = poseFrames[poseFrames.length - 1].questPose3d();
 
             // Transform by the mount pose to get your robot pose
-            return questPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST.inverse());
+            return questPose.transformBy(VisionConstants.ROBOT_TO_QUEST.inverse());
         }
 
         return null;
@@ -118,14 +122,17 @@ public class VisionSubsystem extends SubsystemBase {
     public void resetPose(){
         // TODO: test if this works. I think it might not, and instead the limelight pose should be provided directly
         // if it does work, then maybe the limelight vision data should be added periodically
-        SwerveSubsystem.getInstance().addVisionMeasurement(
-            limelightPose.pose,
-            limelightPose.timestampSeconds,
-            VirtualConstants.Vision.LIMELIGHT_TRUST_STD_DEVS
-        );
+        if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            SwerveSubsystem.getInstance().addVisionMeasurement(
+                limelightPose.pose,
+                limelightPose.timestampSeconds
+            );
 
-        Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);
-        questNav.setPose(currentPose.transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST));
+            Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);
+            questNav.setPose(currentPose.transformBy(VisionConstants.ROBOT_TO_QUEST));
+        } else {
+            System.out.println("Only one AprilTag in view!!!");
+        }
     }
 
     /** Periodically adds vision measurements to the swerve odometry */
@@ -134,10 +141,10 @@ public class VisionSubsystem extends SubsystemBase {
             double timestamp = poseFrame.dataTimestamp();
 
             // Transform by the mount pose to get the robot pose
-            Pose3d robotPose = poseFrame.questPose3d().transformBy(PhysicalConstants.Vision.ROBOT_TO_QUEST.inverse());
+            Pose3d robotPose = poseFrame.questPose3d().transformBy(VisionConstants.ROBOT_TO_QUEST.inverse());
 
             // Add the measurement
-            SwerveSubsystem.getInstance().addVisionMeasurement(robotPose.toPose2d(), timestamp, VirtualConstants.Vision.QUESTNAV_TRUST_STD_DEVS);
+            SwerveSubsystem.getInstance().addVisionMeasurement(robotPose.toPose2d(), timestamp, VisionConstants.QUESTNAV_TRUST_STD_DEVS);
         }
     }
 
@@ -146,17 +153,9 @@ public class VisionSubsystem extends SubsystemBase {
      * @return the pose estimate
      */
     private PoseEstimate getLimelightPose() {
-        double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
+        fiducials = LimelightHelpers.getRawFiducials(VisionConstants.LIMELIGHT);
 
-        LimelightHelpers.SetRobotOrientation(
-            PhysicalConstants.Vision.LIMELIGHT,
-            rotationDegrees,
-            0.0, 0.0, 0.0, 0.0, 0.0
-        );
-
-        fiducials = LimelightHelpers.getRawFiducials(PhysicalConstants.Vision.LIMELIGHT);
-
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(PhysicalConstants.Vision.LIMELIGHT);
+        return LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.LIMELIGHT);
     }
 
     /**
@@ -164,7 +163,7 @@ public class VisionSubsystem extends SubsystemBase {
      * @return if it's in view
      */
     private boolean tagInView(){
-        return LimelightHelpers.getTV(PhysicalConstants.Vision.LIMELIGHT);
+        return LimelightHelpers.getTV(VisionConstants.LIMELIGHT);
     }
 
     /**
@@ -190,6 +189,6 @@ public class VisionSubsystem extends SubsystemBase {
      * @return true if it can be trusted
      */
     public boolean trustLimelightData(){
-        return tagInView() && getLimelightAmbiguity() <= Vision.MAX_APRILTAG_AMBIGUITY;
+        return tagInView() && getLimelightAmbiguity() <= VisionConstants.MAX_APRILTAG_AMBIGUITY;
     }
 }

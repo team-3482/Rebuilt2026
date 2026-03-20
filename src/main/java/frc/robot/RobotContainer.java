@@ -4,25 +4,35 @@
 
 package frc.robot;
 
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.constants.PhysicalConstants;
+import frc.robot.climb.ClimbCommand;
+import frc.robot.climb.ClimbSubsystem;
+import frc.robot.climb.LeaveClimbCommand;
+import frc.robot.constants.Constants.DriverStationConstants;
+import frc.robot.constants.Constants.HoodConstants;
+import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.TunerConstants;
-import frc.robot.constants.VirtualConstants;
+import frc.robot.hood.HoodSubsystem;
+import frc.robot.hood.MoveHoodCommand;
+import frc.robot.intake.IntakeCommand;
+import frc.robot.intake.IntakeSubsystem;
+import frc.robot.intake.MovePivotCommand;
+import frc.robot.shooter.FeedShooterCommand;
+import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
-import frc.robot.vision.ResetPoseCommand;
+import frc.robot.utilities.CommandGenerators;
+import frc.robot.vision.CalibrateQuestCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -49,12 +59,13 @@ public class RobotContainer {
 
     public RobotContainer() {
         // Initialize controllers
-        this.driverController = new CommandXboxController(PhysicalConstants.Controller.DRIVER_CONTROLLER_ID);
+        this.driverController = new CommandXboxController(DriverStationConstants.DRIVER_CONTROLLER_ID);
         this.driverController_HID = this.driverController.getHID();
-        this.operatorController = new CommandXboxController(PhysicalConstants.Controller.OPERATOR_CONTROLLER_ID);
+        this.operatorController = new CommandXboxController(DriverStationConstants.OPERATOR_CONTROLLER_ID);
 
         configureDrivetrain();
         initializeSubsystems();
+        registerNamedCommands();
 
         this.autoChooser = AutoBuilder.buildAutoChooser(); // The default auto will be Commands.none()
         this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
@@ -68,6 +79,10 @@ public class RobotContainer {
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void initializeSubsystems() {
+        ClimbSubsystem.getInstance();
+        HoodSubsystem.getInstance();
+        IntakeSubsystem.getInstance();
+        ShooterSubsystem.getInstance();
         VisionSubsystem.getInstance();
     }
 
@@ -106,7 +121,7 @@ public class RobotContainer {
 
                 double angularSpeed = topSpeed ? NormalAngularSpeed : FastAngularSpeed;
 
-                double fineControlMult = fineControl ? VirtualConstants.Controller.FINE_CONTROL_MULT : 1;
+                double fineControlMult = fineControl ? DriverStationConstants.FINE_CONTROL_MULT : 1;
 
                 return fieldCentricDrive_withDeadband
                     // Drive forward with negative Y (forward)
@@ -116,8 +131,8 @@ public class RobotContainer {
                     // Drive counterclockwise with negative X (left)
                     .withRotationalRate(-driverController.getRightX() * angularSpeed * fineControlMult)
 
-                    .withDeadband(VirtualConstants.Controller.DEADBAND * linearSpeed)
-                    .withRotationalDeadband(VirtualConstants.Controller.DEADBAND * angularSpeed);
+                    .withDeadband(DriverStationConstants.DEADBAND * linearSpeed)
+                    .withRotationalDeadband(DriverStationConstants.DEADBAND * angularSpeed);
             }).ignoringDisable(true)
         );
 
@@ -162,24 +177,65 @@ public class RobotContainer {
     /** Configures the button bindings of the driver controller. */
     public void configureDriverBindings() {
         // Double Rectangle (Left) -> Reset pose
-        this.driverController.back().onTrue(Commands.sequence(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
-            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
-        ));
+        this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
         // Burger (Right) -> Reset rotation to zero
-        this.driverController.start().onTrue(Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric()));
+        this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
+
+        // B -> Cancel all commands
+        this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
+
+        // TODO: make sure whileTrue works
+        // Left Bumper -> Aim to home side to Ferry and start up Shooter
+        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
+        // Right Bumper -> Aim to Hub and start up Shooter
+        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
     public void configureOperatorBindings() {
         // Double Rectangle (Left) -> Reset pose
-        this.driverController.back().onTrue(Commands.sequence(
-            Commands.runOnce(() -> SwerveSubsystem.getInstance().resetPose(Pose2d.kZero)),
-            new ResetPoseCommand().withTimeout(0.25) // cancel if tag isn't seen within 0.25 sec
-        ));
+        this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
+        // Burger (Right) -> Calibrate QuestNav
+        this.operatorController.start().onTrue(new CalibrateQuestCommand());  // TODO: comment this out before comp.
 
         // B -> Cancel all commands
-        this.operatorController.b().onTrue(Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll()));
+        this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
+
+        // Left Bumper -> Intake
+        this.operatorController.leftBumper().whileTrue(new IntakeCommand());
+
+        // Right Bumper -> Feed Fuel into Shooter
+        this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
+
+        // Temporary
+        // Left Trigger -> Shooter Hood Minimum
+        this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
+        // Right Trigger -> Shooter Hood Maximum
+        this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
+
+        // D-Pad Up -> Enter Climb
+        this.operatorController.povUp().onTrue(new ClimbCommand());
+        // D-Pad Down -> Leave Climb
+        this.operatorController.povDown().onTrue(new LeaveClimbCommand());
+
+        this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+    }
+
+    private void registerNamedCommands() {
+        // Climb
+        NamedCommands.registerCommand("Climb", new ClimbCommand());
+        NamedCommands.registerCommand("LeaveClimb", new LeaveClimbCommand());
+
+        // Intake
+        NamedCommands.registerCommand("Intake", new IntakeCommand());
+        NamedCommands.registerCommand("MovePivotDown", new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        NamedCommands.registerCommand("MovePivotUp", new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+
+        // Shooter
+        NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
+        NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
+        NamedCommands.registerCommand("FeedShooter", CommandGenerators.FeedShooter());
     }
 
     public Command getAutonomousCommand() {

@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import org.littletonrobotics.junction.Logger;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 public class SwerveTelemetry {
     private final double MaxSpeed;
 
@@ -25,6 +27,7 @@ public class SwerveTelemetry {
     public SwerveTelemetry(double maxSpeed) {
         MaxSpeed = maxSpeed;
         SignalLogger.start();
+
 
         /* Set up the module state Mechanism2d telemetry */
         for (int i = 0; i < 4; ++i) {
@@ -97,7 +100,6 @@ public class SwerveTelemetry {
         SignalLogger.writeStructArray("DriveState/ModulePositions", SwerveModulePosition.struct, state.ModulePositions);
         SignalLogger.writeDouble("DriveState/OdometryPeriod", state.OdometryPeriod, "seconds");
 
-        // TODO: make sure this works
         Logger.recordOutput("DriveState/PoseArray", m_poseArray);
         Logger.recordOutput("DriveState/Pose", Pose2d.struct, state.Pose);
         Logger.recordOutput("DriveState/Speeds", ChassisSpeeds.struct, state.Speeds);
@@ -121,7 +123,16 @@ public class SwerveTelemetry {
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
         }
 
-        SmartDashboard.putNumber("Robot Angle", state.Pose.getRotation().getDegrees());
-        Logger.recordOutput("DriveState/Angle", state.Pose.getRotation().getDegrees());
+        double angle = state.Pose.getRotation().getDegrees();
+        SmartDashboard.putNumber("Robot Angle", angle);
+        Logger.recordOutput("DriveState/Angle", angle);
+
+        double targetAngle = SwerveSubsystem.getInstance().getTargetAngle().in(Degrees);
+        Logger.recordOutput("DriveState/TargetAngle", targetAngle);
+        SmartDashboard.putNumber("DriveState/TargetAngle", targetAngle);
+
+        boolean angleWithinToleranceToTarget = SwerveSubsystem.getInstance().angleWithinToleranceToTarget();
+        Logger.recordOutput("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
+        SmartDashboard.putBoolean("DriveState/AngleWithinToleranceToTarget", angleWithinToleranceToTarget);
     }
 }

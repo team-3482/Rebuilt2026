@@ -9,13 +9,12 @@ import com.pathplanner.lib.commands.FollowPathCommand;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.VirtualConstants;
+import frc.robot.constants.Constants;
+import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.utilities.Elastic;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -56,7 +55,7 @@ public class Robot extends LoggedRobot {
             Logger.start();
         }
 
-        Elastic.selectTab(VirtualConstants.Dashboard.DEV_TAB);
+        Elastic.selectTab(DriverStationConstants.DEV_TAB);
 
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
         // Eager-load the auton command so it's ready right away
@@ -99,7 +98,7 @@ public class Robot extends LoggedRobot {
             System.err.println("No auton command found.");
         }
 
-        Elastic.selectTab(VirtualConstants.Dashboard.AUTON_TAB);
+        Elastic.selectTab(DriverStationConstants.AUTON_TAB);
     }
 
     @Override
@@ -114,7 +113,7 @@ public class Robot extends LoggedRobot {
             CommandScheduler.getInstance().cancel(auton);
         }
 
-        Elastic.selectTab(VirtualConstants.Dashboard.TELEOP_TAB);
+        Elastic.selectTab(DriverStationConstants.TELEOP_TAB);
     }
 
     @Override
