@@ -27,6 +27,7 @@ import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
+import frc.robot.shooter.FeedShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
@@ -180,6 +181,9 @@ public class RobotContainer {
         // Burger (Right) -> Reset rotation to zero
         this.driverController.start().onTrue(CommandGenerators.SetForwardDirectionCommand());
 
+        // B -> Cancel all commands
+        this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
+
         // TODO: make sure whileTrue works
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
         this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
@@ -201,7 +205,7 @@ public class RobotContainer {
         this.operatorController.leftBumper().whileTrue(new IntakeCommand());
 
         // Right Bumper -> Feed Fuel into Shooter
-        this.operatorController.rightBumper().whileTrue(CommandGenerators.FeedShooter());
+        this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
         // Temporary
         // Left Trigger -> Shooter Hood Minimum

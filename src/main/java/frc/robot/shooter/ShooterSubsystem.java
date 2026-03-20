@@ -64,7 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
         Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(RPM));
         Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
-        Logger.recordOutput("Shooter/TargetVelocity", lastTargetVelocity.in(RPM));
+        Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
 
         SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
         Logger.recordOutput("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
@@ -149,10 +149,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private LinearVelocity calculateFuelLinearVelocity(Distance distance){
         double d = distance.in(Meters);
         return MetersPerSecond.of(
-            CalculationConstants.DISTANCE_A * Math.pow(d, 3)
+            (CalculationConstants.DISTANCE_A * Math.pow(d, 3)
             + CalculationConstants.DISTANCE_B * Math.pow(d, 2)
             + CalculationConstants.DISTANCE_C * d
-            + CalculationConstants.DISTANCE_D
+            + CalculationConstants.DISTANCE_D) * CalculationConstants.OFFSET_MULTIPLIER
         );
     }
 

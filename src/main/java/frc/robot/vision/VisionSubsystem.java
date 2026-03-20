@@ -47,15 +47,6 @@ public class VisionSubsystem extends SubsystemBase {
         );
 
         CameraServer.startAutomaticCapture(LLCamera);
-
-        // TODO: MT2
-        // double rotationDegrees = SwerveSubsystem.getInstance().getState().Pose.getRotation().getDegrees();
-        //
-        // LimelightHelpers.SetRobotOrientation(
-        //     VisionConstants.LIMELIGHT,
-        //     rotationDegrees,
-        //     0.0, 0.0, 0.0, 0.0, 0.0
-        // );
     }
 
     @Override
@@ -135,7 +126,6 @@ public class VisionSubsystem extends SubsystemBase {
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
                 limelightPose.timestampSeconds
-                // VisionConstants.LIMELIGHT_TRUST_STD_DEVS
             );
 
             Pose3d currentPose = new Pose3d(SwerveSubsystem.getInstance().getState().Pose);

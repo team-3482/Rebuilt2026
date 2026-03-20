@@ -332,7 +332,7 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
 
     public boolean angleWithinToleranceToTarget() {
         return MathUtil.isNear(
-            targetAngle.in(Degrees),
+            targetAngle.in(Degrees)-180,
             getState().Pose.getRotation().getDegrees(),
             AutoAngleConstants.TOLERANCE.in(Degrees)
         );

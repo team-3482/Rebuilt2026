@@ -74,6 +74,7 @@ public class CommandGenerators {
      */
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+        Logger.recordOutput("Shooter/Target", target);
         if (
             distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
             && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
@@ -95,7 +96,7 @@ public class CommandGenerators {
      */
     public static Command PrepareFerry() {
         return Commands.runOnce(() -> {
-            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+            boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
             boolean rightSide = SwerveSubsystem.getInstance().getState().Pose.getY() > PositionConstants.HALF_FIELD_Y;
 
             Pose2d position = redAlliance ?
@@ -112,7 +113,7 @@ public class CommandGenerators {
      */
     public static Command PrepareHub() {
         return Commands.runOnce(() -> {
-            boolean redAlliance = DriverStation.getAlliance().equals(DriverStation.Alliance.Red);
+            boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
             CommandScheduler.getInstance().schedule(
                 CommandGenerators.AimAndRevShooter(
                     redAlliance ? PositionConstants.RED_HUB : PositionConstants.BLUE_HUB,
@@ -130,9 +131,10 @@ public class CommandGenerators {
     public static Command FeedShooter() {
         return Commands.run(() -> {
             if (
-                ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
-                && HoodSubsystem.getInstance().isPositionWithinTolerance()
-                && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
+                // ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
+                // && HoodSubsystem.getInstance().isPositionWithinTolerance()
+                // && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
+                true
             ) { // TODO: move intake pivot up and down
                 new FeedShooterCommand();
             }

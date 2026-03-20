@@ -66,8 +66,8 @@ public class Constants {
 
         /** Standard Deviations for Trust with QuestNav */
         public static final Matrix<N3, N1> LIMELIGHT_TRUST_STD_DEVS = VecBuilder.fill(
-            0.5, // Trust down to 50cm in X direction
-            0.5, // Trust down to 50cm in Y direction
+            0.75, // Trust down to 75cm in X direction
+            0.75, // Trust down to 75cm in Y direction
             9999999 // Trust all rotational data
         );
 
@@ -201,6 +201,9 @@ public class Constants {
         public static final double DISTANCE_B = -0.013812;
         public static final double DISTANCE_C = 0.771394;
         public static final double DISTANCE_D = 5.2026;
+
+        /** Heuristic multiplier to account for friction, slippage, etc */
+        public static final double OFFSET_MULTIPLIER = 1.4;
     }
 
     /** Constants for climb */

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
 
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
 
 /** Takes a position on the field and automatically rotates to face it */
@@ -52,7 +53,7 @@ public class LookAtPositionCommand extends Command {
         controller.reset();
         facingAngleDrive.HeadingController = controller;
 
-        currentRobotAngle = SwerveSubsystem.getInstance().getRotation3d().getMeasureZ();
+        currentRobotAngle = SwerveSubsystem.getInstance().getState().Pose.getRotation().getMeasure();
         calculateAngle();
     }
 
@@ -84,11 +85,9 @@ public class LookAtPositionCommand extends Command {
     }
 
     private void calculateAngle(){
-        xDistance = target.getMeasureX().minus(state.Pose.getMeasureX());
-        yDistance = target.getMeasureY().minus(state.Pose.getMeasureY());
+        xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
+        yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 
-        Angle difference = Radians.of(Math.atan(xDistance.magnitude() / yDistance.magnitude()));
-
-        angleToTarget = currentRobotAngle.plus(difference);
+        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)) + Math.PI);
     }
 }
