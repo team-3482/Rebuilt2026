@@ -7,8 +7,10 @@ package frc.robot.shooter;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -45,10 +47,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private final VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
 
-    private AngularVelocity lastTargetVelocity = RPM.of(Double.MAX_VALUE);
+    private AngularVelocity lastTargetVelocity = RPM.of(1);
 
     private ShooterSubsystem() {
         super("ShooterSubsystem");
+
+        Follower follower = new Follower(ShooterConstants.SHOOTER_MOTOR_3, MotorAlignmentValue.Opposed);
+        shooterMotor1.setControl(follower);
+        shooterMotor2.setControl(follower);
 
         this.configureMotors();
     }
@@ -82,8 +88,6 @@ public class ShooterSubsystem extends SubsystemBase {
         slot0Configs.kI = ShooterConstants.Slot0Gains.kI;
         slot0Configs.kD = ShooterConstants.Slot0Gains.kD;
 
-        // this.shooterMotor1.getConfigurator().apply(configuration);
-        // this.shooterMotor2.getConfigurator().apply(configuration);
         this.shooterMotor3.getConfigurator().apply(configuration);
     }
 
@@ -91,12 +95,9 @@ public class ShooterSubsystem extends SubsystemBase {
      * Sets the angular velocity of the shooter motors with PID
      * @param targetAngularVelocity the target angular velocity for the shooter motors.
      */
-    public void motionMagicAngularVelocity(AngularVelocity targetAngularVelocity){
+    public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity){
         lastTargetVelocity = targetAngularVelocity;
-        System.out.println(targetAngularVelocity);
-        // shooterMotor1.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
-        // shooterMotor2.setControl(velocityVoltage.withVelocity(targetAngularVelocity.times(-1)).withFeedForward(0.5));
-        shooterMotor3.setControl(velocityVoltage.withVelocity(1));
+        shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity).withFeedForward(0.5));
     }
 
     /**
@@ -104,8 +105,6 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param speed the speed from -1 to 1
      */
     public void setShooterSpeed(double speed) {
-        // shooterMotor1.set(-speed);
-        // shooterMotor2.set(-speed);
         shooterMotor3.set(speed);
     }
 
@@ -163,7 +162,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The desired/target shooter angular velocity.
      */
     public AngularVelocity calculateShooterAngularVelocity(Distance distance) {
-        return RotationsPerSecond.of( // TODO: this might be radians per second ??
+        return RadiansPerSecond.of(
             (calculateFuelLinearVelocity(distance).in(MetersPerSecond) * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
         );
     }
@@ -180,7 +179,7 @@ public class ShooterSubsystem extends SubsystemBase {
             : calculateShooterAngularVelocity(distance);
 
         return MetersPerSecond.of(
-            angularVelocity.in(RadiansPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
+            angularVelocity.in(RotationsPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
         );
     }
 }

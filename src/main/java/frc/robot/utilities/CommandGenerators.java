@@ -18,8 +18,9 @@ import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
+import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
@@ -60,8 +61,8 @@ public class CommandGenerators {
         return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
             LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
+            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond), MetersPerSecond);
             Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
-            System.out.println(angle.in(Degrees));
             CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
         });
     }
@@ -79,7 +80,7 @@ public class CommandGenerators {
         ) {
             return Commands.parallel(
                 new LookAtPositionCommand(target),
-                ContinuousMoveHoodCommand(target, hub), // TODO: test this, it should be working now
+                ContinuousMoveHoodCommand(target, hub),
                 new RevShooterCommand(target)
             );
         } else {

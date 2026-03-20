@@ -132,14 +132,14 @@ public class Constants {
         public static final double STERILIZER_SPEED = 0.75;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
-        public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(50);
+        public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
 
         /** Gains used for Motion Magic slot 0. */
         public static final class Slot0Gains {
             // TODO: tune these values
-            public static final double kS = 0.1; // static friction
-            public static final double kV = 0.12; // voltage required for 1 rot/s
-            public static final double kP = 0.11; // voltage amount to correct for error of 1 rot/s
+            public static final double kS = 0.015; // static friction
+            public static final double kV = 0.025; // voltage required for 1 rot/s
+            public static final double kP = 0.075; // voltage amount to correct for error of 1 rot/s
             public static final double kI = 0;
             public static final double kD = 0;
         }
@@ -177,9 +177,9 @@ public class Constants {
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
         public static final double WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO = 1 / GEAR_RATIO;
         /** Radius of the path that the Fuel takes */
-        public static final double CARRIER_RADIUS = ((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2));
+        public static final Distance CARRIER_RADIUS = Inches.of((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2));
         /** Ratio for converting Motor angular velocity to Fuel linear velocity */
-        public static final double SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO = WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO * CARRIER_RADIUS;
+        public static final double SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO = WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO * CARRIER_RADIUS.in(Meters);
         /** Ratio for converting Fuel linear velocity to Motor angular velocity */
         public static final double FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO = 1 / SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO;
 
