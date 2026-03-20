@@ -19,20 +19,19 @@ import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
 import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
-import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.PositionConstants;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
-import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
 import frc.robot.shooter.FeedShooterCommand;
+import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.utilities.CommandGenerators;
-import frc.robot.vision.CalibrateQuestCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -184,11 +183,10 @@ public class RobotContainer {
         // B -> Cancel all commands
         this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        // TODO: make sure whileTrue works
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
+        this.driverController.leftBumper().onTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
+        this.driverController.rightBumper().onTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -196,7 +194,7 @@ public class RobotContainer {
         // Double Rectangle (Left) -> Reset pose
         this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
         // Burger (Right) -> Calibrate QuestNav
-        this.operatorController.start().onTrue(new CalibrateQuestCommand());  // TODO: comment this out before comp.
+        // this.operatorController.start().onTrue(new CalibrateQuestCommand());
 
         // B -> Cancel all commands
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
@@ -207,18 +205,22 @@ public class RobotContainer {
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
-        // Temporary
+        // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
         // Left Trigger -> Shooter Hood Minimum
-        this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
-        // Right Trigger -> Shooter Hood Maximum
-        this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
+
+        // // Left Trigger -> Shooter Hood Minimum
+        // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
+        // // Right Trigger -> Shooter Hood Maximum
+        // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
 
         // D-Pad Up -> Enter Climb
         this.operatorController.povUp().onTrue(new ClimbCommand());
         // D-Pad Down -> Leave Climb
         this.operatorController.povDown().onTrue(new LeaveClimbCommand());
 
+        // A -> Intake Pivot Down
         this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        // Y -> Intake Pivot Up
         this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
     }
 

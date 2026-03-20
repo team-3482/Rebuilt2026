@@ -12,7 +12,6 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,7 +47,6 @@ public class IntakeSubsystem extends SubsystemBase {
         this.pivotMotor.getPosition().setUpdateFrequency(50);
     }
 
-    // TODO: telemetry to logs and dashboard
     @Override
     public void periodic() {
         double angle = getPosition().in(Degrees);

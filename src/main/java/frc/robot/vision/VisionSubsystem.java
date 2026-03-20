@@ -43,7 +43,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         HttpCamera LLCamera = new HttpCamera(
             VisionConstants.LIMELIGHT,
-            "http://" + "10.34.82.13" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
+            "http://" + "10.34.82.13" + ":5800/stream.mjpg"
         );
 
         CameraServer.startAutomaticCapture(LLCamera);
@@ -120,8 +120,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     /** Reset pose from absolute Limelight data if QuestNav relative data is inaccurate */
     public void resetPose(){
-        // TODO: test if this works. I think it might not, and instead the limelight pose should be provided directly
-        // if it does work, then maybe the limelight vision data should be added periodically
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,

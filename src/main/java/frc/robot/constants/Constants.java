@@ -72,7 +72,7 @@ public class Constants {
         );
 
         /** Maximum allowed AprilTag ambiguity value */
-        public static final double MAX_APRILTAG_AMBIGUITY = 1.0; // TODO: tune
+        public static final double MAX_APRILTAG_AMBIGUITY = 1.0;
     }
 
     /** Constants for intake subsystem (both the pivot and actual intake) */
@@ -90,7 +90,7 @@ public class Constants {
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = 6;
 
-        // TODO: fill in values
+        // TODO: we can probably optimize this a bit
         /* Motion Magic Config */
         public static final double CRUISE_SPEED = 2;
         public static final double ACCELERATION = 2;
@@ -107,7 +107,7 @@ public class Constants {
         }
 
         /** The tolerance used for pivot in degrees  */
-        public static final double PIVOT_TOLERANCE = 2; // TODO: make ts more accurate
+        public static final double PIVOT_TOLERANCE = 2;
 
         /** Speed to run the intake motor at */
         public static final double INTAKE_SPEED = 0.4;
