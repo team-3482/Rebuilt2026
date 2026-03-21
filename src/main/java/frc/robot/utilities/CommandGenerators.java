@@ -95,16 +95,15 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareFerry() {
-        return Commands.runOnce(() -> {
-            boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
-            boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
+        // TODO: make sure this works
+        boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
+        boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
-            Pose2d position = redAlliance
-                ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
-                : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
+        Pose2d position = redAlliance
+            ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
+            : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
-            CommandScheduler.getInstance().schedule(CommandGenerators.AimAndRevShooter(position, false));
-        });
+        return CommandGenerators.AimAndRevShooter(position, false);
     }
 
     /**
@@ -112,15 +111,11 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        return Commands.runOnce(() -> {
-            boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
-            CommandScheduler.getInstance().schedule(
-                CommandGenerators.AimAndRevShooter(
-                    redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
-                    true
-                )
-            );
-        });
+        boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
+        return CommandGenerators.AimAndRevShooter(
+            redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
+            true
+        );
     }
 
 
