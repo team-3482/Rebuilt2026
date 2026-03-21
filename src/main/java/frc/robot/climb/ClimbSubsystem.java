@@ -38,9 +38,12 @@ public class ClimbSubsystem extends SubsystemBase {
     private ClimbSubsystem() {
         super("ClimbSubsystem");
 
+        climbMotor1.setPosition(0);
+        climbMotor2.setPosition(0);
+
         configureMotors();
 
-        climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Opposed));
+        climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
     }
 
     private void configureMotors(){
