@@ -134,6 +134,9 @@ public class Constants {
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
 
+        /** 1 motor rotation is 3 wheel rotations */
+        public static final double GEAR_RATIO = 3;
+
         /** Gains used for Motion Magic slot 0. */
         public static final class Slot0Gains {
             // TODO: tune these values
