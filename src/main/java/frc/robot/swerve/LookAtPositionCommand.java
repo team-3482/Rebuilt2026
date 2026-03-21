@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
@@ -22,11 +23,13 @@ import static edu.wpi.first.units.Units.Radians;
 /** Takes a position on the field and automatically rotates to face it */
 public class LookAtPositionCommand extends Command {
     Pose2d target;
+    Alliance alliance;
 
-    public LookAtPositionCommand(Pose2d target) {
+    public LookAtPositionCommand(Pose2d target, Alliance alliance) {
         setName("LookAtPositionCommand");
 
         this.target = target;
+        this.alliance = alliance;
 
         controller.enableContinuousInput(-Math.PI, Math.PI);
         controller.setTolerance(AutoAngleConstants.TOLERANCE.in(Radians));
@@ -59,8 +62,6 @@ public class LookAtPositionCommand extends Command {
 
     @Override
     public void execute() {
-        //calculateAngle();
-
         SwerveSubsystem.getInstance().setControl(facingAngleDrive
             .withVelocityX(0)
             .withVelocityY(0)
@@ -88,6 +89,7 @@ public class LookAtPositionCommand extends Command {
         xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
         yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 
-        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)) + Math.PI);
+        // TODO: rotate by pi if on red side ONLY maybe
+        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)) + (alliance.equals(Alliance.Red) ? Math.PI : 0));
     }
 }

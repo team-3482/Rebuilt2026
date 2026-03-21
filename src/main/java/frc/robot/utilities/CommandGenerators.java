@@ -5,6 +5,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -77,10 +78,10 @@ public class CommandGenerators {
         Logger.recordOutput("Shooter/Target", target);
         if (
             distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+                && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
         ) {
             return Commands.parallel(
-                new LookAtPositionCommand(target),
+                new LookAtPositionCommand(target, DriverStation.getAlliance().orElse(Alliance.Blue)),
                 ContinuousMoveHoodCommand(target, hub),
                 new RevShooterCommand(target)
             );
@@ -96,7 +97,7 @@ public class CommandGenerators {
      */
     public static Command PrepareFerry() {
         // TODO: make sure this works
-        boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
+        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
         boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
         Pose2d position = redAlliance
@@ -111,7 +112,7 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        boolean redAlliance = DriverStation.getAlliance().get().equals(DriverStation.Alliance.Red);
+        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
         return CommandGenerators.AimAndRevShooter(
             redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
             true
@@ -124,14 +125,13 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command FeedShooter() {
-        return Commands.run(() -> {
-            if (
-                ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
-                && HoodSubsystem.getInstance().isPositionWithinTolerance()
+        if (
+            ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
+                // && HoodSubsystem.getInstance().isPositionWithinTolerance()
                 && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
-            ) { // TODO: move intake pivot up and down
-                new FeedShooterCommand();
-            }
-        });
+        ) {
+            return new FeedShooterCommand();
+        }
+        return Commands.none();
     }
 }

@@ -68,7 +68,7 @@ public class RobotContainer {
         this.autoChooser = AutoBuilder.buildAutoChooser(); // The default auto will be Commands.none()
         this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
 
-        // SmartDashboard.putData("Auto Chooser", this.autoChooser);
+        SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
     }
 
@@ -213,7 +213,7 @@ public class RobotContainer {
         // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
 
         // X -> Enter Climb
-        this.operatorController.x().onTrue(new ClimbCommand());
+        this.operatorController.x().toggleOnTrue(new ClimbCommand());
 
         // A -> Intake Pivot Down
         this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));

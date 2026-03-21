@@ -9,7 +9,6 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.VisionConstants;
 import frc.robot.swerve.SwerveSubsystem;
@@ -61,10 +60,6 @@ public class VisionSubsystem extends SubsystemBase {
             poseFrames = questNav.getAllUnreadPoseFrames();
 
             updateSwervePoseEstimation();
-
-            SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
-            SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
-            SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
             Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
             Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
