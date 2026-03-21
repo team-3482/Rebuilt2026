@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
-import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.Positions;
@@ -213,10 +212,8 @@ public class RobotContainer {
         // // Right Trigger -> Shooter Hood Maximum
         // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
 
-        // D-Pad Up -> Enter Climb
-        this.operatorController.povUp().onTrue(new ClimbCommand());
-        // D-Pad Down -> Leave Climb
-        this.operatorController.povDown().onTrue(new LeaveClimbCommand());
+        // X -> Enter Climb
+        this.operatorController.x().onTrue(new ClimbCommand());
 
         // A -> Intake Pivot Down
         this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
@@ -227,7 +224,6 @@ public class RobotContainer {
     private void registerNamedCommands() {
         // Climb
         NamedCommands.registerCommand("Climb", new ClimbCommand());
-        NamedCommands.registerCommand("LeaveClimb", new LeaveClimbCommand());
 
         // Intake
         NamedCommands.registerCommand("Intake", new IntakeCommand());
