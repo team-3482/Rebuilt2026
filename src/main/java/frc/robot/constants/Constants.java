@@ -225,13 +225,13 @@ public class Constants {
         public static final int CLIMB_MOTOR_2 = 32;
 
         /** How many revolutions to completely retract the climb */
-        public static final Angle CLIMB_POSITION = Revolutions.of(0.75);
+        public static final Angle CLIMB_POSITION = Revolutions.of(1.2);
 
         /** gearbox ratio */
         public static final double ROTOR_TO_MECHANISM_RATIO = 12;
 
         /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 0.5;
+        public static final double CRUISE_SPEED = 1;
         public static final double ACCELERATION = 0.5;
 
         /** Gains used for Motion Magic slot 0. */
