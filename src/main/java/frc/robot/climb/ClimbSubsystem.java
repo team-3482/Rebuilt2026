@@ -12,12 +12,10 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.ClimbConstants;
 import frc.robot.constants.Constants.RobotConstants;
-import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Revolutions;
 
@@ -80,11 +78,6 @@ public class ClimbSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicAcceleration = ClimbConstants.ACCELERATION;
 
         this.climbMotor1.getConfigurator().apply(configuration);
-    }
-
-    @Override
-    public void periodic() {
-        Logger.recordOutput("Climb/Position", getClimbPosition().in(Units.Revolutions));
     }
 
     /**

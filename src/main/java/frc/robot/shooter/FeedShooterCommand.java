@@ -5,10 +5,12 @@
 package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ShooterConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
+import org.littletonrobotics.junction.Logger;
 
 /** Feed fuel into shooter with Feeder and Sterilizer motors */
 public class FeedShooterCommand extends Command {
@@ -40,6 +42,9 @@ public class FeedShooterCommand extends Command {
 
     @Override
     public void execute() {
+        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
+        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
+
         if(
             !doChecks
             || (ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()

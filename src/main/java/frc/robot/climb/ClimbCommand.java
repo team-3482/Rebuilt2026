@@ -4,8 +4,10 @@
 
 package frc.robot.climb;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ClimbConstants;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Degrees;
 
@@ -23,7 +25,9 @@ public class ClimbCommand extends Command {
     }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        Logger.recordOutput("Climb/Position", ClimbSubsystem.getInstance().getClimbPosition().in(Units.Revolutions));
+    }
 
     @Override
     public void end(boolean interrupted) {

@@ -54,7 +54,8 @@ public class HoodSubsystem extends SubsystemBase {
         final Time elapsedTime = currentTime.minus(lastUpdateTime);
         lastUpdateTime = currentTime;
 
-        if (isPositionWithinTolerance()) {
+        boolean withinTolerance = isPositionWithinTolerance();
+        if (withinTolerance) {
             currentPosition = targetPosition;
         }
 
@@ -66,7 +67,6 @@ public class HoodSubsystem extends SubsystemBase {
 
         Logger.recordOutput("Hood/Position", currentPosition);
 
-        boolean withinTolerance = isPositionWithinTolerance();
         Logger.recordOutput("Hood/WithinTolerance", withinTolerance);
         SmartDashboard.putBoolean("Hood/WithinTolerance", withinTolerance);
     }

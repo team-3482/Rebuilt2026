@@ -5,8 +5,11 @@
 package frc.robot.intake;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.Constants.IntakeConstants;
+import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /** An example command that does nothing. */
 public class MovePivotCommand extends Command {
@@ -26,7 +29,11 @@ public class MovePivotCommand extends Command {
     }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        double angle = IntakeSubsystem.getInstance().getPosition().in(Degrees);
+        Logger.recordOutput("Intake/PivotAngle", angle);
+        SmartDashboard.putNumber("Intake/PivotAngle", angle);
+    }
 
     @Override
     public void end(boolean interrupted) {}

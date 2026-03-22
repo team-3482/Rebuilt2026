@@ -61,8 +61,8 @@ public class VisionSubsystem extends SubsystemBase {
 
             updateSwervePoseEstimation();
 
-            Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
-            Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            // Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
+            // Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
             Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
             try {
@@ -72,14 +72,15 @@ public class VisionSubsystem extends SubsystemBase {
 
         limelightPose = getLimelightPose();
 
-        try {
-            Logger.recordOutput("Limelight/Pose", limelightPose.pose);
-        } catch (Exception ignored){}
 
         if(DriverStation.isDisabled()) {
             if(trustLimelightData()) {
                 resetPose();
             }
+
+            try {
+                Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+            } catch (Exception ignored){}
         }
     }
 
