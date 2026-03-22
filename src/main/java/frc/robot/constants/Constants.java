@@ -127,7 +127,9 @@ public class Constants {
         public static final int STERILIZER_MOTOR = 30;
 
         /** Feed shooter debounce time so all balls consistently make it in */
-        public static final double FEED_SHOOTER_DEBOUNCE = 0.15;
+        public static final double FEEDER_PAUSE_DURATION = 0.3;
+        public static final double FEEDER_FEED_DURATION = 0.15;
+
 
         /** Feeder motor speed */
         public static final double FEEDER_SPEED = .4;

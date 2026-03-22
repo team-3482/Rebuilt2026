@@ -205,10 +205,16 @@ public class RobotContainer {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Intake
-        this.operatorController.leftBumper().whileTrue(new IntakeCommand());
+        this.operatorController.leftBumper().whileTrue(Commands.sequence(
+            new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE),
+            new IntakeCommand()
+        ));
 
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
+
+        // Left Trigger -> Manually feed Shooter without doing checks
+        this.operatorController.leftTrigger().whileTrue(new FeedShooterCommand(false));
 
         // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
         this.operatorController.rightTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
@@ -239,7 +245,7 @@ public class RobotContainer {
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", CommandGenerators.FeedShooter());
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
     }
 
     public Command getAutonomousCommand() {

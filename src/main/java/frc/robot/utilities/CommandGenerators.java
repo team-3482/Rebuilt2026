@@ -13,7 +13,6 @@ import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.Positions;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
-import frc.robot.shooter.FeedShooterCommand;
 import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
@@ -117,21 +116,5 @@ public class CommandGenerators {
             redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
             true
         );
-    }
-
-
-    /**
-     * Feeds Fuel into Shooter if at correct velocity and Hood is at correct position.
-     * @return The command.
-     */
-    public static Command FeedShooter() {
-        if (
-            ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
-                // && HoodSubsystem.getInstance().isPositionWithinTolerance()
-                && SwerveSubsystem.getInstance().angleWithinToleranceToTarget()
-        ) {
-            return new FeedShooterCommand();
-        }
-        return Commands.none();
     }
 }
