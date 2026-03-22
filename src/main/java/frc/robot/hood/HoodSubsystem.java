@@ -9,11 +9,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.HoodConstants;
@@ -38,8 +36,8 @@ public class HoodSubsystem extends SubsystemBase {
     private final Servo servo1 = new Servo(HoodConstants.HOOD_SERVO_1);
     private final Servo servo2 = new Servo(HoodConstants.HOOD_SERVO_2);
 
-    private double currentPosition = 0.0;
-    private double targetPosition = 0.0;
+    private double currentPosition = 0.5;
+    private double targetPosition = 0.5;
     private Time lastUpdateTime = Seconds.of(0);
 
     private HoodSubsystem() {
@@ -58,7 +56,6 @@ public class HoodSubsystem extends SubsystemBase {
 
         if (isPositionWithinTolerance()) {
             currentPosition = targetPosition;
-            return;
         }
 
         final Distance maxDistanceTraveled = HoodConstants.MAX_SERVO_SPEED.times(elapsedTime);
@@ -66,24 +63,6 @@ public class HoodSubsystem extends SubsystemBase {
         currentPosition = targetPosition > currentPosition
             ? Math.min(targetPosition, currentPosition + maxPercentageTraveled)
             : Math.max(targetPosition, currentPosition - maxPercentageTraveled);
-
-        boolean inputToggled = SmartDashboard.getBoolean("Hood/ToggleInputSlider", false);
-
-        if(!inputToggled) {
-            SmartDashboard.putNumber("Hood/Position", currentPosition);
-        }
-
-        if (DriverStation.isEnabled()) {
-            Command currentCommand = getCurrentCommand();
-
-            if (currentCommand != null) {
-                SmartDashboard.putBoolean("Hood/ToggleInputSlider", false);
-            } else if (inputToggled && currentCommand == null) {
-                setHoodAngle(Degrees.of(SmartDashboard.getNumber("Hood/Position", HoodConstants.HOOD_ANGLE_MIN.in(Degrees))));
-            }
-        } else {
-            SmartDashboard.putBoolean("Hood/ToggleInputSlider", false);
-        }
 
         Logger.recordOutput("Hood/Position", currentPosition);
 

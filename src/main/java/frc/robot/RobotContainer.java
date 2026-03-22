@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
@@ -22,6 +23,7 @@ import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.Positions;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
+import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
@@ -183,9 +185,13 @@ public class RobotContainer {
         this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
+        this.driverController.leftBumper()
+            .whileTrue(CommandGenerators.PrepareFerry())
+            .onFalse(new MoveHoodCommand(0.5));
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
+        this.driverController.rightBumper()
+            .whileTrue(CommandGenerators.PrepareHub())
+            .onFalse(new MoveHoodCommand(0.5));
     }
 
     /** Configures the button bindings of the operator controller. */

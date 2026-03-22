@@ -19,6 +19,8 @@ import frc.robot.constants.Constants.ClimbConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import org.littletonrobotics.junction.Logger;
 
+import static edu.wpi.first.units.Units.Revolutions;
+
 /** An example subsystem that does nothing. */
 public class ClimbSubsystem extends SubsystemBase {
     // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
@@ -40,6 +42,9 @@ public class ClimbSubsystem extends SubsystemBase {
 
         climbMotor1.setPosition(0);
         climbMotor2.setPosition(0);
+
+        this.climbMotor1.getPosition().setUpdateFrequency(50);
+        this.climbMotor2.getPosition().setUpdateFrequency(50);
 
         configureMotors();
 
@@ -108,5 +113,15 @@ public class ClimbSubsystem extends SubsystemBase {
             .withPosition(angle);
 
         this.climbMotor1.setControl(control);
+    }
+
+
+    /**
+     * Checks if the current position is within
+     * {@link ClimbConstants#TOLERANCE} of an input position.
+     * @param position The position to compare to.
+     */
+    public boolean withinTolerance(Angle position) {
+        return Math.abs(getClimbPosition().in(Revolutions) - position.in(Revolutions)) <= ClimbConstants.TOLERANCE.in(Revolutions);
     }
 }

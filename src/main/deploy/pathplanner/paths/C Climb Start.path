@@ -3,32 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.5467177871919024,
-        "y": 3.7452625027508804
+        "x": 3.5,
+        "y": 3.85
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.97213662136463,
-        "y": 3.7452625027508804
+        "x": 2.4974412814516134,
+        "y": 3.816166166352453
       },
       "isLocked": false,
-      "linkedName": "Climb aiming at Hub"
-    },
-    {
-      "anchor": {
-        "x": 3.115,
-        "y": 3.745
-      },
-      "prevControl": {
-        "x": 2.663101941097679,
-        "y": 3.745
-      },
-      "nextControl": {
-        "x": 3.8495483341563936,
-        "y": 3.745
-      },
-      "isLocked": false,
-      "linkedName": null
+      "linkedName": "C Start"
     },
     {
       "anchor": {
@@ -36,8 +20,8 @@
         "y": 3.745
       },
       "prevControl": {
-        "x": 2.6359609257417307,
-        "y": 3.745
+        "x": 2.072382310984308,
+        "y": 3.7180028530670475
       },
       "nextControl": null,
       "isLocked": false,
@@ -46,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.7882382454128427,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 180.0
     }
   ],
@@ -66,10 +50,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "2. Climb",
+  "folder": "1. Starting",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 5.6064043383105995
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

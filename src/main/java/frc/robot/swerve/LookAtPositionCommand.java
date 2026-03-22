@@ -89,7 +89,6 @@ public class LookAtPositionCommand extends Command {
         xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
         yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 
-        // TODO: rotate by pi if on red side ONLY maybe
-        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)) + (alliance.equals(Alliance.Red) ? Math.PI : 0));
+        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)));
     }
 }

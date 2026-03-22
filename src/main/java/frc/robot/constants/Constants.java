@@ -126,8 +126,11 @@ public class Constants {
         /** CAN ID for Sterilizer motor */
         public static final int STERILIZER_MOTOR = 30;
 
+        /** Feed shooter debounce time so all balls consistently make it in */
+        public static final double FEED_SHOOTER_DEBOUNCE = 0.15;
+
         /** Feeder motor speed */
-        public static final double FEEDER_SPEED = 0.75;
+        public static final double FEEDER_SPEED = .4;
         /** Sterilizer motor speed */
         public static final double STERILIZER_SPEED = 0.75;
 
@@ -239,6 +242,8 @@ public class Constants {
             public static final double kI = 0;
             public static final double kD = 0;
         }
+
+        public static final Angle TOLERANCE = Revolutions.of(0.05);
     }
 
     /** Constants for positions of important points on the field */
