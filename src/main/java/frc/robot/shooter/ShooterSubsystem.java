@@ -177,7 +177,7 @@ public class ShooterSubsystem extends SubsystemBase {
             : calculateShooterAngularVelocity(distance);
 
         return MetersPerSecond.of(
-            angularVelocity.in(RotationsPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
+            angularVelocity.in(RadiansPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
         );
     }
 }

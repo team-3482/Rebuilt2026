@@ -116,7 +116,7 @@ public class HoodSubsystem extends SubsystemBase {
         double v = Math.abs((velocity).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
-        double h = hub ? CalculationConstants.HUB_HEIGHT.in(Meters) : 0;
+        double h = CalculationConstants.HUB_HEIGHT.in(Meters);
 
         return Radians.of(Math.atan(( // https://www.desmos.com/calculator/moewwoi4pa :)
             Math.pow(v, 2)
@@ -124,7 +124,7 @@ public class HoodSubsystem extends SubsystemBase {
                 Math.pow(v, 4)
                 - g * (
                     g * Math.pow(d, 2)
-                    + 2 * h * Math.pow(v, 2)
+                    + (hub ? 2 * h * Math.pow(v, 2) : 0)
                 )
             )) / (g * d)
         ));

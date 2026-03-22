@@ -80,7 +80,7 @@ public class CommandGenerators {
                 && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
         ) {
             return Commands.parallel(
-                new LookAtPositionCommand(target, DriverStation.getAlliance().orElse(Alliance.Blue)),
+                new LookAtPositionCommand(target),
                 ContinuousMoveHoodCommand(target, hub),
                 new RevShooterCommand(target)
             );
@@ -112,9 +112,6 @@ public class CommandGenerators {
      */
     public static Command PrepareHub() {
         boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-        return CommandGenerators.AimAndRevShooter(
-            redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB,
-            true
-        );
+        return CommandGenerators.AimAndRevShooter(redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB, true);
     }
 }

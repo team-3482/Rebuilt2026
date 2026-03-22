@@ -36,6 +36,7 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate limelightPose;
 
     RawFiducial[] fiducials;
+    boolean lastTracking;
 
     private VisionSubsystem() {
         super("VisionSubsystem");
@@ -53,7 +54,10 @@ public class VisionSubsystem extends SubsystemBase {
         questNav.commandPeriodic();
 
         boolean tracking = questNav.isTracking();
-        Logger.recordOutput("QuestNav/Tracking", tracking);
+        if (tracking != lastTracking){
+            Logger.recordOutput("QuestNav/Tracking", tracking);
+        }
+        lastTracking = tracking;
 
         if (tracking) {
             // Get the latest pose data frames from the Quest
@@ -70,10 +74,9 @@ public class VisionSubsystem extends SubsystemBase {
             } catch (Exception ignored) {}
         }
 
-        limelightPose = getLimelightPose();
-
-
         if(DriverStation.isDisabled()) {
+            limelightPose = getLimelightPose();
+
             if(trustLimelightData()) {
                 resetPose();
             }
@@ -117,6 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
     /** Reset pose from absolute Limelight data if QuestNav relative data is inaccurate */
     public void resetPose(){
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            System.out.println("Resetting Vision pose");
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
                 limelightPose.timestampSeconds
