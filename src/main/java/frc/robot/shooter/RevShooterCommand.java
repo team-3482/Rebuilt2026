@@ -12,6 +12,7 @@ import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.RPM;
 
 /** Rev up shooter to speed based on distance from target */
 public class RevShooterCommand extends Command {
@@ -29,8 +30,10 @@ public class RevShooterCommand extends Command {
     @Override
     public void initialize() {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-        Logger.recordOutput("Shooter/DistanceToTarget", distance.in(Meters), Meters);
+        Logger.recordOutput("Shooter/DistanceToTarget", distance.in(Meters));
         AngularVelocity velocity = ShooterSubsystem.getInstance().calculateShooterAngularVelocity(distance);
+        Logger.recordOutput("Shooter/SetVelocity", velocity.in(RPM));
+        System.out.println("\n\nSetVelocity: " + velocity.in(RPM));
         ShooterSubsystem.getInstance().setShooterAngularVelocity(velocity);
     }
 
@@ -40,6 +43,7 @@ public class RevShooterCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setShooterSpeed(0);
+        ShooterSubsystem.getInstance().setLastTargetVelocity(RPM.of(0));
     }
 
     @Override

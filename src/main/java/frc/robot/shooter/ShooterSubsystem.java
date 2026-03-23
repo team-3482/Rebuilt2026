@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.RobotConstants;
 import frc.robot.constants.Constants.ShooterConstants;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -59,13 +60,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
-        // Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(RPM));
-        // Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
-        // Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
-
-        // SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
-        // Logger.recordOutput("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
+        Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
+        Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
     }
 
     /**
@@ -179,5 +175,13 @@ public class ShooterSubsystem extends SubsystemBase {
         return MetersPerSecond.of(
             angularVelocity.in(RadiansPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
         );
+    }
+
+    /**
+     * Set the lastTargetVelocity to a value
+     * @param lastTargetVelocity The new target velocity.
+     */
+    public void setLastTargetVelocity(AngularVelocity velocity) {
+        this.lastTargetVelocity = lastTargetVelocity;
     }
 }

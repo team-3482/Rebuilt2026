@@ -130,7 +130,6 @@ public class Constants {
         public static final double FEEDER_PAUSE_DURATION = 0.3;
         public static final double FEEDER_FEED_DURATION = 0.15;
 
-
         /** Feeder motor speed */
         public static final double FEEDER_SPEED = .4;
         /** Sterilizer motor speed */
@@ -181,15 +180,15 @@ public class Constants {
         public static final Distance RING_DIAMETER = Inches.of(15.155);
 
         /** Ratio of the diameter of the Ring to the diameter of the Wheel */
-        public static final double GEAR_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1;
+        public static final double GEAR_RATIO = RING_DIAMETER.in(Inches) / WHEEL_DIAMETER.in(Inches) + 1; // 4.822
         /** Ratio for converting Wheel angular velocity to Fuel angular velocity */
-        public static final double WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO = 1 / GEAR_RATIO;
+        public static final double WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO = 1 / GEAR_RATIO; // 0.2074
         /** Radius of the path that the Fuel takes */
-        public static final Distance CARRIER_RADIUS = Inches.of((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2));
+        public static final Distance CARRIER_RADIUS = Inches.of((FUEL_DIAMETER.in(Inches) / 2) + (WHEEL_DIAMETER.in(Inches) / 2)); // 0.1254 m
         /** Ratio for converting Motor angular velocity to Fuel linear velocity */
-        public static final double SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO = WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO * CARRIER_RADIUS.in(Meters);
+        public static final double SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO = WHEEL_TO_FUEL_ANGULAR_VELOCITY_RATIO * CARRIER_RADIUS.in(Meters); // 0.026
         /** Ratio for converting Fuel linear velocity to Motor angular velocity */
-        public static final double FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO = 1 / SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO;
+        public static final double FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO = 1 / SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO; // 38.46
 
         /** Acceleration of gravity */
         public static final LinearAcceleration GRAV = MetersPerSecondPerSecond.of(9.81);
@@ -199,9 +198,10 @@ public class Constants {
         public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.88);
         /** Maximum distance that we can shoot to */
         public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.45);
-        // /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
+
+        /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
         // public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
-        // /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
+        /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
         // public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
 
         // Coefficients for cubic distance formula https://www.desmos.com/calculator/hxakyltti5
@@ -227,7 +227,7 @@ public class Constants {
         /** How many revolutions to completely retract the climb */
         public static final Angle CLIMB_POSITION = Revolutions.of(1.2);
 
-        /** gearbox ratio */
+        /** Gearbox ratio */
         public static final double ROTOR_TO_MECHANISM_RATIO = 12;
 
         /* Motion Magic Config */
