@@ -81,9 +81,6 @@ public class TunerConstants {
     /** Realistic speed robot to run at */
     public static final LinearVelocity kSpeedNormal = MetersPerSecond.of(3.5);
 
-    /** Slower speed for the robot to drive at with the elevator up, so it doesn't tip over. */
-    public static final LinearVelocity kElevatorTooHighSpeed = MetersPerSecond.of(2.0);
-
     /** Normal angular (turning) speed */
     public static final AngularVelocity kAngularSpeedNormal = RadiansPerSecond.of(1 * Math.PI);
 

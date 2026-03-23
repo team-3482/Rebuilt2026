@@ -14,13 +14,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
-import frc.robot.climb.LeaveClimbCommand;
 import frc.robot.constants.Constants.DriverStationConstants;
-import frc.robot.constants.Constants.HoodConstants;
 import frc.robot.constants.Constants.IntakeConstants;
+import frc.robot.constants.Constants.Positions;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
@@ -28,11 +28,11 @@ import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
 import frc.robot.shooter.FeedShooterCommand;
+import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.swerve.SwerveTelemetry;
 import frc.robot.utilities.CommandGenerators;
-import frc.robot.vision.CalibrateQuestCommand;
 import frc.robot.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 
@@ -70,7 +70,7 @@ public class RobotContainer {
         this.autoChooser = AutoBuilder.buildAutoChooser(); // The default auto will be Commands.none()
         this.autoChooser.onChange((Command autoCommand) -> this.auton = autoCommand); // Reloads the stored auto
 
-        // SmartDashboard.putData("Auto Chooser", this.autoChooser);
+        SmartDashboard.putData("Auto Chooser", this.autoChooser);
         SmartDashboard.putData("CommandScheduler", CommandScheduler.getInstance());
     }
 
@@ -184,11 +184,14 @@ public class RobotContainer {
         // B -> Cancel all commands
         this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        // TODO: make sure whileTrue works
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
+        this.driverController.leftBumper()
+            .whileTrue(CommandGenerators.PrepareFerry())
+            .onFalse(new MoveHoodCommand(0.5));
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
+        this.driverController.rightBumper()
+            .whileTrue(CommandGenerators.PrepareHub())
+            .onFalse(new MoveHoodCommand(0.5));
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -196,36 +199,43 @@ public class RobotContainer {
         // Double Rectangle (Left) -> Reset pose
         this.driverController.back().onTrue(CommandGenerators.ResetOdometryToOriginCommand());
         // Burger (Right) -> Calibrate QuestNav
-        this.operatorController.start().onTrue(new CalibrateQuestCommand());  // TODO: comment this out before comp.
+        // this.operatorController.start().onTrue(new CalibrateQuestCommand());
 
         // B -> Cancel all commands
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Intake
-        this.operatorController.leftBumper().whileTrue(new IntakeCommand());
+        this.operatorController.leftBumper().whileTrue(Commands.sequence(
+            new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE),
+            new IntakeCommand()
+        ));
 
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
-        // Temporary
-        // Left Trigger -> Shooter Hood Minimum
-        this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
-        // Right Trigger -> Shooter Hood Maximum
-        this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
+        // Left Trigger -> Manually feed Shooter without doing checks
+        this.operatorController.leftTrigger().whileTrue(new FeedShooterCommand(false));
 
-        // D-Pad Up -> Enter Climb
-        this.operatorController.povUp().onTrue(new ClimbCommand());
-        // D-Pad Down -> Leave Climb
-        this.operatorController.povDown().onTrue(new LeaveClimbCommand());
+        // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
+        this.operatorController.rightTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
+        // // Left Trigger -> Shooter Hood Minimum
+        // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
+        // // Right Trigger -> Shooter Hood Maximum
+        // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
+
+        // X -> Enter Climb
+        this.operatorController.x().toggleOnTrue(new ClimbCommand());
+
+        // A -> Intake Pivot Down
         this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        // Y -> Intake Pivot Up
         this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
     }
 
     private void registerNamedCommands() {
         // Climb
         NamedCommands.registerCommand("Climb", new ClimbCommand());
-        NamedCommands.registerCommand("LeaveClimb", new LeaveClimbCommand());
 
         // Intake
         NamedCommands.registerCommand("Intake", new IntakeCommand());
@@ -235,7 +245,7 @@ public class RobotContainer {
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", CommandGenerators.FeedShooter());
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
     }
 
     public Command getAutonomousCommand() {

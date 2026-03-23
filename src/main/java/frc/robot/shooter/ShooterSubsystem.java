@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.RobotConstants;
@@ -62,12 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
-        Logger.recordOutput("Shooter/FeederVelocity", feederMotor.getVelocity().getValue().in(RPM));
-        Logger.recordOutput("Shooter/SterilizerVelocity", sterilizerMotor.getVelocity().getValue().in(RPM));
         Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
-
-        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
-        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", isShooterVelocityWithinTolerance());
     }
 
     /**
@@ -137,7 +131,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return true if shooter velocity is within threshold
      */
     public boolean isShooterVelocityWithinTolerance() {
-        double difference = (getShooterVelocity().in(RadiansPerSecond) - lastTargetVelocity.in(RPM));
+        double difference = (getShooterVelocity().in(RPM) - lastTargetVelocity.in(RPM));
         return Math.abs(difference) <= ShooterConstants.VELOCITY_TOLERANCE.in(RPM);
     }
 
@@ -179,7 +173,15 @@ public class ShooterSubsystem extends SubsystemBase {
             : calculateShooterAngularVelocity(distance);
 
         return MetersPerSecond.of(
-            angularVelocity.in(RotationsPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
+            angularVelocity.in(RadiansPerSecond) * CalculationConstants.SHOOTER_ANGULAR_TO_FUEL_LINEAR_VELOCITY_RATIO
         );
+    }
+
+    /**
+     * Set the lastTargetVelocity to a value
+     * @param lastTargetVelocity The new target velocity.
+     */
+    public void setLastTargetVelocity(AngularVelocity velocity) {
+        this.lastTargetVelocity = lastTargetVelocity;
     }
 }

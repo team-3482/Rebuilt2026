@@ -29,7 +29,7 @@ public class ResetPoseCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if(!interrupted) { // TODO: LED status (green/red)
+        if(!interrupted) {
             System.out.println("QuestNav pose reset from Limelight AprilTag data!");
         } else {
             System.out.println("Failed to reset QuestNav pose, no AprilTag in view!");

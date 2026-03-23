@@ -59,8 +59,6 @@ public class LookAtPositionCommand extends Command {
 
     @Override
     public void execute() {
-        //calculateAngle();
-
         SwerveSubsystem.getInstance().setControl(facingAngleDrive
             .withVelocityX(0)
             .withVelocityY(0)
@@ -88,6 +86,6 @@ public class LookAtPositionCommand extends Command {
         xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
         yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 
-        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)) + Math.PI);
+        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)));
     }
 }

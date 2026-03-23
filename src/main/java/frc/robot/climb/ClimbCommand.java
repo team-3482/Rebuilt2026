@@ -7,8 +7,9 @@ package frc.robot.climb;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ClimbConstants;
-import frc.robot.constants.Constants.ShooterConstants;
-import frc.robot.shooter.ShooterSubsystem;
+import org.littletonrobotics.junction.Logger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /** Climb from floor to tower */
 public class ClimbCommand extends Command {
@@ -20,19 +21,21 @@ public class ClimbCommand extends Command {
 
     @Override
     public void initialize() {
-        ClimbSubsystem.getInstance().setClimbSpeed(ClimbConstants.CLIMB_SPEED);
+        ClimbSubsystem.getInstance().setClimbPosition(ClimbConstants.CLIMB_POSITION);
     }
 
     @Override
-    public void execute() {}
+    public void execute() {
+        Logger.recordOutput("Climb/Position", ClimbSubsystem.getInstance().getClimbPosition().in(Units.Revolutions));
+    }
 
     @Override
     public void end(boolean interrupted) {
-        ClimbSubsystem.getInstance().setClimbSpeed(0);
+        ClimbSubsystem.getInstance().setClimbPosition(Degrees.of(0));
     }
 
     @Override
     public boolean isFinished() {
-        return ClimbSubsystem.getInstance().getClimbPosition().in(Units.Revolutions) >= ClimbConstants.FULL_RETRACTION_REVOLUTIONS.in(Units.Revolutions);
+        return ClimbSubsystem.getInstance().withinTolerance(ClimbConstants.CLIMB_POSITION);
     }
 }

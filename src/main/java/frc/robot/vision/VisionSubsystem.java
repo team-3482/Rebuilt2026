@@ -9,7 +9,6 @@ import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.VisionConstants;
 import frc.robot.swerve.SwerveSubsystem;
@@ -37,13 +36,14 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate limelightPose;
 
     RawFiducial[] fiducials;
+    boolean lastTracking;
 
     private VisionSubsystem() {
         super("VisionSubsystem");
 
         HttpCamera LLCamera = new HttpCamera(
             VisionConstants.LIMELIGHT,
-            "http://" + "10.34.82.13" + ":5800/stream.mjpg" // TODO: this IP address is probably wrong
+            "http://" + "10.34.82.13" + ":5800/stream.mjpg"
         );
 
         CameraServer.startAutomaticCapture(LLCamera);
@@ -54,7 +54,10 @@ public class VisionSubsystem extends SubsystemBase {
         questNav.commandPeriodic();
 
         boolean tracking = questNav.isTracking();
-        Logger.recordOutput("QuestNav/Tracking", tracking);
+        if (tracking != lastTracking){
+            Logger.recordOutput("QuestNav/Tracking", tracking);
+        }
+        lastTracking = tracking;
 
         if (tracking) {
             // Get the latest pose data frames from the Quest
@@ -62,12 +65,8 @@ public class VisionSubsystem extends SubsystemBase {
 
             updateSwervePoseEstimation();
 
-            SmartDashboard.putNumber("QuestNav/Latency", questNav.getLatency());
-            SmartDashboard.putNumber("QuestNav/FramesPerRobotCycle", poseFrames.length);
-            SmartDashboard.putNumber("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
-
-            Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
-            Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
+            // Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
+            // Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
             Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
             try {
@@ -75,16 +74,16 @@ public class VisionSubsystem extends SubsystemBase {
             } catch (Exception ignored) {}
         }
 
-        limelightPose = getLimelightPose();
-
-        try {
-            Logger.recordOutput("Limelight/Pose", limelightPose.pose);
-        } catch (Exception ignored){}
-
         if(DriverStation.isDisabled()) {
+            limelightPose = getLimelightPose();
+
             if(trustLimelightData()) {
                 resetPose();
             }
+
+            try {
+                Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+            } catch (Exception ignored){}
         }
     }
 
@@ -120,9 +119,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     /** Reset pose from absolute Limelight data if QuestNav relative data is inaccurate */
     public void resetPose(){
-        // TODO: test if this works. I think it might not, and instead the limelight pose should be provided directly
-        // if it does work, then maybe the limelight vision data should be added periodically
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+            System.out.println("Resetting Vision pose");
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
                 limelightPose.timestampSeconds

@@ -12,13 +12,10 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.RobotConstants;
-import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
@@ -46,14 +43,6 @@ public class IntakeSubsystem extends SubsystemBase {
         this.setPivotPosition(Degrees.of(0));
 
         this.pivotMotor.getPosition().setUpdateFrequency(50);
-    }
-
-    // TODO: telemetry to logs and dashboard
-    @Override
-    public void periodic() {
-        double angle = getPosition().in(Degrees);
-        Logger.recordOutput("Intake/PivotAngle", angle);
-        SmartDashboard.putNumber("Intake/PivotAngle", angle);
     }
 
     /* Configures pivot motor since it is the only one using motion magic. */
