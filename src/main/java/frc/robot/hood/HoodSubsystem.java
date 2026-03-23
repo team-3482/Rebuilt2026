@@ -76,7 +76,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @param angle within minimum and maximum set in {@link HoodConstants}
      */
     public double hoodAngleToDouble(Angle angle) {
-        return (
+        return 1 - (
             angle.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees))
             / (HoodConstants.HOOD_ANGLE_MAX.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees)
         );

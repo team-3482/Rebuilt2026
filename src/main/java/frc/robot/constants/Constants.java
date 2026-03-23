@@ -163,9 +163,9 @@ public class Constants {
         public static final Distance SERVO_LENGTH = Millimeters.of(50);
         /** Max Servo speed to run at */
         public static final LinearVelocity MAX_SERVO_SPEED = Millimeters.of(32).per(Second);
-        /** Hood angle minimum */
+        /** Hood angle minimum shooting angle (linear actuators fully extended) */
         public static final Angle HOOD_ANGLE_MIN = Degrees.of(54.2);
-        /** Hood angle maximum */
+        /** Hood angle minimum shooting angle (linear actuators fully retracted) */
         public static final Angle HOOD_ANGLE_MAX = Degrees.of(69);
     }
 
