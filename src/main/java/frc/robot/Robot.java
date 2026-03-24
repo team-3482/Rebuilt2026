@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.Constants;
 import frc.robot.constants.Constants.DriverStationConstants;
 import frc.robot.utilities.Elastic;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -35,9 +34,8 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("ProjectName", "Rebuilt2026");
 
         if (isReal()) {
-            // Random parent directory name to differentiate logs.
-            // I tried to use the date & time, but the RIO doesn't have an accurate timestamp since there's no RTC.
-            String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
+            String event = DriverStation.getEventName();
+            String path = "/U/logs/" + (event.isEmpty() ? "testing" : event);
 
             System.out.println("logging to: " + path + " (new directory: " + new File(path).mkdirs() + ")");
 
@@ -55,12 +53,11 @@ public class Robot extends LoggedRobot {
             Logger.start();
         }
 
-        Elastic.selectTab(DriverStationConstants.DEV_TAB);
-
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
         // Eager-load the auton command so it's ready right away
         RobotContainer.getInstance().getAutonomousCommand();
     }
+
 
     @Override
     public void robotPeriodic() {
