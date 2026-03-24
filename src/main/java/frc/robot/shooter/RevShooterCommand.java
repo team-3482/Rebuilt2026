@@ -33,7 +33,6 @@ public class RevShooterCommand extends Command {
         Logger.recordOutput("Shooter/DistanceToTarget", distance.in(Meters));
         AngularVelocity velocity = ShooterSubsystem.getInstance().calculateShooterAngularVelocity(distance);
         Logger.recordOutput("Shooter/SetVelocity", velocity.in(RPM));
-        System.out.println("\n\nSetVelocity: " + velocity.in(RPM));
         ShooterSubsystem.getInstance().setShooterAngularVelocity(velocity);
     }
 

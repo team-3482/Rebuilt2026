@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.HoodConstants;
+import frc.robot.utilities.Elastic;
+import frc.robot.utilities.Elastic.Notification;
+import frc.robot.utilities.Elastic.NotificationLevel;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
@@ -94,6 +97,7 @@ public class HoodSubsystem extends SubsystemBase {
             targetPosition = clampedPosition;
         } else {
             System.out.println("!!! Hood position change failed: target position is NaN !!!");
+            Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "Hood Subsystem", "Position move failed: target position is NaN!"));
         }
     }
 

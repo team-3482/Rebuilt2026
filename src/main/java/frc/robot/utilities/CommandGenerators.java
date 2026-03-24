@@ -17,6 +17,8 @@ import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
+import frc.robot.utilities.Elastic.Notification;
+import frc.robot.utilities.Elastic.NotificationLevel;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
 
@@ -61,7 +63,7 @@ public class CommandGenerators {
         return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
             LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
-            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond), MetersPerSecond);
+            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
             Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
             CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
         });
@@ -74,18 +76,21 @@ public class CommandGenerators {
      */
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-        Logger.recordOutput("Shooter/Target", target);
+
         if (
             distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-                && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
         ) {
+            Logger.recordOutput("Shooter/Target", target);
+
             return Commands.parallel(
                 new LookAtPositionCommand(target),
                 ContinuousMoveHoodCommand(target, hub),
                 new RevShooterCommand(target)
             );
         } else {
-            System.out.println("Too close to target!!!");
+            System.out.println("Target out of range!!!");
+            Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
             return Commands.none();
         }
     }
