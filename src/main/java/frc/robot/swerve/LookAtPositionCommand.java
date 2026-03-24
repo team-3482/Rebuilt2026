@@ -21,7 +21,7 @@ import static edu.wpi.first.units.Units.Radians;
 
 /** Takes a position on the field and automatically rotates to face it */
 public class LookAtPositionCommand extends Command {
-    Pose2d target;
+    final Pose2d target;
 
     public LookAtPositionCommand(Pose2d target) {
         setName("LookAtPositionCommand");
@@ -46,6 +46,7 @@ public class LookAtPositionCommand extends Command {
         .withDriveRequestType(DriveRequestType.Velocity);
 
     private final PhoenixPIDController controller = new PhoenixPIDController(AutoAngleConstants.P, AutoAngleConstants.I, AutoAngleConstants.D);
+
     @Override
     public void initialize() {
         state = SwerveSubsystem.getInstance().getState();
@@ -70,7 +71,7 @@ public class LookAtPositionCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if(interrupted) {
+        if (interrupted) {
             System.out.println("Swerve Auto Angle command interrupted.");
         } else {
             System.out.println("Swerve angle within tolerance.");
@@ -82,7 +83,10 @@ public class LookAtPositionCommand extends Command {
         return controller.atSetpoint();
     }
 
-    private void calculateAngle(){
+    /**
+     * Calculate the angle that for the bot facing the target
+     */
+    private void calculateAngle() {
         xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
         yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 

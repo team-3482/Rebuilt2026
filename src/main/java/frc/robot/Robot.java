@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
-            //noinspection ConstantValue (IntelliJ warning suppression)
+            // noinspection ConstantValue (IntelliJ warning suppression)
             Logger.recordMetadata("GitDirty", BuildConstants.DIRTY > 0 ? "true" : "false");
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 

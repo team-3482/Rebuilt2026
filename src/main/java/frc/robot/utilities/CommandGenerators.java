@@ -77,8 +77,7 @@ public class CommandGenerators {
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
-        if (
-            distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
             && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
         ) {
             Logger.recordOutput("Shooter/Target", target);

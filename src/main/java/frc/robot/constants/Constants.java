@@ -96,6 +96,7 @@ public class Constants {
         public static final double ACCELERATION = 2;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0.075;
             public static final double kS = 0.09;
@@ -106,7 +107,7 @@ public class Constants {
             public static final double kD = 0;
         }
 
-        /** The tolerance used for pivot in degrees  */
+        /** The tolerance used for pivot in degrees */
         public static final double PIVOT_TOLERANCE = 2;
 
         /** Speed to run the intake motor at */
@@ -142,6 +143,7 @@ public class Constants {
         public static final double GEAR_RATIO = 3;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             // TODO: tune these values
             public static final double kS = 0.015; // static friction
@@ -235,6 +237,7 @@ public class Constants {
         public static final double ACCELERATION = 0.5;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
             public static final double kS = 0; // TODO: TUNE!!!!!
@@ -269,7 +272,8 @@ public class Constants {
 
     }
 
-    /** Constants for auto swerve angle alignment
+    /**
+     * Constants for auto swerve angle alignment
      * {@link frc.robot.swerve.LookAtPositionCommand}
      */
     public static final class AutoAngleConstants {

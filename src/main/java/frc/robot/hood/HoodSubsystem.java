@@ -86,12 +86,12 @@ public class HoodSubsystem extends SubsystemBase {
     }
 
     /**
-     *  Set the position of the Hood
+     * Set the position of the Hood
      * @param position from 0.0 to 1.0
      */
     public void setHoodPosition(double position) {
         double clampedPosition = MathUtil.clamp(position, 0, 1);
-        if(!Double.isNaN(clampedPosition)) {
+        if (!Double.isNaN(clampedPosition)) {
             servo1.set(clampedPosition);
             servo2.set(clampedPosition);
             targetPosition = clampedPosition;
@@ -116,7 +116,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @param hub Whether to calculate to shoot into the hub.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity, boolean hub){
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity, boolean hub) {
         double v = Math.abs((velocity).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
@@ -140,7 +140,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @param velocity The linear velocity that the Fuel will shoot at.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity){
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity) {
         return getShootingHoodAngle(distance, velocity, true);
     }
 

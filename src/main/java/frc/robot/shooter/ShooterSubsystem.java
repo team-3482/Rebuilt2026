@@ -89,7 +89,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * Sets the angular velocity of the shooter motors with PID
      * @param targetAngularVelocity the target angular velocity for the shooter motors.
      */
-    public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity){
+    public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity) {
         lastTargetVelocity = targetAngularVelocity;
         shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity).withFeedForward(0.5));
     }
@@ -140,7 +140,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param distance distance from the target
      * @return the desired velocity of the fuel
      */
-    private LinearVelocity calculateFuelLinearVelocity(Distance distance){
+    private LinearVelocity calculateFuelLinearVelocity(Distance distance) {
         double d = distance.in(Meters);
         return MetersPerSecond.of(
             (CalculationConstants.DISTANCE_A * Math.pow(d, 3)
@@ -179,9 +179,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Set the lastTargetVelocity to a value
-     * @param lastTargetVelocity The new target velocity.
+     * @param velocity The new target velocity.
      */
     public void setLastTargetVelocity(AngularVelocity velocity) {
-        this.lastTargetVelocity = lastTargetVelocity;
+        this.lastTargetVelocity = velocity;
     }
 }

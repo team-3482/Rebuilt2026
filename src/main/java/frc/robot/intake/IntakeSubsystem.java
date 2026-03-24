@@ -32,9 +32,9 @@ public class IntakeSubsystem extends SubsystemBase {
         return IntakeSubsystemHolder.INSTANCE;
     }
 
-    private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR, RobotConstants.CAN_BUS);
-    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
+    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private IntakeSubsystem() {
         super("IntakeSubsystem");
@@ -78,12 +78,12 @@ public class IntakeSubsystem extends SubsystemBase {
         this.pivotMotor.getConfigurator().apply(configuration);
     }
 
-     /**
-      * Goes to a position using Motion Magic slot 0.
-      * @param position The angle position for the pivot.
-      * @param clamp Whether to clamp with the soft limits.
-      * @apiNote The soft limits in {@link IntakeConstants}.
-      */
+    /**
+     * Goes to a position using Motion Magic slot 0.
+     * @param position The angle position for the pivot.
+     * @param clamp Whether to clamp with the soft limits.
+     * @apiNote The soft limits in {@link IntakeConstants}.
+     */
     public void motionMagicPosition(Angle position, boolean clamp) {
         if (clamp) {
             position = Degrees.of(MathUtil.clamp(position.in(Degrees), IntakeConstants.MINIMUM_ANGLE.in(Degrees), IntakeConstants.MAXIMUM_ANGLE.in(Degrees)));
@@ -122,7 +122,7 @@ public class IntakeSubsystem extends SubsystemBase {
         return Math.abs(getPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PIVOT_TOLERANCE;
     }
 
-     /**
+    /**
      * Sets the mechanism position of the pivot motor.
      * @param position The position.
      */

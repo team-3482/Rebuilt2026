@@ -32,8 +32,9 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     private final TalonFX climbMotor1 = new TalonFX(ClimbConstants.CLIMB_MOTOR_1, RobotConstants.CAN_BUS);
+    @SuppressWarnings("FieldCanBeLocal")
     private final TalonFX climbMotor2 = new TalonFX(ClimbConstants.CLIMB_MOTOR_2, RobotConstants.CAN_BUS);
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private ClimbSubsystem() {
         super("ClimbSubsystem");
@@ -49,7 +50,7 @@ public class ClimbSubsystem extends SubsystemBase {
         climbMotor2.setControl(new Follower(climbMotor1.getDeviceID(), MotorAlignmentValue.Aligned));
     }
 
-    private void configureMotors(){
+    private void configureMotors() {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
 
         FeedbackConfigs feedbackConfigs = configuration.Feedback;
@@ -84,7 +85,7 @@ public class ClimbSubsystem extends SubsystemBase {
      * Get the position of the climb
      * @return the position in revolutions
      */
-    public Angle getClimbPosition(){
+    public Angle getClimbPosition() {
         return climbMotor1.getPosition().getValue();
     }
 
@@ -92,7 +93,7 @@ public class ClimbSubsystem extends SubsystemBase {
      * Set the speed of the climb motors
      * @param speed the speed from -1 to 1
      */
-    public void setClimbSpeed(double speed){
+    public void setClimbSpeed(double speed) {
         climbMotor1.set(speed);
     }
 
@@ -100,7 +101,7 @@ public class ClimbSubsystem extends SubsystemBase {
      * Move the climb to a set angle
      * @param angle the angle to move to
      */
-    public void setClimbPosition(Angle angle){
+    public void setClimbPosition(Angle angle) {
         MotionMagicVoltage control = motionMagicVoltage
             .withSlot(0)
             .withPosition(angle);

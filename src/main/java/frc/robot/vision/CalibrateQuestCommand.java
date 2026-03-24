@@ -10,9 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.template.ExampleSubsystem;
 import org.littletonrobotics.junction.Logger;
 
 import java.util.ArrayList;
@@ -26,17 +24,16 @@ public class CalibrateQuestCommand extends Command {
         addRequirements(VisionSubsystem.getInstance());
     }
 
-    double turnDegreesPerSecondRate = 37.5;
+    final double turnDegreesPerSecondRate = 37.5;
+    final double rotationTime = 562.5 / turnDegreesPerSecondRate;
+    final double samplePeriod = rotationTime / 15.0;
 
-    ArrayList<Pose2d> collectedPoses = new ArrayList<>();
-
-    double rotationTime = 562.5 / turnDegreesPerSecondRate;
-    double samplePeriod = rotationTime / 15.0; // 20 samples around circle
+    final ArrayList<Pose2d> collectedPoses = new ArrayList<>();
 
     private final SwerveRequest.ApplyRobotSpeeds drive = new SwerveRequest.ApplyRobotSpeeds();
 
-    Timer timer = new Timer();
-    Timer timer2 = new Timer();
+    final Timer timer = new Timer();
+    final Timer timer2 = new Timer();
 
     @Override
     public void initialize() {
