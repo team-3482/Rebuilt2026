@@ -140,7 +140,7 @@ public class Constants {
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
 
         /** 1 motor rotation is 3 wheel rotations */
-        public static final double GEAR_RATIO = 3;
+        public static final double GEAR_RATIO = (double) 1/3;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
@@ -202,15 +202,15 @@ public class Constants {
         public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.45);
 
         /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
-        // public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
+        public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
         /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
-        // public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
+        public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
 
         // Coefficients for cubic distance formula https://www.desmos.com/calculator/hxakyltti5
-        public static final double DISTANCE_A = 0.0000832704;
-        public static final double DISTANCE_B = -0.013812;
-        public static final double DISTANCE_C = 0.771394;
-        public static final double DISTANCE_D = 5.2026;
+        public static final double DISTANCE_A = 0.000332779;
+        public static final double DISTANCE_B = -0.0262643;
+        public static final double DISTANCE_C = 1.00448;
+        public static final double DISTANCE_D = 4.81439;
 
         /** Heuristic multiplier to account for friction, slippage, etc */
         public static final double OFFSET_MULTIPLIER = 1.5;

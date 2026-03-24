@@ -4,15 +4,18 @@
 
 package frc.robot.shooter;
 
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -72,6 +75,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+
+        FeedbackConfigs feedbackConfigs = configuration.Feedback;
+        feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        feedbackConfigs.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
@@ -142,12 +149,18 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     private LinearVelocity calculateFuelLinearVelocity(Distance distance) {
         double d = distance.in(Meters);
-        return MetersPerSecond.of(
-            (CalculationConstants.DISTANCE_A * Math.pow(d, 3)
-            + CalculationConstants.DISTANCE_B * Math.pow(d, 2)
-            + CalculationConstants.DISTANCE_C * d
-            + CalculationConstants.DISTANCE_D) * CalculationConstants.OFFSET_MULTIPLIER
+        double v = MathUtil.clamp(
+            (
+                CalculationConstants.DISTANCE_A * Math.pow(d, 3)
+                + CalculationConstants.DISTANCE_B * Math.pow(d, 2)
+                + CalculationConstants.DISTANCE_C * d
+                + CalculationConstants.DISTANCE_D
+            ),
+            CalculationConstants.MIN_SHOOTING_VELOCITY.in(MetersPerSecond),
+            CalculationConstants.MAX_SHOOTING_VELOCITY.in(MetersPerSecond)
         );
+
+        return MetersPerSecond.of(v);
     }
 
     /**
@@ -158,6 +171,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public AngularVelocity calculateShooterAngularVelocity(Distance distance) {
         return RadiansPerSecond.of(
             (calculateFuelLinearVelocity(distance).in(MetersPerSecond) * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
+            * CalculationConstants.OFFSET_MULTIPLIER
         );
     }
 
