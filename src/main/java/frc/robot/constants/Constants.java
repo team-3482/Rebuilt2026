@@ -174,6 +174,7 @@ public class Constants {
     /** Constants for kinematics math */
     public static final class CalculationConstants {
         // https://engineerexcel.com/planetary-gear-calculation/
+        // https://www.desmos.com/calculator/qwhpu9mivi
         /** Shooter wheel diameter */
         public static final Distance WHEEL_DIAMETER = Inches.of(3.965);
         /** Fuel ball diameter */
@@ -197,9 +198,9 @@ public class Constants {
 
         // found from https://www.desmos.com/calculator/moewwoi4pa
         /** Minimum distance that we can shoot to */
-        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.88);
+        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.87);
         /** Maximum distance that we can shoot to */
-        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.45);
+        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(11.89);
 
         /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
         public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
