@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Radians;
@@ -67,6 +68,8 @@ public class LookAtPositionCommand extends Command {
         );
 
         SwerveSubsystem.getInstance().setTargetAngle(angleToTarget);
+
+        Logger.recordOutput("Shooter/Target", target);
     }
 
     @Override

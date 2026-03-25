@@ -17,8 +17,6 @@ import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
-import frc.robot.utilities.Elastic.Notification;
-import frc.robot.utilities.Elastic.NotificationLevel;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
 
