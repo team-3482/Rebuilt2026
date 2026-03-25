@@ -22,7 +22,7 @@ import frc.robot.utilities.Elastic.NotificationLevel;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.*;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
@@ -75,23 +75,28 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command AimAndRevShooter(Pose2d target, boolean hub) {
-        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+        return Commands.runOnce(() -> {
+            System.out.println(target);
+            System.out.println(SwerveSubsystem.getInstance().getState().Pose);
+            Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
-        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-        ) {
-            Logger.recordOutput("Shooter/Target", target);
+            System.out.println(distance.in(Meters));
 
-            return Commands.parallel(
-                new LookAtPositionCommand(target),
-                ContinuousMoveHoodCommand(target, hub),
-                new RevShooterCommand(target)
-            );
-        } else {
-            System.out.println("Target out of range!!!");
-            Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
-            return Commands.none();
-        }
+            if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+                && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+            ) {
+                Logger.recordOutput("Shooter/Target", target);
+
+                CommandScheduler.getInstance().schedule(Commands.parallel(
+                    new LookAtPositionCommand(target),
+                    ContinuousMoveHoodCommand(target, hub),
+                    new RevShooterCommand(target)
+                ));
+            } else {
+                System.out.println("Target out of range!!!");
+                Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+            }
+        });
     }
 
     /**
@@ -99,15 +104,16 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareFerry() {
-        // TODO: make sure this works
-        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-        boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
+        return Commands.runOnce(() -> {
+            boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
+            boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
-        Pose2d position = redAlliance
-            ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
-            : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
+            Pose2d position = redAlliance
+                ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
+                : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
-        return CommandGenerators.AimAndRevShooter(position, false);
+            CommandScheduler.getInstance().schedule(AimAndRevShooter(position, false));
+        });
     }
 
     /**
@@ -115,7 +121,10 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-        return CommandGenerators.AimAndRevShooter(redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB, true);
+        return Commands.runOnce(() -> {
+            boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
+            System.out.println(redAlliance);
+            CommandScheduler.getInstance().schedule(AimAndRevShooter(redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB, true));
+        });
     }
 }

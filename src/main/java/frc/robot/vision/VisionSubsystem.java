@@ -120,7 +120,7 @@ public class VisionSubsystem extends SubsystemBase {
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
             // TODO: change this to reset the quest's offset ONLY, no adding vision measurements (so it's instant)
             // Also, QuestNav got an moderately large update right after comp so lets look into what changed!
-            System.out.println("Resetting Vision pose");
+            // System.out.println("Resetting Vision pose");
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
                 limelightPose.timestampSeconds
