@@ -320,7 +320,7 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
      * @param angle The new angle.
      */
     public void setTargetAngle(Angle angle) {
-        targetAngle = angle;
+        targetAngle = angle.plus(Radians.of(Math.PI)); // I have NO CLUE why this is offset
     }
 
     /**
@@ -334,7 +334,7 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
     public boolean angleWithinToleranceToTarget() {
         return MathUtil.isNear(
             targetAngle.in(Degrees),
-            getState().Pose.getRotation().getDegrees()-180,
+            getState().Pose.getRotation().getDegrees(),
             AutoAngleConstants.TOLERANCE.in(Degrees)
         );
     }

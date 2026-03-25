@@ -20,7 +20,8 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
@@ -92,7 +93,7 @@ public class CommandGenerators {
                 ));
             } else {
                 System.out.println("Target out of range!!!");
-                Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+                // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
             }
         });
     }
@@ -150,7 +151,7 @@ public class CommandGenerators {
             LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
             Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
             Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
-            
+
             // Schedule command
             CommandScheduler.getInstance().schedule(Commands.parallel(
                 new LookAtPositionCommand(target),
@@ -160,7 +161,7 @@ public class CommandGenerators {
             return true;
         } else {
             System.out.println("Target out of range!!!");
-            Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+            // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
         }
         return false;
     }
