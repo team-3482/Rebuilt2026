@@ -119,10 +119,49 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        return Commands.runOnce(() -> {
+        return Commands.run(() -> {
             boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
-            System.out.println(redAlliance);
-            CommandScheduler.getInstance().schedule(AimAndRevShooter(redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB, true));
+            System.out.println("PrepareHub: Target=" + (redAlliance ? "Red" : "Blue"));
+            Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
+            AimAndRevShooter_(target, true);
         });
+    }
+
+    /** Helper functions */
+
+    /**
+     * Aligns to target, Aims the Hood, and then revs the Shooter. This command must be run in a previous command thread (.run, .runOnce, etc)
+     * @param target The target.
+     * @return The command.
+     */
+    public static boolean AimAndRevShooter_(Pose2d target, boolean hub) {
+        System.out.println("AimAndRevShooter_: Target=" + target.toString());
+        System.out.println("AimAndRevShooter_: Pose=" + SwerveSubsystem.getInstance().getState().Pose.toString());
+        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+
+        System.out.println("AimAndRevShooter_: Dist=" + distance.in(Meters));
+
+        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+        ) {
+            Logger.recordOutput("Shooter/Target", target);
+
+            // Get angle for move hood cmd
+            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
+            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
+            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+            
+            // Schedule command
+            CommandScheduler.getInstance().schedule(Commands.parallel(
+                new LookAtPositionCommand(target),
+                new MoveHoodCommand(angle),
+                new RevShooterCommand(target)
+            ));
+            return true;
+        } else {
+            System.out.println("Target out of range!!!");
+            Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+        }
+        return false;
     }
 }
