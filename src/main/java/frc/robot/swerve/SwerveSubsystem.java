@@ -320,7 +320,15 @@ public class SwerveSubsystem extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder
      * @param angle The new angle.
      */
     public void setTargetAngle(Angle angle) {
-        targetAngle = angle.plus(Radians.of(Math.PI)); // I have NO CLUE why this is offset
+        targetAngle = angle;
+
+        if(angle.in(Degrees) > 180) {
+            targetAngle = targetAngle.minus(Degrees.of(180));
+            targetAngle = Degrees.of(-180).plus(targetAngle);
+        } else if (angle.in(Degrees) < -180) {
+            targetAngle = targetAngle.plus(Degrees.of(180));
+            targetAngle = Degrees.of(180).plus(targetAngle);
+        }
     }
 
     /**

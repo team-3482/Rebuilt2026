@@ -20,7 +20,6 @@ import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
@@ -31,6 +30,38 @@ public class CommandGenerators {
      */
     public static Command CancelAllCommands() {
         return Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll());
+    }
+
+    /* Helper functions */
+
+    /**
+     * Aligns to target, Aims the Hood, and then revs the Shooter. This command must be run in a previous command thread (.run, .runOnce, .runEnd)
+     * @param target The target.
+     * @return The command.
+     */
+    public static void AimAndRevShooter(Pose2d target, boolean hub) {
+        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+
+        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+        ) {
+            Logger.recordOutput("Shooter/Target", target);
+
+            // Get angle for move hood cmd
+            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
+            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
+            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+
+            // Schedule command
+            CommandScheduler.getInstance().schedule(Commands.parallel(
+                new LookAtPositionCommand(target),
+                new MoveHoodCommand(angle),
+                new RevShooterCommand(target)
+            ));
+        } else {
+            System.out.println("Target out of range!!!");
+            // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+        }
     }
 
     /**
@@ -69,36 +100,6 @@ public class CommandGenerators {
     }
 
     /**
-     * Aligns to target, Aims the Hood, and then revs the Shooter.
-     * @param target The target.
-     * @return The command.
-     */
-    public static Command AimAndRevShooter(Pose2d target, boolean hub) {
-        return Commands.runOnce(() -> {
-            System.out.println(target);
-            System.out.println(SwerveSubsystem.getInstance().getState().Pose);
-            Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-
-            System.out.println(distance.in(Meters));
-
-            if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-                && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-            ) {
-                Logger.recordOutput("Shooter/Target", target);
-
-                CommandScheduler.getInstance().schedule(Commands.parallel(
-                    new LookAtPositionCommand(target),
-                    ContinuousMoveHoodCommand(target, hub),
-                    new RevShooterCommand(target)
-                ));
-            } else {
-                System.out.println("Target out of range!!!");
-                // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
-            }
-        });
-    }
-
-    /**
      * Aims to our alliance side and revs shooter
      * @return The command.
      */
@@ -111,7 +112,7 @@ public class CommandGenerators {
                 ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
                 : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
-            CommandScheduler.getInstance().schedule(AimAndRevShooter(position, false));
+            AimAndRevShooter(position, false);
         });
     }
 
@@ -124,45 +125,7 @@ public class CommandGenerators {
             boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
             System.out.println("PrepareHub: Target=" + (redAlliance ? "Red" : "Blue"));
             Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
-            AimAndRevShooter_(target, true);
+            AimAndRevShooter(target, true);
         });
-    }
-
-    /** Helper functions */
-
-    /**
-     * Aligns to target, Aims the Hood, and then revs the Shooter. This command must be run in a previous command thread (.run, .runOnce, etc)
-     * @param target The target.
-     * @return The command.
-     */
-    public static boolean AimAndRevShooter_(Pose2d target, boolean hub) {
-        System.out.println("AimAndRevShooter_: Target=" + target.toString());
-        System.out.println("AimAndRevShooter_: Pose=" + SwerveSubsystem.getInstance().getState().Pose.toString());
-        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-
-        System.out.println("AimAndRevShooter_: Dist=" + distance.in(Meters));
-
-        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-        ) {
-            Logger.recordOutput("Shooter/Target", target);
-
-            // Get angle for move hood cmd
-            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
-            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
-            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
-
-            // Schedule command
-            CommandScheduler.getInstance().schedule(Commands.parallel(
-                new LookAtPositionCommand(target),
-                new MoveHoodCommand(angle),
-                new RevShooterCommand(target)
-            ));
-            return true;
-        } else {
-            System.out.println("Target out of range!!!");
-            // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
-        }
-        return false;
     }
 }

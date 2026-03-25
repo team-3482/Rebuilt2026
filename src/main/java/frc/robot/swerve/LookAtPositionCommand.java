@@ -10,8 +10,6 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
@@ -37,10 +35,9 @@ public class LookAtPositionCommand extends Command {
     }
 
     SwerveDriveState state;
-    Angle angleToTarget;
-    Angle currentRobotAngle;
-    Distance xDistance;
-    Distance yDistance;
+    double angleToTarget;
+    double xDistance;
+    double yDistance;
 
     private final SwerveRequest.FieldCentricFacingAngle facingAngleDrive = new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(TunerConstants.kSpeedAt12Volts.magnitude() * 0.035)
@@ -55,7 +52,6 @@ public class LookAtPositionCommand extends Command {
         controller.reset();
         facingAngleDrive.HeadingController = controller;
 
-        currentRobotAngle = SwerveSubsystem.getInstance().getState().Pose.getRotation().getMeasure();
         calculateAngle();
     }
 
@@ -67,9 +63,11 @@ public class LookAtPositionCommand extends Command {
             .withTargetDirection(new Rotation2d(angleToTarget))
         );
 
-        SwerveSubsystem.getInstance().setTargetAngle(angleToTarget);
+        SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget - Math.PI));
 
-        Logger.recordOutput("Shooter/Target", target);
+        try {
+            Logger.recordOutput("Shooter/Target", target);
+        } catch (Exception ignored) {}
     }
 
     @Override
@@ -90,9 +88,10 @@ public class LookAtPositionCommand extends Command {
      * Calculate the angle that for the bot facing the target
      */
     private void calculateAngle() {
-        xDistance = Meters.of(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
-        yDistance = Meters.of(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
+        xDistance = target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters);
+        yDistance = target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters);
 
-        angleToTarget = Radians.of(Math.atan(yDistance.in(Meters) / xDistance.in(Meters)));
+        angleToTarget = Math.atan(yDistance / xDistance);
+        // System.out.println("target angle: " + angleToTarget);
     }
 }
