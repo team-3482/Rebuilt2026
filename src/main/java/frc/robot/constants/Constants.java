@@ -140,15 +140,14 @@ public class Constants {
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
 
         /** 1 motor rotation is 3 wheel rotations */
-        public static final double GEAR_RATIO = (double) 1/3;
+        public static final double GEAR_RATIO = (double) 1/2;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
-            // TODO: tune these values
             public static final double kS = 0.015; // static friction
-            public static final double kV = 0.025; // voltage required for 1 rot/s
-            public static final double kP = 0.075; // voltage amount to correct for error of 1 rot/s
+            public static final double kV = 0.052; // voltage required for 1 rot/s
+            public static final double kP = 0.01; // voltage amount to correct for error of 1 rot/s
             public static final double kI = 0;
             public static final double kD = 0;
         }
