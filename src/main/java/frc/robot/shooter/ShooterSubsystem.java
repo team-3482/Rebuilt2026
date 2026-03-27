@@ -59,12 +59,12 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.setControl(follower);
 
         this.configureMotors();
+
     }
 
     @Override
     public void periodic() {
         Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
-        Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
     }
 
     /**
@@ -98,7 +98,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity) {
         lastTargetVelocity = targetAngularVelocity;
-        shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity).withFeedForward(0.5));
+        shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity));
     }
 
     /**

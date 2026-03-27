@@ -7,6 +7,7 @@ package frc.robot.shooter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -23,6 +24,9 @@ public class RevShooterCommand extends Command {
 
         this.target = target;
 
+        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
+        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
+
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem.getInstance());
 
@@ -33,7 +37,7 @@ public class RevShooterCommand extends Command {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
         Logger.recordOutput("Shooter/DistanceToTarget", distance.in(Meters));
         AngularVelocity velocity = ShooterSubsystem.getInstance().calculateShooterAngularVelocity(distance);
-        Logger.recordOutput("Shooter/SetVelocity", velocity.in(RPM));
+        Logger.recordOutput("Shooter/TargetVelocity", velocity.in(RPM));
         ShooterSubsystem.getInstance().setShooterAngularVelocity(velocity);
     }
 
@@ -41,5 +45,6 @@ public class RevShooterCommand extends Command {
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setShooterSpeed(0);
         ShooterSubsystem.getInstance().setLastTargetVelocity(RPM.of(0));
+        Logger.recordOutput("Shooter/TargetVelocity", 0.0);
     }
 }

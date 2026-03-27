@@ -213,11 +213,11 @@ public class RobotContainer {
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
-        // Left Trigger -> Manually feed Shooter without doing checks
-        this.operatorController.leftTrigger().whileTrue(new FeedShooterCommand(false));
+        // Left Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
+        this.operatorController.leftTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
-        // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
-        this.operatorController.rightTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
+        // Right Trigger -> Manually feed Shooter without doing checks
+        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false));
 
         // // Left Trigger -> Shooter Hood Minimum
         // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));

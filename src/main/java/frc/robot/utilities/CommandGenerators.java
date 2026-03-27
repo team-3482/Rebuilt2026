@@ -45,7 +45,9 @@ public class CommandGenerators {
         if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
             && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
         ) {
-            Logger.recordOutput("Shooter/Target", target);
+            try {
+                Logger.recordOutput("Shooter/Target", target);
+            } catch (Exception e) {}
 
             // Get angle for move hood cmd
             LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
@@ -123,7 +125,6 @@ public class CommandGenerators {
     public static Command PrepareHub() {
         return Commands.run(() -> {
             boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
-            System.out.println("PrepareHub: Target=" + (redAlliance ? "Red" : "Blue"));
             Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
             AimAndRevShooter(target, true);
         });
