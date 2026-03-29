@@ -169,8 +169,11 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The desired/target shooter angular velocity.
      */
     public AngularVelocity calculateShooterAngularVelocity(Distance distance) {
+        double linearVelocity = calculateFuelLinearVelocity(distance).in(MetersPerSecond);
+        Logger.recordOutput("Shooter/FuelLinearVelocity", linearVelocity);
+
         return RadiansPerSecond.of(
-            (calculateFuelLinearVelocity(distance).in(MetersPerSecond) * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
+            (linearVelocity * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
             * CalculationConstants.OFFSET_MULTIPLIER
         );
     }

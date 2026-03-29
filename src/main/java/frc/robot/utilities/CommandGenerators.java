@@ -40,6 +40,7 @@ public class CommandGenerators {
      * @return The command.
      */
     public static void AimAndRevShooter(Pose2d target, boolean hub) {
+        // TODO make this a lambda expression
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
         if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
@@ -50,14 +51,12 @@ public class CommandGenerators {
             } catch (Exception e) {}
 
             // Get angle for move hood cmd
-            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
-            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
-            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+            // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
 
             // Schedule command
             CommandScheduler.getInstance().schedule(Commands.parallel(
                 new LookAtPositionCommand(target),
-                new MoveHoodCommand(angle),
+                // new MoveHoodCommand(angle),
                 new RevShooterCommand(target)
             ));
         } else {

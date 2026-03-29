@@ -63,7 +63,7 @@ public class LookAtPositionCommand extends Command {
             .withTargetDirection(new Rotation2d(angleToTarget))
         );
 
-        SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget - Math.PI));
+        SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget));// - Math.PI));
 
         try {
             Logger.recordOutput("Shooter/Target", target);

@@ -245,7 +245,7 @@ public class RobotContainer {
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand(false));
     }
 
     public Command getAutonomousCommand() {
