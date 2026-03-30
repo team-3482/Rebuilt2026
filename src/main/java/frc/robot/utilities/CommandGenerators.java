@@ -15,6 +15,7 @@ import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
+import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
@@ -57,7 +58,7 @@ public class CommandGenerators {
 
             // Schedule command
             Command parallelCommand = Commands.parallel(
-                // new LookAtPositionCommand(target),
+                new LookAtPositionCommand(target),
                 // new MoveHoodCommand(angle),
                 new RevShooterCommand(target)
             );
