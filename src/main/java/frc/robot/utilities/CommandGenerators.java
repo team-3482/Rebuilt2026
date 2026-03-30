@@ -15,7 +15,6 @@ import frc.robot.hood.HoodSubsystem;
 import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
-import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
@@ -24,6 +23,9 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
+    private static Command scheduledPrepareHubCommand;
+    private static Command scheduledPrepareFerryCommand;
+
     /**
      * A command that cancels all running commands.
      * @return The command.
@@ -39,7 +41,7 @@ public class CommandGenerators {
      * @param target The target.
      * @return The command.
      */
-    public static void AimAndRevShooter(Pose2d target, boolean hub) {
+    public static Command AimAndRevShooter(Pose2d target, boolean hub) {
         // TODO make this a lambda expression
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
@@ -54,15 +56,18 @@ public class CommandGenerators {
             // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
 
             // Schedule command
-            CommandScheduler.getInstance().schedule(Commands.parallel(
-                new LookAtPositionCommand(target),
+            Command parallelCommand = Commands.parallel(
+                // new LookAtPositionCommand(target),
                 // new MoveHoodCommand(angle),
                 new RevShooterCommand(target)
-            ));
+            );
+            CommandScheduler.getInstance().schedule(parallelCommand);
+            return parallelCommand;
         } else {
             System.out.println("Target out of range!!!");
             // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
         }
+        return Commands.none();
     }
 
     /**
@@ -105,16 +110,20 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareFerry() {
-        return Commands.runOnce(() -> {
+        return Commands.runEnd(
+            () -> {
             boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-            boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
+                boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
-            Pose2d position = redAlliance
-                ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
-                : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
+                Pose2d position = redAlliance
+                    ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
+                    : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
-            AimAndRevShooter(position, false);
-        });
+                scheduledPrepareFerryCommand = AimAndRevShooter(position, false);
+            },
+            () -> {
+                scheduledPrepareFerryCommand.cancel();
+            });
     }
 
     /**
@@ -122,10 +131,14 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        return Commands.run(() -> {
-            boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
-            Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
-            AimAndRevShooter(target, true);
-        });
+        return Commands.runEnd(
+            () -> {
+                boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
+                Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
+                scheduledPrepareHubCommand = AimAndRevShooter(target, true);
+            },
+            () -> {
+                scheduledPrepareHubCommand.cancel();
+            });
     }
 }
