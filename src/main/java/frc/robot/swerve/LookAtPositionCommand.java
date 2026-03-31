@@ -88,10 +88,10 @@ public class LookAtPositionCommand extends Command {
      * Calculate the angle that for the bot facing the target
      */
     private void calculateAngle() {
-        xDistance = Math.abs(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
-        yDistance = Math.abs(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
+        xDistance = target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters);
+        yDistance = target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters);
 
-        angleToTarget = -Math.atan(yDistance / xDistance);
+        angleToTarget = Math.atan2(yDistance, xDistance);
         System.out.println("target angle: " + angleToTarget);
     }
 }
