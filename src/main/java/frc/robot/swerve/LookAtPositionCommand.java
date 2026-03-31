@@ -63,7 +63,7 @@ public class LookAtPositionCommand extends Command {
             .withTargetDirection(new Rotation2d(angleToTarget))
         );
 
-        SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget));// - Math.PI));
+        SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget));
 
         try {
             Logger.recordOutput("Shooter/Target", target);
@@ -88,10 +88,10 @@ public class LookAtPositionCommand extends Command {
      * Calculate the angle that for the bot facing the target
      */
     private void calculateAngle() {
-        xDistance = target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters);
-        yDistance = target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters);
+        xDistance = Math.abs(target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters));
+        yDistance = Math.abs(target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters));
 
-        angleToTarget = Math.atan(yDistance / xDistance);
-        // System.out.println("target angle: " + angleToTarget);
+        angleToTarget = -Math.atan(yDistance / xDistance);
+        System.out.println("target angle: " + angleToTarget);
     }
 }

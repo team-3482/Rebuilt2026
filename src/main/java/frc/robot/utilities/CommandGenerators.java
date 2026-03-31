@@ -113,7 +113,7 @@ public class CommandGenerators {
     public static Command PrepareFerry() {
         return Commands.runEnd(
             () -> {
-            boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
+                boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
                 boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
                 Pose2d position = redAlliance
