@@ -77,8 +77,10 @@ public class Constants {
 
     /** Constants for intake subsystem (both the pivot and actual intake) */
     public static final class IntakeConstants {
-        /** The CAN ID for the Intake Pivot TalonFX */
-        public static final int PIVOT_MOTOR = 22;
+        /** The CAN ID for the Left Pinion TalonFX */
+        public static final int LEFT_PINION_MOTOR = 22;
+        /** The CAN ID for the Right Pinion TalonFX */
+        public static final int RIGHT_PINION_MOTOR = 22; // TODO: assign real ID
         /** The CAN ID for the Intake TalonFX */
         public static final int INTAKE_MOTOR = 20;
 
@@ -88,7 +90,7 @@ public class Constants {
         public static final Angle MAXIMUM_ANGLE = Degrees.of(70);
 
         /** Gear ratio for mechanism */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 6;
+        public static final double ROTOR_TO_MECHANISM_RATIO = ((double) 30 / 12) * ((double) 36 / 19);
 
         // TODO: we can probably optimize this a bit
         /* Motion Magic Config */
@@ -98,7 +100,7 @@ public class Constants {
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
-            public static final double kG = 0.075;
+            public static final double kG = 0;
             public static final double kS = 0.09;
             public static final double kV = 0;
             public static final double kA = 0;
@@ -108,7 +110,7 @@ public class Constants {
         }
 
         /** The tolerance used for pivot in degrees */
-        public static final double PIVOT_TOLERANCE = 2;
+        public static final double PINION_TOLERANCE = 2;
 
         /** Speed to run the intake motor at */
         public static final double INTAKE_SPEED = 0.4;
