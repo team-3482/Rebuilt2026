@@ -77,8 +77,10 @@ public class Constants {
 
     /** Constants for intake subsystem (both the pivot and actual intake) */
     public static final class IntakeConstants {
-        /** The CAN ID for the Intake Pivot TalonFX */
-        public static final int PIVOT_MOTOR = 22;
+        /** The CAN ID for the Left Pinion TalonFX */
+        public static final int LEFT_PINION_MOTOR = 22;
+        /** The CAN ID for the Right Pinion TalonFX */
+        public static final int RIGHT_PINION_MOTOR = 26;
         /** The CAN ID for the Intake TalonFX */
         public static final int INTAKE_MOTOR = 20;
 
@@ -88,7 +90,7 @@ public class Constants {
         public static final Angle MAXIMUM_ANGLE = Degrees.of(70);
 
         /** Gear ratio for mechanism */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 6;
+        public static final double ROTOR_TO_MECHANISM_RATIO = ((double) 30 / 12) * ((double) 36 / 19);
 
         // TODO: we can probably optimize this a bit
         /* Motion Magic Config */
@@ -96,8 +98,9 @@ public class Constants {
         public static final double ACCELERATION = 2;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
-            public static final double kG = 0.075;
+            public static final double kG = 0;
             public static final double kS = 0.09;
             public static final double kV = 0;
             public static final double kA = 0;
@@ -106,8 +109,8 @@ public class Constants {
             public static final double kD = 0;
         }
 
-        /** The tolerance used for pivot in degrees  */
-        public static final double PIVOT_TOLERANCE = 2;
+        /** The tolerance used for pivot in degrees */
+        public static final double PINION_TOLERANCE = 2;
 
         /** Speed to run the intake motor at */
         public static final double INTAKE_SPEED = 0.4;
@@ -127,8 +130,8 @@ public class Constants {
         public static final int STERILIZER_MOTOR = 30;
 
         /** Feed shooter debounce time so all balls consistently make it in */
-        public static final double FEEDER_PAUSE_DURATION = 0.3;
-        public static final double FEEDER_FEED_DURATION = 0.15;
+        public static final double FEEDER_PAUSE_DURATION = 0.15;
+        public static final double FEEDER_FEED_DURATION = 0.075;
 
         /** Feeder motor speed */
         public static final double FEEDER_SPEED = .4;
@@ -138,16 +141,16 @@ public class Constants {
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
 
-        /** 1 motor rotation is 3 wheel rotations */
-        public static final double GEAR_RATIO = 3;
+        /** 1 motor rotation is 2 wheel rotations */
+        public static final double GEAR_RATIO = (double) 1/2;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
-            // TODO: tune these values
-            public static final double kS = 0.015; // static friction
-            public static final double kV = 0.025; // voltage required for 1 rot/s
-            public static final double kP = 0.075; // voltage amount to correct for error of 1 rot/s
-            public static final double kI = 0;
+            public static final double kS = 0.19; // static friction
+            public static final double kV = 0.055; // voltage required for 1 rot/s
+            public static final double kP = 0.2; // voltage amount to correct for error of 1 rot/s
+            public static final double kI = 0.05;
             public static final double kD = 0;
         }
     }
@@ -163,15 +166,16 @@ public class Constants {
         public static final Distance SERVO_LENGTH = Millimeters.of(50);
         /** Max Servo speed to run at */
         public static final LinearVelocity MAX_SERVO_SPEED = Millimeters.of(32).per(Second);
-        /** Hood angle minimum */
+        /** Hood angle minimum shooting angle (linear actuators fully extended) */
         public static final Angle HOOD_ANGLE_MIN = Degrees.of(54.2);
-        /** Hood angle maximum */
+        /** Hood angle minimum shooting angle (linear actuators fully retracted) */
         public static final Angle HOOD_ANGLE_MAX = Degrees.of(69);
     }
 
     /** Constants for kinematics math */
     public static final class CalculationConstants {
         // https://engineerexcel.com/planetary-gear-calculation/
+        // https://www.desmos.com/calculator/qwhpu9mivi
         /** Shooter wheel diameter */
         public static final Distance WHEEL_DIAMETER = Inches.of(3.965);
         /** Fuel ball diameter */
@@ -195,23 +199,23 @@ public class Constants {
 
         // found from https://www.desmos.com/calculator/moewwoi4pa
         /** Minimum distance that we can shoot to */
-        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.88);
+        public static final Distance MIN_SHOOTING_DISTANCE = Meters.of(1.87);
         /** Maximum distance that we can shoot to */
-        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(16.45);
+        public static final Distance MAX_SHOOTING_DISTANCE = Meters.of(11.89);
 
         /** Minimum shooting velocity (of the fuel, NOT the shooter wheel) */
-        // public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
+        public static final LinearVelocity MIN_SHOOTING_VELOCITY = MetersPerSecond.of(6.6);
         /** Maximum shooting velocity (of the fuel, NOT the shooter wheel) */
-        // public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
+        public static final LinearVelocity MAX_SHOOTING_VELOCITY = MetersPerSecond.of(13.6);
 
         // Coefficients for cubic distance formula https://www.desmos.com/calculator/hxakyltti5
-        public static final double DISTANCE_A = 0.0000832704;
-        public static final double DISTANCE_B = -0.013812;
-        public static final double DISTANCE_C = 0.771394;
-        public static final double DISTANCE_D = 5.2026;
+        public static final double DISTANCE_A = 0.000332779;
+        public static final double DISTANCE_B = -0.0262643;
+        public static final double DISTANCE_C = 1.00448;
+        public static final double DISTANCE_D = 4.81439;
 
         /** Heuristic multiplier to account for friction, slippage, etc */
-        public static final double OFFSET_MULTIPLIER = 1.5;
+        public static final double OFFSET_MULTIPLIER = 1.175;
 
         /** Height of the Hub */
         public static final Distance HUB_HEIGHT = Feet.of(6);
@@ -228,13 +232,14 @@ public class Constants {
         public static final Angle CLIMB_POSITION = Revolutions.of(1.2);
 
         /** Gearbox ratio */
-        public static final double ROTOR_TO_MECHANISM_RATIO = 12;
+        public static final double ROTOR_TO_MECHANISM_RATIO = 45;
 
         /* Motion Magic Config */
         public static final double CRUISE_SPEED = 1;
         public static final double ACCELERATION = 0.5;
 
         /** Gains used for Motion Magic slot 0. */
+        @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
             public static final double kS = 0; // TODO: TUNE!!!!!
@@ -269,7 +274,8 @@ public class Constants {
 
     }
 
-    /** Constants for auto swerve angle alignment
+    /**
+     * Constants for auto swerve angle alignment
      * {@link frc.robot.swerve.LookAtPositionCommand}
      */
     public static final class AutoAngleConstants {

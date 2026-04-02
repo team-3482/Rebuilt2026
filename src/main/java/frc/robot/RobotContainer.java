@@ -187,11 +187,11 @@ public class RobotContainer {
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
         this.driverController.leftBumper()
             .whileTrue(CommandGenerators.PrepareFerry())
-            .onFalse(new MoveHoodCommand(0.5));
+            .onFalse(new MoveHoodCommand(0));
         // Right Bumper -> Aim to Hub and start up Shooter
         this.driverController.rightBumper()
             .whileTrue(CommandGenerators.PrepareHub())
-            .onFalse(new MoveHoodCommand(0.5));
+            .onFalse(new MoveHoodCommand(0));
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -213,11 +213,11 @@ public class RobotContainer {
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
-        // Left Trigger -> Manually feed Shooter without doing checks
-        this.operatorController.leftTrigger().whileTrue(new FeedShooterCommand(false));
+        // Left Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
+        this.operatorController.leftTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
-        // Right Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
-        this.operatorController.rightTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
+        // Right Trigger -> Manually feed Shooter without doing checks
+        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false));
 
         // // Left Trigger -> Shooter Hood Minimum
         // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
@@ -245,7 +245,7 @@ public class RobotContainer {
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand(false));
     }
 
     public Command getAutonomousCommand() {

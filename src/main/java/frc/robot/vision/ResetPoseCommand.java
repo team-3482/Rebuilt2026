@@ -17,11 +17,8 @@ public class ResetPoseCommand extends Command {
     }
 
     @Override
-    public void initialize() {}
-
-    @Override
     public void execute() {
-        if(VisionSubsystem.getInstance().trustLimelightData()) {
+        if (VisionSubsystem.getInstance().trustLimelightData()) {
             VisionSubsystem.getInstance().resetPose();
             reset = true;
         }
@@ -29,7 +26,7 @@ public class ResetPoseCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        if(!interrupted) {
+        if (!interrupted) {
             System.out.println("QuestNav pose reset from Limelight AprilTag data!");
         } else {
             System.out.println("Failed to reset QuestNav pose, no AprilTag in view!");

@@ -13,9 +13,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.constants.Constants;
-import frc.robot.constants.Constants.DriverStationConstants;
-import frc.robot.utilities.Elastic;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -35,9 +32,8 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("ProjectName", "Rebuilt2026");
 
         if (isReal()) {
-            // Random parent directory name to differentiate logs.
-            // I tried to use the date & time, but the RIO doesn't have an accurate timestamp since there's no RTC.
-            String path = "/U/logs/" + (long)(Math.random() * Math.pow(10, 16));
+            String event = DriverStation.getEventName();
+            String path = "/U/logs/" + (event.isEmpty() ? "testing" : event);
 
             System.out.println("logging to: " + path + " (new directory: " + new File(path).mkdirs() + ")");
 
@@ -48,19 +44,18 @@ public class Robot extends LoggedRobot {
 
             Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
             // This will always be either 0 or 1, so the > sign is used to suppress the comparing identical expressions.
-            //noinspection ConstantValue (IntelliJ warning suppression)
+            // noinspection ConstantValue (IntelliJ warning suppression)
             Logger.recordMetadata("GitDirty", BuildConstants.DIRTY > 0 ? "true" : "false");
             Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
 
             Logger.start();
         }
 
-        Elastic.selectTab(DriverStationConstants.DEV_TAB);
-
         CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
         // Eager-load the auton command so it's ready right away
         RobotContainer.getInstance().getAutonomousCommand();
     }
+
 
     @Override
     public void robotPeriodic() {
@@ -98,7 +93,7 @@ public class Robot extends LoggedRobot {
             System.err.println("No auton command found.");
         }
 
-        Elastic.selectTab(DriverStationConstants.AUTON_TAB);
+        // Elastic.selectTab(DriverStationConstants.AUTON_TAB);
     }
 
     @Override
@@ -113,7 +108,7 @@ public class Robot extends LoggedRobot {
             CommandScheduler.getInstance().cancel(auton);
         }
 
-        Elastic.selectTab(DriverStationConstants.TELEOP_TAB);
+        // Elastic.selectTab(DriverStationConstants.TELEOP_TAB);
     }
 
     @Override

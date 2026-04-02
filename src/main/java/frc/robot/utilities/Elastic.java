@@ -2,7 +2,6 @@
 // This software can be modified and/or shared under the terms
 // defined by the Elastic license:
 // https://github.com/Gold872/elastic_dashboard/blob/main/LICENSE
-
 package frc.robot.utilities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,6 +12,7 @@ import edu.wpi.first.networktables.PubSubOption;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StringTopic;
 
+@SuppressWarnings("ALL")
 public final class Elastic {
   private static final StringTopic notificationTopic =
       NetworkTableInstance.getDefault().getStringTopic("/Elastic/RobotNotifications");

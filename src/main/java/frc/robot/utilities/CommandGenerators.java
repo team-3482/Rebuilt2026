@@ -24,12 +24,51 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
+    private static Command scheduledPrepareHubCommand;
+    private static Command scheduledPrepareFerryCommand;
+
     /**
      * A command that cancels all running commands.
      * @return The command.
      */
     public static Command CancelAllCommands() {
         return Commands.runOnce(() -> CommandScheduler.getInstance().cancelAll());
+    }
+
+    /* Helper functions */
+
+    /**
+     * Aligns to target, Aims the Hood, and then revs the Shooter. This command must be run in a previous command thread (.run, .runOnce, .runEnd)
+     * @param target The target.
+     * @return The command.
+     */
+    public static Command AimAndRevShooter(Pose2d target, boolean hub) {
+        // TODO make this a lambda expression
+        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+
+        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+        ) {
+            try {
+                Logger.recordOutput("Shooter/Target", target);
+            } catch (Exception e) {}
+
+            // Get angle for move hood cmd
+            // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+
+            // Schedule command
+            Command parallelCommand = Commands.parallel(
+                new LookAtPositionCommand(target),
+                // new MoveHoodCommand(angle),
+                new RevShooterCommand(target)
+            );
+            CommandScheduler.getInstance().schedule(parallelCommand);
+            return parallelCommand;
+        } else {
+            System.out.println("Target out of range!!!");
+            // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
+        }
+        return Commands.none();
     }
 
     /**
@@ -61,33 +100,10 @@ public class CommandGenerators {
         return Commands.runOnce(() -> {
             Distance distance = SwerveSubsystem.getInstance().getDistance(target);
             LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
-            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond), MetersPerSecond);
+            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
             Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
             CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
         });
-    }
-
-    /**
-     * Aligns to target, Aims the Hood, and then revs the Shooter.
-     * @param target The target.
-     * @return The command.
-     */
-    public static Command AimAndRevShooter(Pose2d target, boolean hub) {
-        Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-        Logger.recordOutput("Shooter/Target", target);
-        if (
-            distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-                && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-        ) {
-            return Commands.parallel(
-                new LookAtPositionCommand(target),
-                ContinuousMoveHoodCommand(target, hub),
-                new RevShooterCommand(target)
-            );
-        } else {
-            System.out.println("Too close to target!!!");
-            return Commands.none();
-        }
     }
 
     /**
@@ -95,15 +111,20 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareFerry() {
-        // TODO: make sure this works
-        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-        boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
+        return Commands.runEnd(
+            () -> {
+                boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
+                boolean topHalf = SwerveSubsystem.getInstance().getState().Pose.getY() > Positions.HALF_FIELD_Y;
 
-        Pose2d position = redAlliance
-            ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
-            : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
+                Pose2d position = redAlliance
+                    ? (topHalf ? Positions.RED_TOP_FERRY : Positions.RED_BOTTOM_FERRY)
+                    : (topHalf ? Positions.BLUE_TOP_FERRY : Positions.BLUE_BOTTOM_FERRY);
 
-        return CommandGenerators.AimAndRevShooter(position, false);
+                scheduledPrepareFerryCommand = AimAndRevShooter(position, false);
+            },
+            () -> {
+                scheduledPrepareFerryCommand.cancel();
+            });
     }
 
     /**
@@ -111,7 +132,14 @@ public class CommandGenerators {
      * @return The command.
      */
     public static Command PrepareHub() {
-        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
-        return CommandGenerators.AimAndRevShooter(redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB, true);
+        return Commands.runEnd(
+            () -> {
+                boolean redAlliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue).equals(DriverStation.Alliance.Red);
+                Pose2d target = redAlliance ? Positions.RED_HUB : Positions.BLUE_HUB;
+                scheduledPrepareHubCommand = AimAndRevShooter(target, true);
+            },
+            () -> {
+                scheduledPrepareHubCommand.cancel();
+            });
     }
 }

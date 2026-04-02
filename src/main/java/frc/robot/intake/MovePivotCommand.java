@@ -13,7 +13,7 @@ import static edu.wpi.first.units.Units.Degrees;
 
 /** An example command that does nothing. */
 public class MovePivotCommand extends Command {
-    private Angle position;
+    private final Angle position;
 
     public MovePivotCommand(Angle position) {
         setName("MovePivotCommand");
@@ -34,9 +34,6 @@ public class MovePivotCommand extends Command {
         Logger.recordOutput("Intake/PivotAngle", angle);
         SmartDashboard.putNumber("Intake/PivotAngle", angle);
     }
-
-    @Override
-    public void end(boolean interrupted) {}
 
     @Override
     public boolean isFinished() {

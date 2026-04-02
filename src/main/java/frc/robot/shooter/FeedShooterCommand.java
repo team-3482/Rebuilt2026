@@ -5,28 +5,21 @@
 package frc.robot.shooter;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ShooterConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.swerve.SwerveSubsystem;
-import org.littletonrobotics.junction.Logger;
 
 /** Feed fuel into shooter with Feeder and Sterilizer motors */
 public class FeedShooterCommand extends Command {
     private final Timer timer = new Timer();
     private boolean shouldFeed = true;
-    private boolean doChecks;
+    private final boolean doChecks;
 
     public FeedShooterCommand(boolean doChecks) {
         setName("FeedShooterCommand");
 
         this.doChecks = doChecks;
-
-        // Use addRequirements() here to declare subsystem dependencies.
-        // addRequirements(ShooterSubsystem.getInstance());
-        // addRequirements(HoodSubsystem.getInstance());
-        // addRequirements(SwerveSubsystem.getInstance());
     }
 
     public FeedShooterCommand() {
@@ -42,10 +35,7 @@ public class FeedShooterCommand extends Command {
 
     @Override
     public void execute() {
-        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
-        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
-
-        if(
+        if (
             !doChecks
             || (ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
             && HoodSubsystem.getInstance().isPositionWithinTolerance()
@@ -67,10 +57,5 @@ public class FeedShooterCommand extends Command {
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setFeederSpeed(0);
         ShooterSubsystem.getInstance().setSterilizerSpeed(0);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
     }
 }

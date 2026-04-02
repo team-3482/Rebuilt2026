@@ -16,6 +16,7 @@ import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.Degrees;
 
+@SuppressWarnings("ALL")
 public class SwerveTelemetry {
     private final double MaxSpeed;
 

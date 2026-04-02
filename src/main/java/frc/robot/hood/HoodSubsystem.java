@@ -36,8 +36,8 @@ public class HoodSubsystem extends SubsystemBase {
     private final Servo servo1 = new Servo(HoodConstants.HOOD_SERVO_1);
     private final Servo servo2 = new Servo(HoodConstants.HOOD_SERVO_2);
 
-    private double currentPosition = 0.5;
-    private double targetPosition = 0.5;
+    private double currentPosition = 0;
+    private double targetPosition = 0;
     private Time lastUpdateTime = Seconds.of(0);
 
     private HoodSubsystem() {
@@ -76,24 +76,25 @@ public class HoodSubsystem extends SubsystemBase {
      * @param angle within minimum and maximum set in {@link HoodConstants}
      */
     public double hoodAngleToDouble(Angle angle) {
-        return (
+        return 1 - (
             angle.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees))
             / (HoodConstants.HOOD_ANGLE_MAX.in(Degrees) - HoodConstants.HOOD_ANGLE_MIN.in(Degrees)
         );
     }
 
     /**
-     *  Set the position of the Hood
+     * Set the position of the Hood
      * @param position from 0.0 to 1.0
      */
     public void setHoodPosition(double position) {
         double clampedPosition = MathUtil.clamp(position, 0, 1);
-        if(!Double.isNaN(clampedPosition)) {
+        if (!Double.isNaN(clampedPosition)) {
             servo1.set(clampedPosition);
             servo2.set(clampedPosition);
             targetPosition = clampedPosition;
         } else {
             System.out.println("!!! Hood position change failed: target position is NaN !!!");
+            //Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "Hood Subsystem", "Position move failed: target position is NaN!"));
         }
     }
 
@@ -112,7 +113,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @param hub Whether to calculate to shoot into the hub.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity, boolean hub){
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity, boolean hub) {
         double v = Math.abs((velocity).in(MetersPerSecond));
         double g = CalculationConstants.GRAV.in(MetersPerSecondPerSecond);
         double d = distance.in(Meters);
@@ -136,7 +137,7 @@ public class HoodSubsystem extends SubsystemBase {
      * @param velocity The linear velocity that the Fuel will shoot at.
      * @return The angle at which the hood should be set.
      */
-    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity){
+    public Angle getShootingHoodAngle(Distance distance, LinearVelocity velocity) {
         return getShootingHoodAngle(distance, velocity, true);
     }
 

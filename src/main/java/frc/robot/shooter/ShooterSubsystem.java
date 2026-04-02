@@ -4,15 +4,18 @@
 
 package frc.robot.shooter;
 
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -56,12 +59,12 @@ public class ShooterSubsystem extends SubsystemBase {
         shooterMotor2.setControl(follower);
 
         this.configureMotors();
+
     }
 
     @Override
     public void periodic() {
         Logger.recordOutput("Shooter/ShooterVelocity", getShooterVelocity().in(RPM));
-        Logger.recordOutput("Shooter/TargetAngularVelocity", lastTargetVelocity.in(RPM));
     }
 
     /**
@@ -72,6 +75,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
+
+        FeedbackConfigs feedbackConfigs = configuration.Feedback;
+        feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+        feedbackConfigs.SensorToMechanismRatio = ShooterConstants.GEAR_RATIO;
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
@@ -89,9 +96,9 @@ public class ShooterSubsystem extends SubsystemBase {
      * Sets the angular velocity of the shooter motors with PID
      * @param targetAngularVelocity the target angular velocity for the shooter motors.
      */
-    public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity){
+    public void setShooterAngularVelocity(AngularVelocity targetAngularVelocity) {
         lastTargetVelocity = targetAngularVelocity;
-        shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity).withFeedForward(0.5));
+        shooterMotor3.setControl(velocityVoltage.withVelocity(targetAngularVelocity));
     }
 
     /**
@@ -140,14 +147,20 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param distance distance from the target
      * @return the desired velocity of the fuel
      */
-    private LinearVelocity calculateFuelLinearVelocity(Distance distance){
+    private LinearVelocity calculateFuelLinearVelocity(Distance distance) {
         double d = distance.in(Meters);
-        return MetersPerSecond.of(
-            (CalculationConstants.DISTANCE_A * Math.pow(d, 3)
-            + CalculationConstants.DISTANCE_B * Math.pow(d, 2)
-            + CalculationConstants.DISTANCE_C * d
-            + CalculationConstants.DISTANCE_D) * CalculationConstants.OFFSET_MULTIPLIER
+        double v = MathUtil.clamp(
+            (
+                CalculationConstants.DISTANCE_A * Math.pow(d, 3)
+                + CalculationConstants.DISTANCE_B * Math.pow(d, 2)
+                + CalculationConstants.DISTANCE_C * d
+                + CalculationConstants.DISTANCE_D
+            ),
+            CalculationConstants.MIN_SHOOTING_VELOCITY.in(MetersPerSecond),
+            CalculationConstants.MAX_SHOOTING_VELOCITY.in(MetersPerSecond)
         );
+
+        return MetersPerSecond.of(v);
     }
 
     /**
@@ -156,8 +169,12 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The desired/target shooter angular velocity.
      */
     public AngularVelocity calculateShooterAngularVelocity(Distance distance) {
+        double linearVelocity = calculateFuelLinearVelocity(distance).in(MetersPerSecond);
+        Logger.recordOutput("Shooter/FuelLinearVelocity", linearVelocity);
+
         return RadiansPerSecond.of(
-            (calculateFuelLinearVelocity(distance).in(MetersPerSecond) * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
+            (linearVelocity * CalculationConstants.FUEL_LINEAR_TO_SHOOTER_ANGULAR_VELOCITY_RATIO)
+            * CalculationConstants.OFFSET_MULTIPLIER
         );
     }
 
@@ -179,9 +196,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /**
      * Set the lastTargetVelocity to a value
-     * @param lastTargetVelocity The new target velocity.
+     * @param velocity The new target velocity.
      */
     public void setLastTargetVelocity(AngularVelocity velocity) {
-        this.lastTargetVelocity = lastTargetVelocity;
+        this.lastTargetVelocity = velocity;
     }
 }

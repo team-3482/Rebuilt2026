@@ -7,6 +7,7 @@ package frc.robot.shooter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.swerve.SwerveSubsystem;
 import org.littletonrobotics.junction.Logger;
@@ -16,11 +17,15 @@ import static edu.wpi.first.units.Units.RPM;
 
 /** Rev up shooter to speed based on distance from target */
 public class RevShooterCommand extends Command {
-    Pose2d target;
+    final Pose2d target;
+
     public RevShooterCommand(Pose2d target) {
         setName("RevShooterCommand");
 
         this.target = target;
+
+        SmartDashboard.putBoolean("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
+        Logger.recordOutput("Shooter/AtShootingVelocityThreshold", ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance());
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem.getInstance());
@@ -32,22 +37,14 @@ public class RevShooterCommand extends Command {
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
         Logger.recordOutput("Shooter/DistanceToTarget", distance.in(Meters));
         AngularVelocity velocity = ShooterSubsystem.getInstance().calculateShooterAngularVelocity(distance);
-        Logger.recordOutput("Shooter/SetVelocity", velocity.in(RPM));
-        System.out.println("\n\nSetVelocity: " + velocity.in(RPM));
+        Logger.recordOutput("Shooter/TargetVelocity", velocity.in(RPM));
         ShooterSubsystem.getInstance().setShooterAngularVelocity(velocity);
     }
-
-    @Override
-    public void execute() {}
 
     @Override
     public void end(boolean interrupted) {
         ShooterSubsystem.getInstance().setShooterSpeed(0);
         ShooterSubsystem.getInstance().setLastTargetVelocity(RPM.of(0));
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
+        Logger.recordOutput("Shooter/TargetVelocity", 0.0);
     }
 }

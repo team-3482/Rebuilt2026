@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 /** Move shooter hood to position */
 public class MoveHoodCommand extends Command {
-    private double position;
+    private final double position;
 
     public MoveHoodCommand(double position) {
         setName("MoveHoodCommand");
@@ -31,12 +31,6 @@ public class MoveHoodCommand extends Command {
     public void initialize() {
         HoodSubsystem.getInstance().setHoodPosition(position);
     }
-
-    @Override
-    public void execute() {}
-
-    @Override
-    public void end(boolean interrupted) {}
 
     @Override
     public boolean isFinished() {

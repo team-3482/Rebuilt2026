@@ -21,15 +21,7 @@ public class IntakeCommand extends Command {
     }
 
     @Override
-    public void execute() {}
-
-    @Override
     public void end(boolean interrupted) {
         IntakeSubsystem.getInstance().setIntakeSpeed(0);
-    }
-
-    @Override
-    public boolean isFinished() {
-        return false;
     }
 }

@@ -5,12 +5,10 @@
 package frc.robot.intake;
 
 import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.*;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,7 +18,7 @@ import frc.robot.constants.Constants.RobotConstants;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 
-/** Controls Intake and Intake Pivot */
+/** Controls Intake and Rack and Pinion */
 public class IntakeSubsystem extends SubsystemBase {
     // Use Bill Pugh Singleton Pattern for efficient lazy initialization (thread-safe !)
     private static class IntakeSubsystemHolder {
@@ -32,20 +30,23 @@ public class IntakeSubsystem extends SubsystemBase {
         return IntakeSubsystemHolder.INSTANCE;
     }
 
-    private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR, RobotConstants.CAN_BUS);
-    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
-    private MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
+    private final TalonFX leftPinionMotor = new TalonFX(IntakeConstants.LEFT_PINION_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX rightPinionMotor = new TalonFX(IntakeConstants.RIGHT_PINION_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
+    private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private IntakeSubsystem() {
         super("IntakeSubsystem");
 
         this.configureMotor();
-        this.setPivotPosition(Degrees.of(0));
+        this.setRackAndPinionPosition(Degrees.of(0));
 
-        this.pivotMotor.getPosition().setUpdateFrequency(50);
+        this.leftPinionMotor.getPosition().setUpdateFrequency(50);
+        
+        this.rightPinionMotor.setControl(new Follower(leftPinionMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
-    /* Configures pivot motor since it is the only one using motion magic. */
+    /* Configures pinion motor since it is the only one using motion magic. */
     private void configureMotor() {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
 
@@ -61,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;
-        slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
+        slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
         slot0Configs.kG = IntakeConstants.Slot0Gains.kG;
         slot0Configs.kS = IntakeConstants.Slot0Gains.kS;
         slot0Configs.kV = IntakeConstants.Slot0Gains.kV;
@@ -75,15 +76,15 @@ public class IntakeSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicCruiseVelocity = IntakeConstants.CRUISE_SPEED;
         motionMagicConfigs.MotionMagicAcceleration = IntakeConstants.ACCELERATION;
 
-        this.pivotMotor.getConfigurator().apply(configuration);
+        this.leftPinionMotor.getConfigurator().apply(configuration);
     }
 
-     /**
-      * Goes to a position using Motion Magic slot 0.
-      * @param position The angle position for the pivot.
-      * @param clamp Whether to clamp with the soft limits.
-      * @apiNote The soft limits in {@link IntakeConstants}.
-      */
+    /**
+     * Goes to a position using Motion Magic slot 0.
+     * @param position The angle position for the rack and pinion.
+     * @param clamp Whether to clamp with the soft limits.
+     * @apiNote The soft limits in {@link IntakeConstants}.
+     */
     public void motionMagicPosition(Angle position, boolean clamp) {
         if (clamp) {
             position = Degrees.of(MathUtil.clamp(position.in(Degrees), IntakeConstants.MINIMUM_ANGLE.in(Degrees), IntakeConstants.MAXIMUM_ANGLE.in(Degrees)));
@@ -93,12 +94,12 @@ public class IntakeSubsystem extends SubsystemBase {
             .withSlot(0)
             .withPosition(position.in(Rotations));
 
-        this.pivotMotor.setControl(control);
+        this.leftPinionMotor.setControl(control);
     }
 
     /**
      * Goes to a position using Motion Magic slot 0.
-     * @param position The angle position for the pivot.
+     * @param position The angle position for the rack and pinion.
      * @apiNote The position is clamped by the soft limits in {@link IntakeConstants}.
      */
     public void motionMagicPosition(Angle position) {
@@ -110,24 +111,24 @@ public class IntakeSubsystem extends SubsystemBase {
      * @return The angle
      */
     public Angle getPosition() {
-        return this.pivotMotor.getPosition().getValue();
+        return this.leftPinionMotor.getPosition().getValue();
     }
 
     /**
      * Checks if the current position is within
-     * {@link IntakeConstants#PIVOT_TOLERANCE} of an input position.
+     * {@link IntakeConstants#PINION_TOLERANCE} of an input position.
      * @param position The position to compare to.
      */
     public boolean withinTolerance(Angle position) {
-        return Math.abs(getPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PIVOT_TOLERANCE;
+        return Math.abs(getPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PINION_TOLERANCE;
     }
 
-     /**
-     * Sets the mechanism position of the pivot motor.
+    /**
+     * Sets the mechanism position of the rack and pinion motors.
      * @param position The position.
      */
-    public void setPivotPosition(Angle position) {
-        this.pivotMotor.setPosition(position);
+    public void setRackAndPinionPosition(Angle position) {
+        this.leftPinionMotor.setPosition(position);
     }
 
     /**

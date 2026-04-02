@@ -31,7 +31,7 @@ public class VisionSubsystem extends SubsystemBase {
         return VisionSubsystemHolder.INSTANCE;
     }
 
-    QuestNav questNav = new QuestNav();
+    final QuestNav questNav = new QuestNav();
     PoseFrame[] poseFrames;
     PoseEstimate limelightPose;
 
@@ -54,7 +54,7 @@ public class VisionSubsystem extends SubsystemBase {
         questNav.commandPeriodic();
 
         boolean tracking = questNav.isTracking();
-        if (tracking != lastTracking){
+        if (tracking != lastTracking) {
             Logger.recordOutput("QuestNav/Tracking", tracking);
         }
         lastTracking = tracking;
@@ -65,8 +65,6 @@ public class VisionSubsystem extends SubsystemBase {
 
             updateSwervePoseEstimation();
 
-            // Logger.recordOutput("QuestNav/Latency", questNav.getLatency());
-            // Logger.recordOutput("QuestNav/FramesPerRobotCycle", poseFrames.length);
             Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
             try {
@@ -74,16 +72,16 @@ public class VisionSubsystem extends SubsystemBase {
             } catch (Exception ignored) {}
         }
 
-        if(DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled()) {
             limelightPose = getLimelightPose();
 
-            if(trustLimelightData()) {
+            if (trustLimelightData()) {
                 resetPose();
             }
 
             try {
                 Logger.recordOutput("Limelight/Pose", limelightPose.pose);
-            } catch (Exception ignored){}
+            } catch (Exception ignored) {}
         }
     }
 
@@ -110,7 +108,7 @@ public class VisionSubsystem extends SubsystemBase {
     public Pose2d getPose2d() {
         Pose3d pose3d = getPose3d();
 
-        if(pose3d != null) {
+        if (pose3d != null) {
             return pose3d.toPose2d();
         }
 
@@ -118,9 +116,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     /** Reset pose from absolute Limelight data if QuestNav relative data is inaccurate */
-    public void resetPose(){
+    public void resetPose() {
         if (limelightPose.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-            System.out.println("Resetting Vision pose");
+            // TODO: change this to reset the quest's offset ONLY, no adding vision measurements (so it's instant)
+            // Also, QuestNav got an moderately large update right after comp so lets look into what changed!
+            // System.out.println("Resetting Vision pose");
+
             SwerveSubsystem.getInstance().addVisionMeasurement(
                 limelightPose.pose,
                 limelightPose.timestampSeconds
@@ -160,7 +161,7 @@ public class VisionSubsystem extends SubsystemBase {
      * Getter method to know if an AprilTag is in view of the Limelight
      * @return if it's in view
      */
-    private boolean tagInView(){
+    private boolean tagInView() {
         return LimelightHelpers.getTV(VisionConstants.LIMELIGHT);
     }
 
@@ -168,10 +169,10 @@ public class VisionSubsystem extends SubsystemBase {
      * Getter method to find the ambiguity value of currently visible AprilTags
      * @return the ambiguity value
      */
-    private double getLimelightAmbiguity(){ // If this doesn't work, just switch to distance
+    private double getLimelightAmbiguity() { // If this doesn't work, just switch to distance
         double lowestAmbiguity = Double.MAX_VALUE;
 
-        if(fiducials != null) {
+        if (fiducials != null) {
             for (RawFiducial fiducial : fiducials) {
                 if (fiducial.ambiguity < lowestAmbiguity) {
                     lowestAmbiguity = fiducial.ambiguity;
@@ -186,7 +187,7 @@ public class VisionSubsystem extends SubsystemBase {
      * Whether to trust the Limelight pose or not.
      * @return true if it can be trusted
      */
-    public boolean trustLimelightData(){
+    public boolean trustLimelightData() {
         return tagInView() && getLimelightAmbiguity() <= VisionConstants.MAX_APRILTAG_AMBIGUITY;
     }
 }
