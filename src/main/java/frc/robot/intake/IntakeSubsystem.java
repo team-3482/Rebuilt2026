@@ -58,7 +58,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
         MotorOutputConfigs motorOutputConfigs = configuration.MotorOutput;
         motorOutputConfigs.NeutralMode = NeutralModeValue.Brake;
-        motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Set Motion Magic gains in slot 0.
         Slot0Configs slot0Configs = configuration.Slot0;

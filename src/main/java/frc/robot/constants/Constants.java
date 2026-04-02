@@ -80,7 +80,7 @@ public class Constants {
         /** The CAN ID for the Left Pinion TalonFX */
         public static final int LEFT_PINION_MOTOR = 22;
         /** The CAN ID for the Right Pinion TalonFX */
-        public static final int RIGHT_PINION_MOTOR = 22; // TODO: assign real ID
+        public static final int RIGHT_PINION_MOTOR = 26;
         /** The CAN ID for the Intake TalonFX */
         public static final int INTAKE_MOTOR = 20;
 
