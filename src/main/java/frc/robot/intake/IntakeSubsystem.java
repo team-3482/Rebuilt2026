@@ -32,7 +32,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final TalonFX leftPinionMotor = new TalonFX(IntakeConstants.LEFT_PINION_MOTOR, RobotConstants.CAN_BUS);
     private final TalonFX rightPinionMotor = new TalonFX(IntakeConstants.RIGHT_PINION_MOTOR, RobotConstants.CAN_BUS);
-    private final TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX leftIntakeMotor = new TalonFX(IntakeConstants.LEFT_INTAKE_MOTOR, RobotConstants.CAN_BUS);
+    private final TalonFX rightIntakeMotor = new TalonFX(IntakeConstants.RIGHT_INTAKE_MOTOR, RobotConstants.CAN_BUS);
     private final MotionMagicVoltage motionMagicVoltage = new MotionMagicVoltage(0);
 
     private IntakeSubsystem() {
@@ -44,6 +45,7 @@ public class IntakeSubsystem extends SubsystemBase {
         this.leftPinionMotor.getPosition().setUpdateFrequency(50);
         
         this.rightPinionMotor.setControl(new Follower(leftPinionMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+        this.rightIntakeMotor.setControl(new Follower(leftIntakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
     /* Configures pinion motor since it is the only one using motion magic. */
@@ -136,6 +138,6 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param speed How fast the motor goes. Must be between -1 and 1.
      */
     public void setIntakeSpeed(double speed) {
-        this.intakeMotor.set(-speed);
+        this.leftIntakeMotor.set(speed);
     }
 }

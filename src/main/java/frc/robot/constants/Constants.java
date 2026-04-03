@@ -81,8 +81,10 @@ public class Constants {
         public static final int LEFT_PINION_MOTOR = 22;
         /** The CAN ID for the Right Pinion TalonFX */
         public static final int RIGHT_PINION_MOTOR = 26;
-        /** The CAN ID for the Intake TalonFX */
-        public static final int INTAKE_MOTOR = 20;
+        /** The CAN ID for the Left Intake TalonFX */
+        public static final int LEFT_INTAKE_MOTOR = 27;
+            /** The CAN ID for the Right Intake TalonFX */
+        public static final int RIGHT_INTAKE_MOTOR = 28;
 
         /** Minimum angle (Up on hardstop inside robot) */
         public static final Angle MINIMUM_ANGLE = Degrees.of(0);
