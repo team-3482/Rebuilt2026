@@ -11,11 +11,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.HoodConstants;
-import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -65,10 +63,10 @@ public class HoodSubsystem extends SubsystemBase {
             ? Math.min(targetPosition, currentPosition + maxPercentageTraveled)
             : Math.max(targetPosition, currentPosition - maxPercentageTraveled);
 
-        Logger.recordOutput("Hood/Position", currentPosition);
+        // Logger.recordOutput("Hood/Position", currentPosition);
 
-        Logger.recordOutput("Hood/WithinTolerance", withinTolerance);
-        SmartDashboard.putBoolean("Hood/WithinTolerance", withinTolerance);
+        // Logger.recordOutput("Hood/WithinTolerance", withinTolerance);
+        // SmartDashboard.putBoolean("Hood/WithinTolerance", withinTolerance);
     }
 
     /**

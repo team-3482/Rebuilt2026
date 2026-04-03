@@ -23,7 +23,6 @@ import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.Positions;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
-import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
 import frc.robot.intake.MovePivotCommand;
@@ -185,13 +184,9 @@ public class RobotContainer {
         this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper()
-            .whileTrue(CommandGenerators.PrepareFerry())
-            .onFalse(new MoveHoodCommand(0));
+        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper()
-            .whileTrue(CommandGenerators.PrepareHub())
-            .onFalse(new MoveHoodCommand(0));
+        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
