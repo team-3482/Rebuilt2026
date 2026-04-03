@@ -237,8 +237,8 @@ public class Constants {
         public static final double ROTOR_TO_MECHANISM_RATIO = 45;
 
         /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 1;
-        public static final double ACCELERATION = 0.5;
+        public static final double CRUISE_SPEED = 2;
+        public static final double ACCELERATION = 1;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
@@ -247,7 +247,7 @@ public class Constants {
             public static final double kS = 0; // TODO: TUNE!!!!!
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 2;
+            public static final double kP = 8;
             public static final double kI = 0;
             public static final double kD = 0;
         }
