@@ -41,9 +41,9 @@ public class FeedShooterCommand extends Command {
             && HoodSubsystem.getInstance().isPositionWithinTolerance()
             && SwerveSubsystem.getInstance().angleWithinToleranceToTarget())
         ) {
-            if (timer.advanceIfElapsed(shouldFeed ? ShooterConstants.FEEDER_FEED_DURATION : ShooterConstants.FEEDER_PAUSE_DURATION)) {
-                shouldFeed = !shouldFeed;
-            }
+            // if (timer.advanceIfElapsed(shouldFeed ? ShooterConstants.FEEDER_FEED_DURATION : ShooterConstants.FEEDER_PAUSE_DURATION)) {
+            //     shouldFeed = !shouldFeed;
+            // }
 
             if (shouldFeed) {
                 ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);

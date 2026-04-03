@@ -217,7 +217,7 @@ public class Constants {
         public static final double DISTANCE_D = 4.81439;
 
         /** Heuristic multiplier to account for friction, slippage, etc */
-        public static final double OFFSET_MULTIPLIER = 1.175;
+        public static final double OFFSET_MULTIPLIER = 1.2;
 
         /** Height of the Hub */
         public static final Distance HUB_HEIGHT = Feet.of(6);
