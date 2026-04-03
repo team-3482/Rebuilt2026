@@ -86,10 +86,10 @@ public class Constants {
             /** The CAN ID for the Right Intake TalonFX */
         public static final int RIGHT_INTAKE_MOTOR = 28;
 
-        /** Minimum angle (Up on hardstop inside robot) */
-        public static final Angle MINIMUM_ANGLE = Degrees.of(0);
-        /** Maximum angle (Intaking position on bumper) */
-        public static final Angle MAXIMUM_ANGLE = Degrees.of(70);
+        /** Minimum angle (On hardstop inside robot) */
+        public static final Angle MINIMUM_POSITION = Rotations.of(0);
+        /** Maximum angle (Intaking position) */
+        public static final Angle MAXIMUM_POSITION = Rotations.of(3.125);
 
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = ((double) 30 / 12) * ((double) 36 / 19);
@@ -103,7 +103,7 @@ public class Constants {
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
-            public static final double kS = 0.09;
+            public static final double kS = 0.22;
             public static final double kV = 0;
             public static final double kA = 0;
             public static final double kP = 256;

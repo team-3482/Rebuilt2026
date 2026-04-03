@@ -44,7 +44,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
         this.leftPinionMotor.getPosition().setUpdateFrequency(50);
         
-        this.rightPinionMotor.setControl(new Follower(leftPinionMotor.getDeviceID(), MotorAlignmentValue.Opposed));
         this.rightIntakeMotor.setControl(new Follower(leftIntakeMotor.getDeviceID(), MotorAlignmentValue.Opposed));
     }
 
@@ -79,6 +78,9 @@ public class IntakeSubsystem extends SubsystemBase {
         motionMagicConfigs.MotionMagicAcceleration = IntakeConstants.ACCELERATION;
 
         this.leftPinionMotor.getConfigurator().apply(configuration);
+
+        motorOutputConfigs.Inverted = InvertedValue.Clockwise_Positive;
+        this.rightPinionMotor.getConfigurator().apply(configuration);
     }
 
     /**
@@ -89,7 +91,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void motionMagicPosition(Angle position, boolean clamp) {
         if (clamp) {
-            position = Degrees.of(MathUtil.clamp(position.in(Degrees), IntakeConstants.MINIMUM_ANGLE.in(Degrees), IntakeConstants.MAXIMUM_ANGLE.in(Degrees)));
+            position = Degrees.of(MathUtil.clamp(position.in(Degrees), IntakeConstants.MINIMUM_POSITION.in(Degrees), IntakeConstants.MAXIMUM_POSITION.in(Degrees)));
         }
 
         MotionMagicVoltage control = motionMagicVoltage
@@ -97,6 +99,7 @@ public class IntakeSubsystem extends SubsystemBase {
             .withPosition(position.in(Rotations));
 
         this.leftPinionMotor.setControl(control);
+        this.rightPinionMotor.setControl(control);
     }
 
     /**
@@ -109,11 +112,19 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /**
-     * Gets the mechanism position of the motor.
+     * Gets the mechanism position of the left motor.
      * @return The angle
      */
-    public Angle getPosition() {
+    public Angle getLeftPosition() {
         return this.leftPinionMotor.getPosition().getValue();
+    }
+
+    /**
+     * Gets the mechanism position of the right motor.
+     * @return The angle
+     */
+    public Angle getRightPosition() {
+        return this.rightPinionMotor.getPosition().getValue();
     }
 
     /**
@@ -122,7 +133,9 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param position The position to compare to.
      */
     public boolean withinTolerance(Angle position) {
-        return Math.abs(getPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PINION_TOLERANCE;
+        return
+            Math.abs(getLeftPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PINION_TOLERANCE
+            && Math.abs(getRightPosition().in(Degrees) - position.in(Degrees)) <= IntakeConstants.PINION_TOLERANCE;
     }
 
     /**
@@ -131,6 +144,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void setRackAndPinionPosition(Angle position) {
         this.leftPinionMotor.setPosition(position);
+        this.rightPinionMotor.setPosition(position);
     }
 
     /**

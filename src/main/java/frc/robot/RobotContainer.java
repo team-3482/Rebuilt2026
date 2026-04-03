@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
@@ -25,7 +24,7 @@ import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.MovePivotCommand;
+import frc.robot.intake.MoveRackAndPinionCommand;
 import frc.robot.shooter.FeedShooterCommand;
 import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
@@ -200,10 +199,10 @@ public class RobotContainer {
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Intake
-        this.operatorController.leftBumper().whileTrue(Commands.sequence(
-            new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE),
+        this.operatorController.leftBumper().whileTrue(//Commands.sequence(
+            // new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION),
             new IntakeCommand()
-        ));
+        );//);
 
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
@@ -223,9 +222,9 @@ public class RobotContainer {
         this.operatorController.x().toggleOnTrue(new ClimbCommand());
 
         // A -> Intake Pivot Down
-        this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
+        this.operatorController.a().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION));
         // Y -> Intake Pivot Up
-        this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+        this.operatorController.y().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION));
     }
 
     private void registerNamedCommands() {
@@ -234,8 +233,8 @@ public class RobotContainer {
 
         // Intake
         NamedCommands.registerCommand("Intake", new IntakeCommand());
-        NamedCommands.registerCommand("MovePivotDown", new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
-        NamedCommands.registerCommand("MovePivotUp", new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+        NamedCommands.registerCommand("MoveRackAndPinionOut", new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION));
+        NamedCommands.registerCommand("MoveRackAndPinionIn", new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION));
 
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
