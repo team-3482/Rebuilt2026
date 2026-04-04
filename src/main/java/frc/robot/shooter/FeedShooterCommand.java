@@ -31,6 +31,7 @@ public class FeedShooterCommand extends Command {
         timer.restart();
 
         ShooterSubsystem.getInstance().setSterilizerSpeed(ShooterConstants.STERILIZER_SPEED);
+        ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
     }
 
     @Override
@@ -45,11 +46,11 @@ public class FeedShooterCommand extends Command {
             //     shouldFeed = !shouldFeed;
             // }
 
-            if (shouldFeed) {
-                ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
-            } else {
-                ShooterSubsystem.getInstance().setFeederSpeed(0);
-            }
+            // if (shouldFeed) {
+            //     ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
+            // } else {
+            //     ShooterSubsystem.getInstance().setFeederSpeed(0);
+            // }
         }
     }
 
