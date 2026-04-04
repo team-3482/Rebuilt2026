@@ -39,29 +39,29 @@ public class CommandGenerators {
         // TODO make this a lambda expression
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
-        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-        ) {
-            try {
-                Logger.recordOutput("Shooter/Target", target);
-            } catch (Exception e) {}
+        try {
+            Logger.recordOutput("Shooter/Target", target);
+        } catch (Exception ignored) {}
 
-            // Get angle for move hood cmd
-            // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+        // Get angle for move hood cmd
+        // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
 
-            // Schedule command
-            Command parallelCommand = Commands.parallel(
-                new LookAtPositionCommand(target),
-                // new MoveHoodCommand(angle),
-                new RevShooterCommand(target)
-            );
-            CommandScheduler.getInstance().schedule(parallelCommand);
-            return parallelCommand;
-        } else {
+        // Schedule command
+        Command parallelCommand = Commands.parallel(
+            new LookAtPositionCommand(target),
+            // new MoveHoodCommand(angle),
+            new RevShooterCommand(target)
+        );
+
+        CommandScheduler.getInstance().schedule(parallelCommand);
+
+        if (distance.gt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MIN_SHOOTING_DISTANCE)) {
             System.out.println("Target out of range!!!");
             // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
         }
-        return Commands.none();
+
+        return parallelCommand;
     }
 
     /**

@@ -10,13 +10,16 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.utility.PhoenixPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.constants.Constants.AutoAngleConstants;
 import frc.robot.constants.TunerConstants;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.*;
 
 /** Takes a position on the field and automatically rotates to face it */
 public class LookAtPositionCommand extends Command {
@@ -44,6 +47,7 @@ public class LookAtPositionCommand extends Command {
         .withDriveRequestType(DriveRequestType.Velocity);
 
     private final PhoenixPIDController controller = new PhoenixPIDController(AutoAngleConstants.P, AutoAngleConstants.I, AutoAngleConstants.D);
+    boolean flip;
 
     @Override
     public void initialize() {
@@ -51,6 +55,11 @@ public class LookAtPositionCommand extends Command {
 
         controller.reset();
         facingAngleDrive.HeadingController = controller;
+
+        flip = RobotContainer.getInstance().driverController_HID.getLeftTriggerAxis() >= 0.5;
+
+        boolean redAlliance = DriverStation.getAlliance().orElse(Alliance.Blue).equals(DriverStation.Alliance.Red);
+        if (redAlliance) { flip = !flip; }
 
         calculateAngle();
     }
@@ -64,6 +73,10 @@ public class LookAtPositionCommand extends Command {
         );
 
         SwerveSubsystem.getInstance().setTargetAngle(Radians.of(angleToTarget));
+        Pose2d targetPose = new Pose2d(state.Pose.getTranslation(), new Rotation2d(angleToTarget));
+        try {
+            Logger.recordOutput("Shooter/TargetPose", targetPose);
+        } catch (Exception ignored) {}
 
         try {
             Logger.recordOutput("Shooter/Target", target);
@@ -91,7 +104,19 @@ public class LookAtPositionCommand extends Command {
         xDistance = target.getMeasureX().in(Meters) - state.Pose.getMeasureX().in(Meters);
         yDistance = target.getMeasureY().in(Meters) - state.Pose.getMeasureY().in(Meters);
 
-        angleToTarget = Math.atan2(yDistance, xDistance);
+        Angle angle = Radians.of(Math.atan2(yDistance, xDistance));
+
+        if(angle.in(Degrees) > 180) {
+            angle = angle.minus(Degrees.of(180));
+            angle = Degrees.of(-180).plus(angle);
+        } else if (angle.in(Degrees) < -180) {
+            angle = angle.plus(Degrees.of(180));
+            angle = Degrees.of(180).plus(angle);
+        }
+
+        angleToTarget = angle.in(Radians);
+
+        if(flip) { angleToTarget -= Math.PI; }
         System.out.println("target angle: " + angleToTarget);
     }
 }

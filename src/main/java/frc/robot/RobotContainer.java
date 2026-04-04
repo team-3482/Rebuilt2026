@@ -52,7 +52,7 @@ public class RobotContainer {
 
     // Instance of the controllers used to drive the robot
     private final CommandXboxController driverController;
-    private final XboxController driverController_HID;
+    public final XboxController driverController_HID;
     private final CommandXboxController operatorController;
 
     public RobotContainer() {
