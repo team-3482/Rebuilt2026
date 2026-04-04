@@ -96,8 +96,8 @@ public class Constants {
 
         // TODO: we can probably optimize this a bit
         /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 2;
-        public static final double ACCELERATION = 2;
+        public static final double CRUISE_SPEED = 4;
+        public static final double ACCELERATION = 8;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
@@ -106,7 +106,7 @@ public class Constants {
             public static final double kS = 0.22;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 256;
+            public static final double kP = 32;
             public static final double kI = 0;
             public static final double kD = 0;
         }
@@ -136,9 +136,9 @@ public class Constants {
         public static final double FEEDER_FEED_DURATION = 0.075;
 
         /** Feeder motor speed */
-        public static final double FEEDER_SPEED = .4;
+        public static final double FEEDER_SPEED = 1;
         /** Sterilizer motor speed */
-        public static final double STERILIZER_SPEED = 0.75;
+        public static final double STERILIZER_SPEED = 0.4;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
@@ -231,23 +231,23 @@ public class Constants {
         public static final int CLIMB_MOTOR_2 = 32;
 
         /** How many revolutions to completely retract the climb */
-        public static final Angle CLIMB_POSITION = Revolutions.of(1.2);
+        public static final Angle CLIMB_POSITION = Revolutions.of(1.4);
 
         /** Gearbox ratio */
         public static final double ROTOR_TO_MECHANISM_RATIO = 45;
 
         /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 2;
-        public static final double ACCELERATION = 1;
+        public static final double CRUISE_SPEED = 1;
+        public static final double ACCELERATION = 2;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
-            public static final double kS = 0; // TODO: TUNE!!!!!
+            public static final double kS = 0;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 8;
+            public static final double kP = 32;
             public static final double kI = 0;
             public static final double kD = 0;
         }

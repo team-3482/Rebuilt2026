@@ -36,6 +36,6 @@ public class ClimbCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return ClimbSubsystem.getInstance().withinTolerance(ClimbConstants.CLIMB_POSITION);
+        return false;//ClimbSubsystem.getInstance().withinTolerance(ClimbConstants.CLIMB_POSITION);
     }
 }
