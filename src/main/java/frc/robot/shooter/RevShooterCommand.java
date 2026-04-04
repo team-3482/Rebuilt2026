@@ -17,7 +17,7 @@ import static edu.wpi.first.units.Units.RPM;
 
 /** Rev up shooter to speed based on distance from target */
 public class RevShooterCommand extends Command {
-    final Pose2d target;
+    private final Pose2d target;
 
     public RevShooterCommand(Pose2d target) {
         setName("RevShooterCommand");
@@ -29,7 +29,6 @@ public class RevShooterCommand extends Command {
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(ShooterSubsystem.getInstance());
-
     }
 
     @Override

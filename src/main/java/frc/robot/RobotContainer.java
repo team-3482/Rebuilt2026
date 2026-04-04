@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.climb.ClimbCommand;
 import frc.robot.climb.ClimbSubsystem;
@@ -198,20 +199,23 @@ public class RobotContainer {
         // B -> Cancel all commands
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        // Left Bumper -> Intake
-        this.operatorController.leftBumper().whileTrue(//Commands.sequence(
-            // new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION),
-            new IntakeCommand()
-        );//);
+        // Left Bumper -> Spin Intake Roller
+        this.operatorController.leftBumper()
+            .whileTrue(Commands.sequence(
+                new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION),
+                new IntakeCommand()
+            )).onFalse(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION)
+        );
 
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
+        // Right Trigger -> Spin Feeder and Sterilizer in reverse.
+        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false, true));
+
         // Left Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
         this.operatorController.leftTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
-        // Right Trigger -> Manually feed Shooter without doing checks
-        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false));
 
         // // Left Trigger -> Shooter Hood Minimum
         // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
@@ -221,9 +225,9 @@ public class RobotContainer {
         // X -> Enter Climb
         this.operatorController.x().toggleOnTrue(new ClimbCommand());
 
-        // A -> Intake Pivot Down
+        // A -> Intake Rack and Pinion Out
         this.operatorController.a().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION));
-        // Y -> Intake Pivot Up
+        // Y -> Intake Rack and Pinion In
         this.operatorController.y().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION));
     }
 
@@ -239,7 +243,7 @@ public class RobotContainer {
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand(false));
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
     }
 
     public Command getAutonomousCommand() {
