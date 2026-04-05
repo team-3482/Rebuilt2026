@@ -201,7 +201,7 @@ public class RobotContainer {
 
         // Left Bumper -> Spin Intake Roller
         this.operatorController.leftBumper()
-            .whileTrue(Commands.sequence(
+            .whileTrue(Commands.parallel(
                 new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION),
                 new IntakeCommand()
             )).onFalse(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION)
