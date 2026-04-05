@@ -36,7 +36,6 @@ public class VisionSubsystem extends SubsystemBase {
     PoseEstimate limelightPose;
 
     RawFiducial[] fiducials;
-    boolean lastTracking;
 
     private VisionSubsystem() {
         super("VisionSubsystem");
@@ -54,34 +53,31 @@ public class VisionSubsystem extends SubsystemBase {
         questNav.commandPeriodic();
 
         boolean tracking = questNav.isTracking();
-        if (tracking != lastTracking) {
-            Logger.recordOutput("QuestNav/Tracking", tracking);
-        }
-        lastTracking = tracking;
+        Logger.recordOutput("QuestNav/Tracking", tracking);
 
         if (tracking) {
+            Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
+
             // Get the latest pose data frames from the Quest
             poseFrames = questNav.getAllUnreadPoseFrames();
 
             updateSwervePoseEstimation();
-
-            Logger.recordOutput("QuestNav/BatteryPercent", questNav.getBatteryPercent().getAsInt());
 
             try {
                 Logger.recordOutput("QuestNav/Pose", getPose2d());
             } catch (Exception ignored) {}
         }
 
-        if (DriverStation.isDisabled()) {
+        if (DriverStation.isDisabled() || !tracking) {
             limelightPose = getLimelightPose();
 
             if (trustLimelightData()) {
+                try {
+                    Logger.recordOutput("Limelight/Pose", limelightPose.pose);
+                } catch (Exception ignored) {}
+
                 resetPose();
             }
-
-            try {
-                Logger.recordOutput("Limelight/Pose", limelightPose.pose);
-            } catch (Exception ignored) {}
         }
     }
 
