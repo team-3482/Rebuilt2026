@@ -4,22 +4,20 @@
 
 package frc.robot.shooter;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants.ShooterConstants;
+import frc.robot.swerve.SwerveSubsystem;
 
 /** Feed fuel into shooter with Feeder and Sterilizer motors */
 public class FeedShooterCommand extends Command {
-    private final Timer timer = new Timer();
-    private boolean shouldFeed = true;
     private final boolean doChecks;
-    private final boolean reversed;
+    private final double direction;
 
     public FeedShooterCommand(boolean doChecks, boolean reversed) {
         setName("FeedShooterCommand");
 
         this.doChecks = doChecks;
-        this.reversed = reversed;
+        direction = reversed ? -1.0 : 1.0;
     }
 
     public FeedShooterCommand() {
@@ -27,34 +25,19 @@ public class FeedShooterCommand extends Command {
     }
 
     @Override
-    public void initialize() {
-        timer.restart();
-
-        double direction = reversed ? -1.0 : 1.0;
-
-        ShooterSubsystem.getInstance().setSterilizerSpeed(ShooterConstants.STERILIZER_SPEED * direction);
-        ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED * direction);
+    public void execute() {
+        if (
+            !doChecks
+            || (ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
+            && SwerveSubsystem.getInstance().angleWithinToleranceToTarget())
+        ) {
+            ShooterSubsystem.getInstance().setSterilizerSpeed(ShooterConstants.STERILIZER_SPEED * direction);
+            ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED * direction);
+        } else {
+            ShooterSubsystem.getInstance().setFeederSpeed(0);
+            ShooterSubsystem.getInstance().setSterilizerSpeed(0);
+        }
     }
-
-    // @Override
-    // public void execute() {
-    //     if (
-    //         !doChecks
-    //         || (ShooterSubsystem.getInstance().isShooterVelocityWithinTolerance()
-    //         && HoodSubsystem.getInstance().isPositionWithinTolerance()
-    //         && SwerveSubsystem.getInstance().angleWithinToleranceToTarget())
-    //     ) {
-    //         if (timer.advanceIfElapsed(shouldFeed ? ShooterConstants.FEEDER_FEED_DURATION : ShooterConstants.FEEDER_PAUSE_DURATION)) {
-    //             shouldFeed = !shouldFeed;
-    //         }
-    //
-    //         if (shouldFeed) {
-    //             ShooterSubsystem.getInstance().setFeederSpeed(ShooterConstants.FEEDER_SPEED);
-    //         } else {
-    //             ShooterSubsystem.getInstance().setFeederSpeed(0);
-    //         }
-    //     }
-    // }
 
     @Override
     public void end(boolean interrupted) {

@@ -216,12 +216,6 @@ public class RobotContainer {
         // Left Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
         this.operatorController.leftTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
 
-
-        // // Left Trigger -> Shooter Hood Minimum
-        // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
-        // // Right Trigger -> Shooter Hood Maximum
-        // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
-
         // X -> Enter Climb
         this.operatorController.x().toggleOnTrue(new ClimbCommand());
 
