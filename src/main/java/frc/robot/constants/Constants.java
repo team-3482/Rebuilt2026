@@ -81,30 +81,32 @@ public class Constants {
         public static final int LEFT_PINION_MOTOR = 22;
         /** The CAN ID for the Right Pinion TalonFX */
         public static final int RIGHT_PINION_MOTOR = 26;
-        /** The CAN ID for the Intake TalonFX */
-        public static final int INTAKE_MOTOR = 20;
+        /** The CAN ID for the Left Intake TalonFX */
+        public static final int LEFT_INTAKE_MOTOR = 27;
+            /** The CAN ID for the Right Intake TalonFX */
+        public static final int RIGHT_INTAKE_MOTOR = 28;
 
-        /** Minimum angle (Up on hardstop inside robot) */
-        public static final Angle MINIMUM_ANGLE = Degrees.of(0);
-        /** Maximum angle (Intaking position on bumper) */
-        public static final Angle MAXIMUM_ANGLE = Degrees.of(70);
+        /** Minimum angle (On hardstop inside robot) */
+        public static final Angle MINIMUM_POSITION = Rotations.of(0);
+        /** Maximum angle (Intaking position) */
+        public static final Angle MAXIMUM_POSITION = Rotations.of(3.125);
 
         /** Gear ratio for mechanism */
         public static final double ROTOR_TO_MECHANISM_RATIO = ((double) 30 / 12) * ((double) 36 / 19);
 
         // TODO: we can probably optimize this a bit
         /* Motion Magic Config */
-        public static final double CRUISE_SPEED = 2;
-        public static final double ACCELERATION = 2;
+        public static final double CRUISE_SPEED = 4;
+        public static final double ACCELERATION = 8;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
-            public static final double kS = 0.09;
+            public static final double kS = 0.22;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 256;
+            public static final double kP = 32;
             public static final double kI = 0;
             public static final double kD = 0;
         }
@@ -134,9 +136,9 @@ public class Constants {
         public static final double FEEDER_FEED_DURATION = 0.075;
 
         /** Feeder motor speed */
-        public static final double FEEDER_SPEED = .4;
+        public static final double FEEDER_SPEED = 1;
         /** Sterilizer motor speed */
-        public static final double STERILIZER_SPEED = 0.75;
+        public static final double STERILIZER_SPEED = 0.4;
 
         /** Shooter velocity (RPM) threshold to start feeding fuel */
         public static final AngularVelocity VELOCITY_TOLERANCE = RPM.of(200);
@@ -215,7 +217,7 @@ public class Constants {
         public static final double DISTANCE_D = 4.81439;
 
         /** Heuristic multiplier to account for friction, slippage, etc */
-        public static final double OFFSET_MULTIPLIER = 1.175;
+        public static final double OFFSET_MULTIPLIER = 1.2;
 
         /** Height of the Hub */
         public static final Distance HUB_HEIGHT = Feet.of(6);
@@ -229,23 +231,23 @@ public class Constants {
         public static final int CLIMB_MOTOR_2 = 32;
 
         /** How many revolutions to completely retract the climb */
-        public static final Angle CLIMB_POSITION = Revolutions.of(1.2);
+        public static final Angle CLIMB_POSITION = Revolutions.of(1.4);
 
         /** Gearbox ratio */
         public static final double ROTOR_TO_MECHANISM_RATIO = 45;
 
         /* Motion Magic Config */
         public static final double CRUISE_SPEED = 1;
-        public static final double ACCELERATION = 0.5;
+        public static final double ACCELERATION = 2;
 
         /** Gains used for Motion Magic slot 0. */
         @SuppressWarnings("HungarianNotationConstants")
         public static final class Slot0Gains {
             public static final double kG = 0;
-            public static final double kS = 0; // TODO: TUNE!!!!!
+            public static final double kS = 0;
             public static final double kV = 0;
             public static final double kA = 0;
-            public static final double kP = 2;
+            public static final double kP = 32;
             public static final double kI = 0;
             public static final double kD = 0;
         }

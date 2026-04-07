@@ -23,10 +23,9 @@ import frc.robot.constants.Constants.IntakeConstants;
 import frc.robot.constants.Constants.Positions;
 import frc.robot.constants.TunerConstants;
 import frc.robot.hood.HoodSubsystem;
-import frc.robot.hood.MoveHoodCommand;
 import frc.robot.intake.IntakeCommand;
 import frc.robot.intake.IntakeSubsystem;
-import frc.robot.intake.MovePivotCommand;
+import frc.robot.intake.MoveRackAndPinionCommand;
 import frc.robot.shooter.FeedShooterCommand;
 import frc.robot.shooter.RevShooterCommand;
 import frc.robot.shooter.ShooterSubsystem;
@@ -54,7 +53,7 @@ public class RobotContainer {
 
     // Instance of the controllers used to drive the robot
     private final CommandXboxController driverController;
-    private final XboxController driverController_HID;
+    public final XboxController driverController_HID;
     private final CommandXboxController operatorController;
 
     public RobotContainer() {
@@ -185,13 +184,9 @@ public class RobotContainer {
         this.driverController.b().onTrue(CommandGenerators.CancelAllCommands());
 
         // Left Bumper -> Aim to home side to Ferry and start up Shooter
-        this.driverController.leftBumper()
-            .whileTrue(CommandGenerators.PrepareFerry())
-            .onFalse(new MoveHoodCommand(0));
+        this.driverController.leftBumper().whileTrue(CommandGenerators.PrepareFerry());
         // Right Bumper -> Aim to Hub and start up Shooter
-        this.driverController.rightBumper()
-            .whileTrue(CommandGenerators.PrepareHub())
-            .onFalse(new MoveHoodCommand(0));
+        this.driverController.rightBumper().whileTrue(CommandGenerators.PrepareHub());
     }
 
     /** Configures the button bindings of the operator controller. */
@@ -204,33 +199,30 @@ public class RobotContainer {
         // B -> Cancel all commands
         this.operatorController.b().onTrue(CommandGenerators.CancelAllCommands());
 
-        // Left Bumper -> Intake
-        this.operatorController.leftBumper().whileTrue(Commands.sequence(
-            new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE),
-            new IntakeCommand()
-        ));
+        // Left Bumper -> Spin Intake Roller
+        this.operatorController.leftBumper()
+            .whileTrue(Commands.parallel(
+                new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION),
+                new IntakeCommand()
+            )).onFalse(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION)
+        );
 
         // Right Bumper -> Feed Fuel into Shooter
         this.operatorController.rightBumper().whileTrue(new FeedShooterCommand());
 
+        // Right Trigger -> Spin Feeder and Sterilizer in reverse.
+        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false, true));
+
         // Left Trigger -> Manually rev Shooter (shouldn't be necessary other than for testing)
         this.operatorController.leftTrigger().whileTrue(new RevShooterCommand(Positions.BLUE_HUB));
-
-        // Right Trigger -> Manually feed Shooter without doing checks
-        this.operatorController.rightTrigger().whileTrue(new FeedShooterCommand(false));
-
-        // // Left Trigger -> Shooter Hood Minimum
-        // this.operatorController.leftTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MIN));
-        // // Right Trigger -> Shooter Hood Maximum
-        // this.operatorController.rightTrigger().onTrue(new MoveHoodCommand(HoodConstants.HOOD_ANGLE_MAX));
 
         // X -> Enter Climb
         this.operatorController.x().toggleOnTrue(new ClimbCommand());
 
-        // A -> Intake Pivot Down
-        this.operatorController.a().onTrue(new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
-        // Y -> Intake Pivot Up
-        this.operatorController.y().onTrue(new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+        // A -> Intake Rack and Pinion Out
+        this.operatorController.a().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION));
+        // Y -> Intake Rack and Pinion In
+        this.operatorController.y().onTrue(new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION));
     }
 
     private void registerNamedCommands() {
@@ -239,13 +231,13 @@ public class RobotContainer {
 
         // Intake
         NamedCommands.registerCommand("Intake", new IntakeCommand());
-        NamedCommands.registerCommand("MovePivotDown", new MovePivotCommand(IntakeConstants.MAXIMUM_ANGLE));
-        NamedCommands.registerCommand("MovePivotUp", new MovePivotCommand(IntakeConstants.MINIMUM_ANGLE));
+        NamedCommands.registerCommand("MoveRackAndPinionOut", new MoveRackAndPinionCommand(IntakeConstants.MAXIMUM_POSITION));
+        NamedCommands.registerCommand("MoveRackAndPinionIn", new MoveRackAndPinionCommand(IntakeConstants.MINIMUM_POSITION));
 
         // Shooter
         NamedCommands.registerCommand("PrepareFerry", CommandGenerators.PrepareFerry());
         NamedCommands.registerCommand("PrepareHub", CommandGenerators.PrepareHub());
-        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand(false));
+        NamedCommands.registerCommand("FeedShooter", new FeedShooterCommand());
     }
 
     public Command getAutonomousCommand() {

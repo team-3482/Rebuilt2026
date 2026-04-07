@@ -11,8 +11,6 @@ import frc.robot.constants.Constants.IntakeConstants;
 public class IntakeCommand extends Command {
     public IntakeCommand() {
         setName("IntakeCommand");
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(IntakeSubsystem.getInstance());
     }
 
     @Override

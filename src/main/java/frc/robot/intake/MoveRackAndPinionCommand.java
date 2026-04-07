@@ -9,14 +9,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
 
 /** An example command that does nothing. */
-public class MovePivotCommand extends Command {
+public class MoveRackAndPinionCommand extends Command {
     private final Angle position;
 
-    public MovePivotCommand(Angle position) {
-        setName("MovePivotCommand");
+    public MoveRackAndPinionCommand(Angle position) {
+        setName("MoveRackAndPinionCommand");
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(IntakeSubsystem.getInstance());
 
@@ -30,9 +30,9 @@ public class MovePivotCommand extends Command {
 
     @Override
     public void execute() {
-        double angle = IntakeSubsystem.getInstance().getPosition().in(Degrees);
-        Logger.recordOutput("Intake/PivotAngle", angle);
-        SmartDashboard.putNumber("Intake/PivotAngle", angle);
+        double position = IntakeSubsystem.getInstance().getLeftPosition().in(Rotations);
+        Logger.recordOutput("Intake/RackAndPinionPosition", position);
+        SmartDashboard.putNumber("Intake/RackAndPinionPosition", position);
     }
 
     @Override

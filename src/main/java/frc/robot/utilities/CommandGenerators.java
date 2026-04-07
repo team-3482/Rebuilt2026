@@ -1,9 +1,7 @@
 package frc.robot.utilities;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,16 +9,11 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.constants.Constants.CalculationConstants;
 import frc.robot.constants.Constants.Positions;
-import frc.robot.hood.HoodSubsystem;
-import frc.robot.hood.MoveHoodCommand;
 import frc.robot.shooter.RevShooterCommand;
-import frc.robot.shooter.ShooterSubsystem;
 import frc.robot.swerve.LookAtPositionCommand;
 import frc.robot.swerve.SwerveSubsystem;
 import frc.robot.vision.ResetPoseCommand;
 import org.littletonrobotics.junction.Logger;
-
-import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /** Class that holds commands that don't need to clutter RobotContainer */
 public class CommandGenerators {
@@ -46,29 +39,29 @@ public class CommandGenerators {
         // TODO make this a lambda expression
         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
 
-        if (distance.gt(CalculationConstants.MIN_SHOOTING_DISTANCE)
-            && distance.lt(CalculationConstants.MAX_SHOOTING_DISTANCE)
-        ) {
-            try {
-                Logger.recordOutput("Shooter/Target", target);
-            } catch (Exception e) {}
+        try {
+            Logger.recordOutput("Shooter/Target", target);
+        } catch (Exception ignored) {}
 
-            // Get angle for move hood cmd
-            // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+        // Get angle for move hood cmd
+        // Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
 
-            // Schedule command
-            Command parallelCommand = Commands.parallel(
-                new LookAtPositionCommand(target),
-                // new MoveHoodCommand(angle),
-                new RevShooterCommand(target)
-            );
-            CommandScheduler.getInstance().schedule(parallelCommand);
-            return parallelCommand;
-        } else {
+        // Schedule command
+        Command parallelCommand = Commands.parallel(
+            new LookAtPositionCommand(target),
+            // new MoveHoodCommand(angle),
+            new RevShooterCommand(target)
+        );
+
+        CommandScheduler.getInstance().schedule(parallelCommand);
+
+        if (distance.gt(CalculationConstants.MAX_SHOOTING_DISTANCE)
+            && distance.lt(CalculationConstants.MIN_SHOOTING_DISTANCE)) {
             System.out.println("Target out of range!!!");
             // Elastic.sendNotification(new Notification(NotificationLevel.ERROR, "AimAndRevShooter", "Target out of range!"));
         }
-        return Commands.none();
+
+        return parallelCommand;
     }
 
     /**
@@ -91,20 +84,20 @@ public class CommandGenerators {
         return Commands.runOnce(() -> SwerveSubsystem.getInstance().seedFieldCentric());
     }
 
-    /**
-     * Continuously move the hood angle to meet a target's distance.
-     * @param target The target.
-     * @return The command.
-     */
-    public static Command ContinuousMoveHoodCommand(Pose2d target, boolean hub) {
-        return Commands.runOnce(() -> {
-            Distance distance = SwerveSubsystem.getInstance().getDistance(target);
-            LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
-            Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
-            Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
-            CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
-        });
-    }
+    // /**
+    //  * Continuously move the hood angle to meet a target's distance.
+    //  * @param target The target.
+    //  * @return The command.
+    //  */
+    // public static Command ContinuousMoveHoodCommand(Pose2d target, boolean hub) {
+    //     return Commands.runOnce(() -> {
+    //         Distance distance = SwerveSubsystem.getInstance().getDistance(target);
+    //         LinearVelocity velocity = ShooterSubsystem.getInstance().getFuelLinearVelocity(distance);
+    //         Logger.recordOutput("Shooter/FuelLinearVelocity", velocity.in(MetersPerSecond));
+    //         Angle angle = HoodSubsystem.getInstance().getShootingHoodAngle(distance, velocity, hub);
+    //         CommandScheduler.getInstance().schedule(new MoveHoodCommand(angle));
+    //     });
+    // }
 
     /**
      * Aims to our alliance side and revs shooter
